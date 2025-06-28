@@ -1,0 +1,650 @@
+{
+    "1": {
+        "question": "Làm thế nào xử lý khi nhập thêm giấy tờ tùy thân của khách hàng nhưng bị báo lỗi trùng với khách hàng khác?",
+        "answer": "1. HƯớng dẫn trên màn hình Dùng Menu Thông tin Khách hàng/chọn chức năng tìm kiếm Khách hàng và Khách hàng liên quan Tìm kiếm bằng tất cả giấy tờ hiện hành của khách hàng để lấy tất cả thông tin Mã ACL Ref của Khách hàng đã tạo trên ACL và xác định đây là 1 KH hay thuộc 2 đối tượng KH khác nhau dựa theo Ngày sinh, Tên khách hàng 2. Lưu ý: - Tất cả trường hợp nhập thiếu ID của cùng 1 KH đều phải trả lại bước P1 để hủy hoặc thực hiện điều chỉnh thông tin theo hướng dẫn của BTS cho tùy trường hợp. 3. Hướng xử lý: - Tạo ITSM với tiêu đề \"Xử lý ID trùng\" - Nội dung cần cung cấp trong y/c ITSM:  tất cả ID number (CMND, CCCD, Hộ chiêu (nếu có))  đặc biệt ID number bị trùng của Khách hàng, Ma ACL Ref của các KH đã tạo trên ACL, Mã số hồ sơ (PPID) đang thực hiện.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "1"
+        ]
+    },
+    "2": {
+        "question": "Quy trình xử lý khi chọn giấy tờ tùy thân làm giấy tờ chính nhưng bị báo lỗi trùng với khách hàng khác?",
+        "answer": "1. HƯớng dẫn trên màn hình Dùng Menu Thông tin Khách hàng/chọn chức năng tìm kiếm Khách hàng và Khách hàng liên quan Tìm kiếm bằng tất cả giấy tờ hiện hành của khách hàng để lấy tất cả thông tin Mã ACL Ref của Khách hàng đã tạo trên ACL và xác định đây là 1 KH hay thuộc 2 đối tượng KH khác nhau dựa theo Ngày sinh, Tên khách hàng 2. Lưu ý: - Tất cả trường hợp nhập thiếu ID của cùng 1 KH đều phải trả lại bước P1 để hủy hoặc thực hiện điều chỉnh thông tin theo hướng dẫn của BTS cho tùy trường hợp. 3. Hướng xử lý: - Tạo ITSM với tiêu đề \"Xử lý ID trùng\" - Nội dung cần cung cấp trong y/c ITSM:  tất cả ID number (CMND, CCCD, Hộ chiêu (nếu có))  đặc biệt ID number bị trùng của Khách hàng, Ma ACL Ref của các KH đã tạo trên ACL, Mã số hồ sơ (PPID) đang thực hiện.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "2"
+        ]
+    },
+    "3": {
+        "question": "Cần làm gì khi phải bổ sung giấy tờ tùy thân bị thiếu trong quá trình trình hồ sơ hoặc giải ngân?",
+        "answer": "1. HƯớng dẫn trên màn hình Dùng Menu Thông tin Khách hàng/chọn chức năng tìm kiếm Khách hàng và Khách hàng liên quan Tìm kiếm bằng tất cả giấy tờ hiện hành của khách hàng để lấy tất cả thông tin Mã ACL Ref của Khách hàng đã tạo trên ACL để xác định ID cần nhập có bị trùng với KH khác không 2. Lưu ý: - Tất cả trường hợp nhập thiếu ID của KH đều phải trả lại bước P1 để thực hiện điều chỉnh thông tin  và trình duyệt lại. - Trường hợp hồ sơ đang giải ngân của sẽ phải hủy KUNN hiện tại và hủy hồ sơ (tham chiếu HDSD chức năng Thay đổi điều kiện phê duyệt / Cập nhật trạng thái hạn mức) để làm lại hồ sơ mới 3. Hướng xử lý: - Trả hồ sơ về P1 hoặc Hủy hồ sơ tùy theo tình huống. - Trường hợp ID cần thêm trùng với KH khác có trên hệ thống ACL thì sau khi hủy hoặc trả về P1 thực hiện gửi ITSM \"Xử lý ID trùng\" (tham chiếu mục 1.1)",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "3"
+        ]
+    },
+    "4": {
+        "question": "Làm sao xử lý khi hệ thống báo lỗi Client no không hợp lệ khiến hồ sơ bị treo tại bước P2 hoặc P8?",
+        "answer": "Kiểm tra bằng email hoặc nhờ quầy kiểm tra trên Symbols để xác định là 1 khách hàng hay 2 khách hàng xác nhau Trường hợp 1: - Bước 1: Báo khách hàng ra quầy xử lý hồ sơ khách hàng để chỉ giữ lại 1 mã CIF - Bước 2: + gửi ITSM với tiêu đề \"Cập nhật mã CIF\" Nội dung ITSM bao gồm: Mã hồ sơ đang thực hiện (PPID), Mã cif cũ và mã cif mới của Khách hàng + BTS sẽ hướng dẫn xử lý trên ITSM  Trường hợp 2: - Bước 1: Báo quầy xử lý hồ sơ khách hàng ( làm theo qui định xử lý gian lận hồ sơ Khách hàng của Deposit ban hành, thời gian thông thường 10-15 ngày) - Bước 2.1: Nếu quầy đã xử lý làm sạch hồ sơ KH xong  + gửi ITSM với tiêu đề \"Cập nhật mã CIF\" Nội dung ITSM bao gồm: Mã hồ sơ đang thực hiện (PPID), Mã cif cũ và mã cif mới của Khách hàng + BTS sẽ hướng dẫn xử lý trên ITSM - Bước 2.2:  nếu Quầy báo không thể xử lý hồ sơ do KH vẫn đang sử dụng dịch vụ tại và thông tin do Bộ CA cấp sai + gửi ITSM với tiêu đề \"Cập nhật mã CIF\" Nội dung ITSM bao gồm: Mã hồ sơ đang thực hiện (PPID), Mã cif cũ và mã cif mới của Khách hàng , tất cả giấy tờ tùy thân của KH + Đính kèm email xác nhận của quầy có kèm cc RB-product về SP đang trình về việc không xử lý HS khách hàng + BTS sẽ hỗ trợ hủy ID number do bộ CA cấp sai để đẩy tiếp hồ sơ + Lưu ý: khi trình hồ sơ phải kèm cả email của quầy để CA và cấp phê duyệt chấp thuận việc nhập thiếu ID number cũ của khách -->  refer comment",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "4"
+        ]
+    },
+    "5": {
+        "question": "Quy trình xử lý khi hệ thống báo lỗi sai ngày sinh và dừng luồng hồ sơ tại P2 hoặc P3?",
+        "answer": "Kiểm tra thông tin ngày sinh trên ACL trên hồ sơ đang trình bằng cách dùng nút \"I\" ngay sau ACL ref của KH để xem chi tiết, cần kiểm tra bao gồm KH vay chính và người liên quan và dùng Symbols để kiểm tra thông tin ngày sinh của Khách hàng Trường hợp 1: RM nhập trên ACL bị sai - Gửi ITSM với tiêu đề \"Cập nhật ngày sinh\" - Nội dung ITSM cung cấp ngày sinh đúng + kèm hình ảnh giấy tờ tùy thân để chứng minh  Trường hợp 2: Quầy nhập sai - Bước 1: báo quầy cập nhật thông tin trước - Bước 2: Tạo ITSM với title \"Resume hồ sơ sai ngày sinh\" với nội dung ITSM kèm Mã hồ sơ hoặc nhắn group Vùng, nhờ resume hồ sơ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "5"
+        ]
+    },
+    "6": {
+        "question": "Cần làm gì khi hồ sơ bị pending CIC quá lâu?",
+        "answer": "Đơn vị kiểm tra tất cả các giấy tờ của khách hàng đã có đủ kết quả cic chưa? Nếu chưa thì đợi, còn có rồi thì req ITSM để được hỗ trợ.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "6"
+        ]
+    },
+    "7": {
+        "question": "Làm sao xử lý khi SM hoặc cấp phê duyệt chuyển xử lý báo lỗi số tiền đề xuất không được vượt quá số tiền vay tối đa?",
+        "answer": "SM / Cấp phê duyệt mở tab chi tiết đề xuất, chọn dòng đang được phê duyệt rồi lưu lại sau đó duyệt hồ sơ. Trường hợp hiển thị Số tiền vay tối đa nhỏ hơn số tiền vay đề xuất thì tìm câu hỏi \"Số tiền vay tối đa nhỏ hơn số tiền vay đề xuất\"",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "7"
+        ]
+    },
+    "8": {
+        "question": "Làm thế nào xử lý khi số tiền vay tối đa nhỏ hơn số tiền vay đề xuất trong quá trình RM hoàn thiện hồ sơ?",
+        "answer": "1.Với hồ sơ vay từng lần/vay món: Trường hợp 1: HS đang ở P4 thì check lại dti thu nhập Trường hợp 2: HS đang ở P5 thì kiểm tra: -  Tài sản đã đi định giá xong chưa, ltv được duyệt có đủ không hoặc tài sản đang có dùng đảm bảo cho nhiều khoản vay khác thì LTV phải bằng tổng LTV các món - DTI thu nhập-chi phí (cáp dụng cho tất cả các khoản vay từng lần) - Kế hoạch kinh doanh (áp dụng cho khoản vay hạn mức) 2.Với hồ sơ vay hạn mức: Trường hợp 1: Hs đang ở P4 check lại thông tin kế hoạch kinh doanh xem số tiền đề xuất theo năng lực trả nợ, DTI thu nhập-chi phí Trường hợp 2: HS đang ở P5 thì kiểm tra xem tài sản đã đi định giá xong chưa, ltv được duyệt có đủ không, DTI thu nhập-chi phí, có đang trình nhiều hồ sơ 1 lúc không",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "8"
+        ]
+    },
+    "9": {
+        "question": "Làm sao xử lý khi TSĐB không hiển thị MaxLTV và giá trị khả dụng?",
+        "answer": "LTV bất động sản tính theo Địa chỉ thực tế của tài sản, trường hợp tài sản chuyển đổi thông tin này chưa đầy đủ hoặc tài sản mới RM chưa thực hiện định giá Cách xử lý: 1. Nhập mã tài sản trên menu tìm kiếm TS của ACL 2. Bắt đầu quy trình P2 Tài sản 3. Chọn nhiệm vụ \"Yêu cầu định giá tài sản\" để bổ sung thông tin còn thiếu 4. Thêm mới yêu cầu định giá (tab thông tin định giá) 5. Kết thúc nhiệm vụ: chọn \"Chuyển xử lý\" 6. Chọn task \"Xác nhận yêu cầu định giá lại\": áp dụng cho tài sản đã có định giá còn hiệu lực 7. Kết thúc nhiệm vụ: chọn \"Tái sử dụng\": áp dụng cho tài sản đã có định giá còn hiệu lực",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "9"
+        ]
+    },
+    "10": {
+        "question": "Quy trình xử lý khi TSĐB có lỗi ngoại lệ không thỏa điều kiện nhận tại VIB?",
+        "answer": "Đơn vị tìm lại tài sản rồi bắt đầu quy trình P2-định giá tài sản, đi định giá lại tài sản để nhập lại các thông tin còn thiếu. Khi định giá xong mà vẫn bị lỗi ngoại lệ thì liên hệ với chính sách TSDB để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "10"
+        ]
+    },
+    "11": {
+        "question": "Làm sao xử lý khi kết thúc qui trình Thay đổi điều kiện phê duyệt báo lỗi \"Tài sản phải đang hoạt động để kết thúc quy trình\"?",
+        "answer": "Với luồng tái cấp hạn mức/Đối tài sản: -  Tài sản mới đưa thêm vào phải nhập kho xong mới kết thúc được quy trình",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "11"
+        ]
+    },
+    "12": {
+        "question": "Quy trình thay đổi chủ sở hữu tài sản trên hệ thống ACL?",
+        "answer": "Trường hợp 1: Tài sản chuyển từ LOS lên ACL Đơn vị tìm tài sản rồi bắt đầu quy trình P7-cập nhật thông tin tài sản. Sau đó lấy task, kết thúc nhiệm vụ chọn mục đích thay đổi chủ sở hữu đẩy lên CA nhờ chỉnh sửa lại. (Chỉ làm được với tài sản có trạng thái là hiệu lực, các trạn thái khác thì req ITSM để chỉnh trạng thái rồi làm các bước trên) Trường hợp 2: Tài sản do đơn vị tự tạo trên ACL chưa nhập kho - BTS không hỗ trợ chỉnh thông tin chủ sở hữu tài sản, đơn vị trả hồ sơ lại P2, sau đó start lại P2 trên tài sản và thực hiện đổi thông tin đồng sở hữu (tab Thông tin chủ sở hữu) - Tình huống đổi thông tin Chủ sở hữu ở tab \"Thông tin chính\", trả hồ sơ về P2, tạo lại tài sản mới và thực hiện liên két lại Trường hợp 3: Tài sản do đơn vị tự tạo trên ACL chưa đã nhập kho - Đơn vị tìm tài sản rồi bắt đầu quy trình P7-cập nhật thông tin tài sản. Sau đó lấy task, kết thúc nhiệm vụ chọn mục đích thay đổi chủ sở hữu đẩy lên CA nhờ chỉnh sửa lại.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "12"
+        ]
+    },
+    "13": {
+        "question": "Làm thế nào để thay đổi loại tài sản đảm bảo trên hệ thống ACL?",
+        "answer": "BTS chỉ hỗ trợ chỉnh loại tài sản đảm bảo với trường hợp tài sản chuyển từ LOS lên ACL. Các trường hợp khác đơn vị trả hồ sơ lại P2, tạo tài sản đúng và liên kết lại.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "13"
+        ]
+    },
+    "15": {
+        "question": "Cách xử lý khi hệ thống báo vi phạm: vị trí TSDB không thỏa quy định?",
+        "answer": "1019.Len chỉ nhận tài sản đảm bảo ở zone 1 và bắt buộc phải có công trình trên đát. Chi tiết liên hệ qlsp. Các sản phẩm khác thì req ITSM để được hỗ trợ với tiêu đề \"Sai vị trí TSĐB\"",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "15"
+        ]
+    },
+    "16": {
+        "question": "Làm sao xử lý khi đi luồng cập nhật trạng thái hạn mức nhưng không hiển thị số hồ sơ để chọn?",
+        "answer": "Chỉ có các hồ sơ có trạng thái là hiệu lực, đóng băng, hạn mức hết hạn và hồ sơ phải thuộc quản lý của bạn thì bạn mới đi được luồng thay đổi điều kiện phê duyệt, loại yêu cầu là cập nhật trạng thái hạn mức. Do đó, nếu hồ sơ có trạng thái là đang chờ giải ngân thì bạn Các trường hợp còn lại req lên ITSM để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "16"
+        ]
+    },
+    "17": {
+        "question": "Làm thế nào để xóa file đính kèm trên hệ thống ACL?",
+        "answer": "BTS không hỗ trợ xóa file đính kèm. Trường hợp hồ sơ vẫn đang ở bước soạn thảo HDTD thì kết thúc nhiệm vụ chọn chuyển sale cập nhật chi tiết đề xuất để trả hồ sơ về P5 và xóa. Các trường hợp còn lại thì upload file mới và noted lại với CA và CA hội sở.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "17"
+        ]
+    },
+    "18": {
+        "question": "Làm sao xử lý khi bắt đầu qui trình tạo KUNN báo lỗi \"Trạng thái hồ sơ không đủ điều kiện để bắt đầu quy trình mới\"?",
+        "answer": "Trường hợp 1: Đơn vị chọn sai Mã hồ sơ (ví dụ ĐVKD vừa thực hiện tạo KUNN trên luồng tái cấp  hạn mức/thay đổi tài sản đảm bảo) --> thì phải quay về hồ sơ gốc để bắt đầu quy trình giải ngân tiếp Trường hợp 2: Hồ sơ vay kinh doanh có trạng thái đóng băng (do ltv được duyệt không đủ) thì làm các bước sau:  1. Menu -> Cho vay -> Tạo mới -> Thay đổi điều kiện phê duyệt 2. Chọn Cập nhật trạng thái hạn mức 3. Chọn hồ sơ cần Hủy (trạng thái Active) 4. Lưu lại, sau đó tìm kiếm lại hồ sơ và bắt đầu quy trình để làm 5. Thay đổi trạng thái từ đóng băng -> Hiệu lực 6. Kết thúc nhiệm vụ chuyển lên CA phê duyệt. Sau đó sẽ bắt đầu quy trình được. Trường hợp 3: Các loại trạng thái khác thì req lên itsm để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "18"
+        ]
+    },
+    "19": {
+        "question": "Cách xử lý khi giải ngân gặp lỗi \"Số tiền trả nợ không đúng với cam kết\"?",
+        "answer": "Kiiểm tra với CA đã hoàn thành thu nợ chưa, hoàn thành vào lúc nào và check với thời gian bắt đầu quy trình KUNN Trường hợp 1: RM tạo KUNN trước thời điểm KH thanh toán nợ như cam kết  - Nếu đang ở bước đầu tiên (Hoàn thiện yêu cầu giải ngân) --> RM hủy KUNN đi tạo lại KUNN mới bằng cách: Kết thúc nhiệm vụ chọn hủy/từ chối vì ACL không thể lấy thông tin dư nợ lại  - Nếu đang ở bước đính kèm tài liệu --> RM trả lại bước trước để ACL lấy lại thông tin dư nợ mới nhất Trường hợp 2: Đã trả về nhưng vẫn báo lỗi sai số tiền  Gửi yêu cầu itsm để chỉnh lại số tiền dự kiên trả nợ bằng đúng số tiền đã trả.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "19"
+        ]
+    },
+    "20": {
+        "question": "Làm thế nào xử lý khi tài khoản thu nợ không hiển thị trong KUNN?",
+        "answer": "Lưu ý: Tài khoản thu nợ sẽ được ACL lấy thông tin trực tiếp từ Symbols  tại bước \"Đính kèm hồ sơ\" do đó RM cần kiểm tra KUNN đang ở bước nào và tình trạng TKTT được tạo/active lại khi nào: - Bước 1: Đơn vị kiểm tra khách hàng đã có tài khoàn thanh toán còn hoạt động gắn với mã CIF của hồ sơ chưa. - Bước 2: kiểm tra KUNN đang ở bước nào để xử lý    + Trường hợp 1: Khách hàng có tài khoản thanh toán rồi nhưng tài khoản chưa hoạt động thì đơn vị active lại tài khoản cho khách rồi chuyển trả hồ sơ về bước trước (bước Hoàn thiện KUNN), sau đó đẩy lại lên thì hệ thống sẽ tự lấy được thông tin tài khoản.    + Trường hợp 2: Khách hàng có tài khoản thanh toán hoạt động rồi thì chuyển trả hồ sơ về bước trước, sau đó đẩy lại lên thì hệ thống sẽ tự lấy được thông tin tài khoản.    + Trường hợp 3: Khách hàng có tài khoản thanh toán hoạt động nhưng không gắn với mã CIF của hồ sơ trên ACL thì đơn vị tạo req ITSM để được hỗ trợ.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "20"
+        ]
+    },
+    "21": {
+        "question": "Quy trình xử lý khi tài khoản trung gian không hiển thị trong KUNN?",
+        "answer": "Nếu đơn vị có chuyển đổi phương thức giải ngân từ  chuyển khoản --> tiền mặt ở P9 thì vui lòng hủy KUNN hiện tại và tạo KUNN mới để hệ thống ghi nhận đúng Phương thức giải ngân và hiển thị tài khoản trung gian theo các bước sau: - RM hủy KUNN bằng cách Kết thúc nhiệm vụ chọn hủy/từ chối - Bắt đầu qui trình để tạo KUNN mới Lưu ý: Trường hợp tạo lại KUNN mới rồi nhưng vẫn không lên Tài khoản trung gian thì req lên ITSM để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "21"
+        ]
+    },
+    "22": {
+        "question": "Làm sao xử lý khi duyệt giải ngân báo lỗi giá trị TSDB không đủ để đảm bảo cho khoản vay?",
+        "answer": "1.Với tài sản thế chấp lần đầu tiên: Trường hợp 1: Kiểm tra xem tài sản đã hoàn thành quy trình nhập kho chưa và thời điểm trước hay sau bước đẩy KUNN  - Nếu đã hoàn thành và thực hiện sau thì chuyển xử lý lại KUNN  - Nếu chưa hoàn tất thì thực hiện nhập kho tài sản trước sau đó quay lại đẩy KUNN Trường hợp 2: Tài sản nhập kho rồi thì kiểm tra lại LTV được duyệt đã đủ chưa? - Nếu chưa đủ thì req ITSM để chỉnh lại. - Nếu ltv được duyệt đã đủ cho cả khoản vay hiện tại và khoản vay khác mà vẫn không chuyển xử lý được thì req ITSM với tiêu đề \"Kiểm tra giá trị khả dụng TSĐB khi giải ngân\" kèm các thông tin về mã hồ sơ, mã tài sản và màn hình lỗi 2. Với tài sản đang thế chấp tại VIB Trường hợp 1: Vay thêm trên tài sản đó thì kiểm tra ltv được duyệt đã bao gồm đủ cả khoản đã giải ngân chưa? Chưa thì req ITSM để chỉnh lại. Trường hợp 2: Tất toán khoản vay cũ và giải ngân lại thì cần phải gỡ phân bổ tài sản cho khoản vay cũ. - Cập nhật trạng thái hạn mức (nếu có):  tạo Yêu cầu thay đổi điều kiện phê duyệt/Cập nhật trạng thái hạn mức ( tham chiếu qui trình mục 7 TL HDSD sau giải ngân) - Gỡ phân bổ:  tạo Yêu cầu thay đổi điều kiện phê duyệt/Thay đổi tỷ lệ phân bổ (tham chiếu qui trình mục 8 TL HDSD sau giải ngân) 3. Các trường hợp còn lại đã xử lý hết tình huống 1 và 2 thì gửi lên ITSM với tiêu đề \"Kiểm tra giá trị khả dụng TSĐB khi giải ngân\" kèm các thông tin về mã hồ sơ, mã tài sản và màn hình lỗi",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "22"
+        ]
+    },
+    "23": {
+        "question": "Cách xử lý khi nhận email lỗi \"Tài khoản không đủ số dư để thu phí chuyển tiền giải ngân\" khi duyệt giải ngân?",
+        "answer": "Bước 1: Báo KH nộp tiền vào TK thanh toán đang dùng làm TK trả nợ trên KUNN Bước 2: Tạo ITSM nhờ xử lý hồ sơ với tiêu đề \"Resume hồ sơ đã nộp bổ sung tiền phí\"",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "23"
+        ]
+    },
+    "24": {
+        "question": "Làm thế nào xử lý khi đẩy yêu cầu giải ngân báo lỗi \"Số tiền đề xuất giải ngân vượt quá số tiền cho vay\"?",
+        "answer": "Kiểm tra tab \"Thông tin giải ngân\" so sánh tổng số tiền giải ngân với Số tiền đề xuất ở tab \"chi tiết đề xuất\" Trường hợp 1: món vay IBL chưa thu nợ để dáo hạn mức --> kiểm tra lại với CA về dư nợ hiện tại sau đó vui lòng hủy KUNN hiện tại (Kết thúc nhiệm vụ chọn hủy/từ chối) và tạo lại KUNN mới sau khi CA đã hoàn thành thu nợ dưới core  Trường hợp 2: RM nhập sai số tiền giải ngân  --> Điều chỉnh lại số tiền giải ngân tại bước \"hoàn thiện thông tin giải ngân\". Nếu không thể điều chỉnh thì hủy KUNN hiện tại và tạo lại KUNN mới",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "24"
+        ]
+    },
+    "25": {
+        "question": "Quy trình xử lý khi không lên thông tin phí trả nợ trước hạn?",
+        "answer": "Trường hợp khách hàng chưa ký KUNN thì đơn vị hủy KUNN đi tạo lại KUNN mới bằng cách Kết thúc nhiệm vụ chọn hủy/từ chối. Trường hợp khách ký KUNN rồi thì req ITSM để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "25"
+        ]
+    },
+    "26": {
+        "question": "Làm sao để hỗ trợ chỉnh tái sử dụng trên tài sản đang thế chấp tại VIB?",
+        "answer": "Hệ thống ACL không sinh lại luồng thế chấp mới đối với hồ sơ tái cấp hạn mức sử dụng lại tài sản cũ. Trường hợp đơn vị vẫn muốn đẩy luồng thế chấp lên CA thì bắt đầu quy trình P7-cập nhật thông tin TS, chọn hoàn công BDS (với tài sản có trạng thái là hiệu lực); chọn chuyển nhượng BDS phong tỏa (với tài sản có trạng thái là đã định giá) để chuyển tài sản lên CA.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "26"
+        ]
+    },
+    "27": {
+        "question": "Các bước để hủy hồ sơ trên hệ thống ACL?",
+        "answer": "Trường hợp 1: Hồ sơ đang có trạng thái hiệu lực thì đi đơn vị đi luồng thay đổi điều kiện phê duyệt, loại yêu cầu cập nhật trạng thái hạn mức để chuyển hồ sơ về hết hiệu lực. Trường hợp 2: Hồ sơ có trạng thái đang chờ giải ngân thì đơn vị lấy nhiệm vụ, chọn hủy/từ chối để hủy KUNN để cho hồ sơ về trạng thái hiệu lực sau đó làm như trường hợp 1. Trường hợp 3: Hồ sơ trước P8, vẫn trong luồng xử lý thì đơn vị lấy nhiệm vụ chọn hủy/từ chối để hủy hồ sơ. Trường hợp 4: Các trường hợp hồ sơ bị treo thì req ITSM để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "27"
+        ]
+    },
+    "28": {
+        "question": "Làm sao xử lý lỗi phong tỏa sau khi giải ngân?",
+        "answer": "Trường hợp giải ngân phong tỏa, khi tài sản hoàn tất quy trình nhập kho thì hệ thống sẽ sinh task P13--Nhập quyết định giải tỏa đối với khoản tiền giải ngân của KH. Nếu tài sản đã nhập kho xong mà hệ thống không sinh task hoặc có sinh task nhưng đơn vị không thao tác được thì req ITSM để được hỗ trợ.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "28"
+        ]
+    },
+    "29": {
+        "question": "Có thể giải ngân nhiều lần với hồ sơ vay ba bên không?",
+        "answer": "Hiện ACL chỉ đang hỗ trợ giải ngân 1 lần với hồ sơ vay 3 bên. Trường hợp đơn vị muốn giải ngân nhiều lần thì req ITSM để được hỗ trợ. Lưu ý: Phần giải tỏa số tiền vay thì CA sẽ phải thực hiện manual trong trường hợp này.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "29"
+        ]
+    },
+    "30": {
+        "question": "Quy trình chuyển tài sản từ LOS lên ACL?",
+        "answer": "ĐVKD vui lòng đăng ký chuyển đổi bằng link sau:  https://forms.office.com/pages/responsepage.aspx?id=u-gsZtuFoku6mL4iIxi4PlGNjKtP_5RDmbkm06G1PS1UNEwxRjRBMFJKVE1SSlNUR1VZS1ZHSkNNVS4u&route=shorturl  Vui lòng đăng ký trước 11:30 AM để được xử lý trong ngày, trường hợp dăng ký sau thời gian này sẽ chuyển qua ngày.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "30"
+        ]
+    },
+    "34": {
+        "question": "Làm thế nào để thay đổi thông tin ngày cấp, nơi cấp của giấy tờ định danh của khách hàng?",
+        "answer": "Thông tin ngày cấp, nơi cấp của giấy tờ định danh của thể chỉnh sửa ở các bước P1, P8 - Soạn HDTD. User kiểm tra lại hồ sơ vay đang ở bước nào rồi tự điều chỉnh về các bước có thể chỉnh sửa được Nếu hồ sơ vay đang ở bước giải ngân (P9), user tạo ITSM cung cấp thông tin đúng và bản scan QR của giấy tờ cho BTS hỗ trợ.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "34"
+        ]
+    },
+    "35": {
+        "question": "Cách chỉnh sửa thông tin địa chỉ của khách hàng trên hệ thống ACL?",
+        "answer": "Thông tin địa chỉ của KH có thể điều chỉnh ở bước P2 - Cập nhật thông tin cơ bản và P8 - Soạn HĐTD. User kiểm tra lại hồ sơ vay đang ở bước nào rồi tự điều chỉnh về các bước có thể chỉnh sửa được Nếu hồ sơ vay đang ở bước giải ngân (P9), user tạo ITSM cung cấp thông tin đúng và bản scan QR của giấy tờ cho BTS hỗ trợ.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "35"
+        ]
+    },
+    "36": {
+        "question": "Làm sao xử lý khi gặp lỗi không thể điền thông tin nghề nghiệp của khách hàng?",
+        "answer": "Nếu gặp lỗi hệ thống yêu cầu nhập thông tin nghề nghiệp của KH nhưng user không thể chỉnh sửa/bổ sung được thì user làm theo các bước sau: 1. Chuyển hồ sơ vay về P1 để tự chỉnh sửa thông tin nghề nghiệp 2. Nếu P1 mà vẫn không chỉnh sửa được thì user hủy hồ sơ tạo lại hồ sơ vay mới 3. Khi tạo lại hồ sơ vay mới, user bổ sung thông tin nghề nghiệp ngay tại P1 của hồ sơ vay, sau đó mới khai báo thêm thông tin người liên quan.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "36"
+        ]
+    },
+    "37": {
+        "question": "Làm thế nào xử lý khi chọn Nơi cấp giấy tờ định danh của khách hàng không hiển thị danh sách lựa chọn?",
+        "answer": "User vui lòng kiểm tra lại và lựa chọn Thông tin Quốc tịch chính trước khi khai báo thông tin Pháp lý.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "37"
+        ]
+    },
+    "38": {
+        "question": "Quy trình chỉnh sửa thông tin Tên của khách hàng trên hệ thống ACL?",
+        "answer": "Nếu KH là KH hiện hữu đã có CIF ở VIB, RM thông báo với KH cần ra quầy cập nhật thông tin trên CIF, sau đó chuyển hồ sơ vay về P1 và đẩy lên lại, hoặc Tạo mới lại hồ sơ vay khác. Nếu KH là KH tạo mới ở ACL. RM thực hiện chuyển hồ sơ vay về P1 hoặc P2 để có thể tự chỉnh sửa thông tin Tên Khách hàng. Lưu ý: Việc chỉnh sửa tên của KH không làm thay đổi tên KH ở phần Mô tả nhiệm vụ, mục Mô tả nhiệm vụ không ảnh hưởng tới thông tin hồ sơ giải ngân nhưng nếu bắt buộc phải chỉnh sửa, RM vui lòng tạo lại hồ sơ vay mới.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "38"
+        ]
+    },
+    "39": {
+        "question": "Làm sao để chỉnh sửa các thông tin trong mục Thông tin sử dụng vốn?",
+        "answer": "Các thông tin trong mục Thông tin mục đích sử dụng vốn có thể chỉnh sửa ở các bước sau: 1. Chỉnh sửa ở P2 hồ sơ vay tất cả các thông tin 2. Chỉnh sửa ở P8 các thông tin: Mô tả mục đích vay, Số HĐMB công chứng BĐS, Số GCN QSĐ BDS đã sang tên (nếu có) 3. Chỉnh sửa ở P9 các thông tin: Mô trả mục đích vay",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "39"
+        ]
+    },
+    "40": {
+        "question": "Quy trình thay đổi Loại sản phẩm vay trên hệ thống ACL?",
+        "answer": "Thông tin Loại sản phẩm vay có thể điều chỉnh ở P1 hồ sơ ở tab Chi tiết đề xuất. User kiểm tra lại hồ sơ vay đang ở bước nào rồi tự điều chỉnh về các bước có thể chỉnh sửa được Nếu hồ sơ vay đang ở bước giải ngân (P9), user bắt buộc phải hủy hồ sơ vay và tạo lại hồ sơ vay mới. Để hủy hồ sơ ở P9, user tham khảo HDSD hủy hồ sơ ở P9.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "40"
+        ]
+    },
+    "41": {
+        "question": "Làm thế nào để gỡ phong tỏa sổ tiết kiệm khi khách hàng không muốn vay nữa?",
+        "answer": "Hồ sơ vay chưa đến bước giải ngân (P9) và đang ở bước P8 và trước đó: User chỉ cần kết thúc nhiệm vụ chọn hủy/ từ chối để hệ thống hủy hồ sơ và tự động gỡ phong tỏa sổ tiết kiệm. User cần hủy thêm cả nhiệm vụ tài sản (nếu có). Hồ sơ vay đang có trạng thái Hiệu lực hoặc ở bước giải ngân P9: 1. Nếu tài sản chưa đến bước nhập kho của Quỹ, user hủy nhiệm vụ tài sản, hủy nhiệm vụ P9 và tạo ITSM cho BTS hỗ trợ hủy hồ sơ vay và gỡ phong tỏa tài sản 2. Nếu tài sản đã đến bước quỹ nhập kho, user cần báo quỹ duyệt tài sản, sau đó tạo yêu cầu giải chấp để gỡ phong tỏa tài sản và cập nhật trạng thái hạn mức của hồ sơ vay thành Hết hiệu lực để hủy hồ sơ vay.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "41"
+        ]
+    },
+    "42": {
+        "question": "Sau khi mở sổ tiết kiệm thì bao lâu có thể làm vay cầm cố được?",
+        "answer": "ACL đã có tính năng tự động đồng bộ thông tin sổ mở trong ngày lên ACL.  Sau khi mở sổ user đợi đến các khung giờ chẵn như 10h, 11h, 12h....  thì tạo hồ sơ làm ở ACL. Nếu đã tạo hồ sơ rồi thì user chuyển hồ sơ về P1 rồi đẩy lại.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "42"
+        ]
+    },
+    "43": {
+        "question": "Khách hàng thu nợ tất toán khoản vay thì có vay lại khoản vay mới trong ngày luôn được không?",
+        "answer": "Có, ACL: đã có thể tự động cập nhật thông tin dư nợ tất toán trong ngày, sau khi thu nợ và xuất tài sản xong, user có thể tạo hồ sơ vay mới và chuyển hồ sơ vay lên bước P6 để kiểm tra lại HMRR.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "43"
+        ]
+    },
+    "44": {
+        "question": "Hướng dẫn xuất tài sản là Sổ tiết kiệm của Vay cầm cố GTCG (giấy tờ có giá)?",
+        "answer": "User làm theo các bước sau: 1. Tìm kiếm tài sản 2. Bắt đầu quy trình -> P8 Giải chấp tài sản 3. Đính kèm chứng từ hệ thống yêu cầu 4. Kết thúc nhiệm vụ -> Chuyển xử lý -> Cho vay cầm cố GTCG -> Nhập ngày nhận sổ 5. Lưu lại",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "44"
+        ]
+    },
+    "45": {
+        "question": "Sau khi chuyển nhượng sổ tiết kiệm thì bao lâu có thể làm vay cầm cố sổ tiết kiệm đó?",
+        "answer": "Sau khi chuyển nhượng sổ tiết kiệm cần đợi qua ngày hôm sau hệ thống mới đồng bộ thông tin sổ chuyển nhượng và user mới có thể tạo hồ sơ vay cho tài sản đã chuyển nhượng đó. Nếu user đã tạo hồ sơ vay trước đó, vui lòng chuyển hồ sơ vay về P1 và đẩy lên lại hoặc tạo lại hồ sơ vay mới.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "45"
+        ]
+    },
+    "49": {
+        "question": "Làm thế nào để giải chấp tài sản khi khách hàng đổi tài sản?",
+        "answer": "Tình trạng: toàn bộ liên kết của tài sản với các Mã hồ sơ vay đều ở trạng thái Đã hủy liên kết Xem chi tiết tài sản: Tab Thông tin phân bổ trên tài sản còn PPID liên kết với trạng thái \"Đã hủy liên kết\" Tạo yêu cầu giải chấp tài sản (P8-TS)",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "49"
+        ]
+    },
+    "50": {
+        "question": "Quy trình giải chấp tài sản khi khách hàng tất toán khoản vay trong ngày?",
+        "answer": "Trường hợp 1: tất toán trong ngày (vay món đã giải ngân toàn bộ hoặc vay kinh doanh đã hết thời hạn giải ngân) --> thông tin phân bổ chưa giảm về 0 trên khoản vay và các tài sản đang liên kết + Trạng thái hồ sơ là Freezing/Đống băng hoặc Limit Expired/hết hạn hạn mức hoặc Disbursed/Đã giải ngân Cách xử lý Bước 1: Tạo yêu cầu thay đổi điều kiện phê duyệt, Thay đổi tỷ  lệ phân bổ  - Đẩy lên CA giảm số tiền phân bổ về 0 Bước 2: sau khi 1 hoàn thành mới Tạo yêu cầu giải chấp TS (P8.0-TS)  Trường hợp 2: tất toán với khoản vay kinh doanh còn hiệu lực --> trạng thái hồ sơ vay = Hiệu lực, thông tin phân bổ chưa giảm về 0 trên khoản vay và các tài sản đang liên kết Cách xử lý Bước 1: - Tạo yêu cầu thay đổi điều kiện phê duyệt, chọn Cập nhật trạng thái hạn mức - Chuyển trạng thái từ Active/Hiệu lực sang Inactive/Hết hiệu lực Bước 2: Tạo yêu cầu thay đổi điều kiện phê duyệt, Thay đổi tỷ  lệ phân bổ  - Đẩy lên CA giảm số tiền phân bổ về 0 Bước 3: sau khi 1&2 hoàn thành mới Tạo yêu cầu giải chấp TS (P8.0-TS)",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "50"
+        ]
+    },
+    "51": {
+        "question": "Cách giải chấp tài sản khi khách hàng tất toán khoản vay qua ngày?",
+        "answer": "Trường hợp 1: tất toán đối với vay món đã giải ngân toàn bộ hoặc vay kinh doanh đã hết thời hạn giải ngân --> thông tin phân bổ đã giảm về 0 và tự động gỡ liên kết Cách xử lý: Tạo yêu cầu giải chấp tài sản (P8-TS) với yêu cầu \"Thông thường\"  Trường hợp 2: tất toán với khoản vay kinh doanh còn hiệu lực --> trạng thái hồ sơ vay = Hiệu lực, thông tin phân bổ chưa giảm về 0 trên khoản vay và các tài sản đang liên kết Cách xử lý: Bước 1: - Tạo yêu cầu thay đổi điều kiện phê duyệt, chọn Cập nhật trạng thái hạn mức - Chuyển trạng thái từ Active/Hiệu lực sang Inactive/Hết hiệu lực Bước 2: Tạo yêu cầu thay đổi điều kiện phê duyệt, Thay đổi tỷ  lệ phân bổ  - Đẩy lên CA giảm số tiền phân bổ về 0 Bước 3: sau khi 1&2 hoàn thành mới Tạo yêu cầu giải chấp TS (P8.0-TS)",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "51"
+        ]
+    },
+    "60": {
+        "question": "Làm thế nào xử lý khi xe ô tô không có tên thương hiệu/tên dòng xe (model) để lựa chọn trên hệ thống ACL?",
+        "answer": "ĐVKD thực hiện như sau: 1. Check lại thông tin nhập liệu lựa chọn đúng loại Phương tiện vận tải (xe ô tô < 9 chỗ, xe ô tô > 9 chỗ, xe bán tải,...) 2. Trường hợp TSBĐ đã có trong khung giá nhưng không có tên trên hệ thống, ĐVKD gửi request về ITSM (theo hướng dẫn....) để được hỗ trợ. 3. Trường hợp TSBĐ không có tên dòng xe (model xe) trên hệ thống và khung giá, ĐVKD gửi request vướng mắc về Chính sách TSBĐ theo đường link : https://helpdesk.vib/WOListView.do? để được hỗ trợ 4. Trường hợp thương hiệu xe mới chưa được nhận theo Quy định sản phẩm, ĐVKD gửi request vướng mắc về Chính sách sản phẩm RB QLSP-RB-Lending <QLSP-RB-Lending@vib.com.vn> để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "60"
+        ]
+    },
+    "63": {
+        "question": "Làm sao xử lý khi TSBĐ không thỏa điều kiện nhận tại VIB và phải thực hiện phê duyệt thông qua UBTD?",
+        "answer": "ĐVKD thực hiện như sau: 1. Trong tab Khảo sát thực tế, phần thông tin đánh giá TSBĐ, lựa chọn Điều kiện nhận = Không phù hợp/Fail và nhập chi tiết TSBĐ không thỏa điều kiện nhận tại VIB theo list LOV trên hệ thống đã có 2. Hệ thống sẽ đánh giá và cảnh báo TSBĐ không thỏa QĐ nhận của VIB và chuyển luồng phê duyệt hồ sơ tín dụng lên UBTD",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "63"
+        ]
+    },
+    "65": {
+        "question": "Làm thế nào xử lý khi TSBĐ không thỏa tiêu chí nhận tại VIB?",
+        "answer": "ĐVKD thực hiện như sau: 1. ĐVKD nhập liệu đúng thông tin mô tả trong tab Khảo sát thực tế, bộ tiêu chí nhận được check tự động trên hệ thống  2. Hệ thống sẽ đánh giá và cảnh báo TSBĐ không thỏa tiêu của VIB và chuyển luồng phê duyệt hồ sơ tín dụng theo đúng Quy định 3. Trường hợp cấp phê duyệt chưa đúng, ĐVKD liên hệ RB - BO để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "65"
+        ]
+    },
+    "66": {
+        "question": "Quy trình chuyển đổi tài sản từ LOS lên ACL?",
+        "answer": "Áp dụng với sản phẩm Vay kinh doanh và bất động sản RM tạo đề xuất trên Sales Support RM chủ động kiểm tra kết quả chuyển đổi sau 17:30 hàng ngày",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "66"
+        ]
+    },
+    "70": {
+        "question": "Làm sao xử lý khi đã tra CIC của khách hàng thấy trả tin nhưng ACL vẫn báo pending CIC?",
+        "answer": "ACL sẽ gọi thông tin CIC theo từng ID của khách hàng được nhập lên hệ thống. Trường hợp thấy ACL báo pending CIC, đơn vị có thể vào CIS kiểm tra bản tin theo các CMT cũ của KH xem đã được trả bản tin đầy đủ chưa. - Trường hợp CIS báo Chờ NHNN trả tin: đơn vị chờ trả tin để thao tác tiếp hoặc nếu chờ đã  lâu nhưng chưa trả tin, đơn vị có thể gọi hotline CIS yêu cầu kiểm tra. - Trường hợp đã trả đủ bản tin cho tất cả ID của khách hàng nhưng ACL vẫn báo pending CIC: gửi ITSM để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "70"
+        ]
+    },
+    "71": {
+        "question": "Khi ACL hiện nhiều dòng cảnh báo Lịch sử tín dụng không thỏa điều kiện, có phải tương ứng với nhiều tiêu chí CIC bị Fail không?",
+        "answer": "Không CIC được check tại 3 bước Khởi tạo đề xuất (P2), Hoàn thiện đề xuất (P5) và Thẩm định đề xuất (P6). Cảnh báo này thể hiện Lịch sử tín dụng bị vi phạm tại từng bước, không thể hiện số lượng tiêu chí Lịch sử tín dụng bị vi phạm. Các tiêu chí vi phạm đơn vị có thể xem chi tiết ở Mục Thông tin rủi ro của KH.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "71"
+        ]
+    },
+    "72": {
+        "question": "Tại sao khách hàng không có nợ xấu nhưng vẫn bị Fail Ascore?",
+        "answer": "Điểm Ascore được tính dựa trên nhiều tiêu chí. Thông tin CIC chỉ là một trong số các tiêu chí được đưa vào để chấm điểm Ascore nên việc CIC tốt không có nghĩa là KH sẽ Pass Ascore.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "72"
+        ]
+    },
+    "73": {
+        "question": "Tại sao khách hàng không có nợ xấu nhưng ACL vẫn cảnh báo?",
+        "answer": "ACL sẽ gọi thông tin CIC theo từng ID của khách hàng được nhập lên hệ thống. Trường hợp thấy ACL cảnh báo, đơn vị cần check lại thông tin theo toàn bộ ID của KH (bao gồm cả CMT cũ)",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "73"
+        ]
+    },
+    "74": {
+        "question": "Các đối tượng liên quan của khách hàng như đối tượng góp vốn cao nhất, Chủ tịch HĐQT, Chủ tịch HĐTV đã được check CIC tự động chưa?",
+        "answer": "Chưa. Các đối tượng này chưa được hỗ trợ check CIC tự động trên ACL. Đơn vị chủ động check CIC trên đầy đủ ID của các đối tượng này và đính kèm vào đề xuất cấp tín dụng.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "74"
+        ]
+    },
+    "90": {
+        "question": "Khách hàng có 2 lần nợ nhóm 2 trong vòng 12 tháng gần nhất có được giải ngân không?",
+        "answer": "Theo quy định 1032.RSK, tại thời điểm giải ngân Khách hàng/KH và vợ/chồng khách hàng phải không có nợ từ nhóm 2 trở lên. Không xét các tiêu chí Lịch sủ tín dụng khác.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "90"
+        ]
+    },
+    "91": {
+        "question": "Khi khách hàng tất toán nợ trong ngày, hạn mức tín dụng rủi ro/HMTDRR/HMRR có được điều chỉnh tương ứng luôn không?",
+        "answer": "Hạn mức tín dụng rủi ro/HMTDRR/HMRR đã được loại trừ các khoản  đã được tất toán trong ngày. Trường hợp, đơn vị tất toán sau khi đẩy lên bước P2, đơn vị cần trả hồ sơ vè lại bước P2 để hệ thống tính toán lại số đúng",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "91"
+        ]
+    },
+    "92": {
+        "question": "Hạn mức tín dụng rủi ro/HMTDRR/HMRR đã loại trừ số tiền cam kết trả nợ trước giải ngân chưa?",
+        "answer": "Đã loại trừ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "92"
+        ]
+    },
+    "93": {
+        "question": "Hạn mức tín dụng rủi ro/HMTDRR/HMRR có bao gồm các hồ sơ đang trình chưa được duyệt không?",
+        "answer": "Có bao gồm, trừ phần Hạn mức tín dụng rủi ro của khách hàng theo TT21/HMTDRR của KH theo TT21/HMRR của KH TT21",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "93"
+        ]
+    },
+    "94": {
+        "question": "Khách hàng thuộc danh sách đen/blacklist tín chấp có bị cảnh báo khi trình cấp hạn mức thế chấp không?",
+        "answer": "Không Hồ sơ trình hạn mức thế chấp sẽ không bị cảnh báo hoặc chặn nếu khách hàng/KH thuộc danh sách đen/blacklist tín chấp. Tuy nhiên, trên màn hình khách hàng/KH, tại Tab Danh sách đen/Blacklist hệ thống sẽ vẫn hiển thị nhằm cung cấp thêm thông tin cho cấp thẩm định, phê duyệt.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "94"
+        ]
+    },
+    "97": {
+        "question": "Khách hàng có thông tin nợ xấu trong vòng 5 năm gần nhất, số tiền vay > 0 triệu đồng và không có ghi nhóm nợ thì có bị tính là có nợ xấu hay không?",
+        "answer": "Có bị tính là có nợ xấu ![Image](/s3-explorer/api/download?path=vib-images/images/FAQs/data/Q&A_Testcase_ACL_ChatBot_v1.xlsx/sheet_Master_D183.png)",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "97"
+        ]
+    },
+    "98": {
+        "question": "Khách hàng có nợ thẻ tín dụng số tiền <0 triệu đồng và số ngày quá hạn > 90 ngày có bị tính là có nợ quá hạn hay không?",
+        "answer": "Không bị tính là có nợ quá hạn",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "98"
+        ]
+    },
+    "101": {
+        "question": "Làm thế nào xử lý khi TSBĐ là CHCC hiện hữu ở ACL, khách hàng muốn vay thêm sản phẩm 1016.LEN trên ACL?",
+        "answer": "Trường hợp TSBĐ (tài sản bảo đảm) là CHCC ( căn hộ chung cư) đang ở ACL & có nhu cầu thực hiện sản phẩm (SP) 1016.LEN ( căn hộ chung cư), ( ĐVKD ( ĐV/Đơn vị) thực hiện đi trên luồng sản phẩm (SP) 1011.LEN . ĐVKD ( ĐV/Đơn vị) lưu ý note \"1016.LEN\" tại mục mô tả mục đích vay để cấp phê duyệt có căn cứ nhận diện đúng sản phẩm (SP) .  Về mức LTV ( tỷ lệ cho vay): cấp phê duyệt thực hiện ghi mức LTV ( tỷ lệ cho vay) đúng vào ĐXTD (đề xuất tín dụng/tờ trình) dưới phần chữ ký phê duyệt   Sau khi có phê duyệt, ĐVKD ( ĐV/Đơn vị) upload ĐXTD (đề xuất tín dụng/tờ trình) qua email và tạo request ITSM gửi đến Team ACL-Secure Lending để được hỗ trợ chuyển luồng phê duyệt về đúng thẩm quyền phê duyệt  vay nhanh của sản phẩm (SP) 1016.LEN .",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "101"
+        ]
+    },
+    "102": {
+        "question": "Khi sử dụng sản phẩm 1018.LEN với TSBĐ không thuộc các Zone được nhận theo QĐ 1168.RSK, khu vực địa bàn và LTV tối đa hiển thị như thế nào?",
+        "answer": "- Khi xuất ĐXTD (đề xuất tín dụng/tờ trình), Khu vực sẽ hiển thị  không xác định . ĐVKD ( ĐV/Đơn vị) thực hiện sửa tay mục này thành khu vực tương ứng với thông tin Zone  theo lần phê duyệt gần nhất và có ký nháy của BM .  - LTV ( tỷ lệ cho vay) tối đa, ĐVKD ( ĐV/Đơn vị) để trống và chọn chuyển ngoại lệ -> chọn cấp phê duyệt là GĐVKD ( ĐV/Đơn vị)",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "102"
+        ]
+    },
+    "103": {
+        "question": "Làm sao xử lý khi sản phẩm 1018.LEN khách hàng đã thực hiện tất toán nhưng cấp phê duyệt không duyệt được trên ACL?",
+        "answer": "- Cấp phê duyệt cần bấm nút refresh outstanding tại Mục \"Dư nợ Khách hàng\" để cập nhật dư nợ trước khi thực hiện bấm nút  phê duyệt",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "103"
+        ]
+    },
+    "104": {
+        "question": "Làm thế nào xử lý khi LTV tối đa của TSBĐ bị hạn chế mức 65% hoặc thấp hơn khi cho khách hàng vay thêm?",
+        "answer": "ĐVKD ( ĐV/Đơn vị) chủ động kiểm tra khoản vay hiện hữu trước đó là sản phẩm (SP) Vay nhanh hay vay thường .  1. sản phẩm (SP) Vay nhanh  LTV ( tỷ lệ cho vay) tối đa của khoản vay dự kiến phát sinh không được vượt LTV ( tỷ lệ cho vay) vay nhanh trước đó .  2. sản phẩm (SP) vay thường  Tạo request trên helpdesk và gửi đến Phòng QLTSBĐ (tài sản bảo đảm) để được hỗ trợ tư vấn",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "104"
+        ]
+    },
+    "105": {
+        "question": "Tại sao sản phẩm 1011.LEN có LTV thấp hơn 10% nhưng không đi thẩm quyền phê duyệt vay nhanh?",
+        "answer": "Sản phẩm (SP) 1011.LEN quy định thẩm quyền phê duyệt vay nhanh thỏa với điều kiện LTV ( tỷ lệ cho vay) ≤ 15% so với LTV ( tỷ lệ cho vay) tối đa theo QĐ 1168.RSK",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "105"
+        ]
+    },
+    "106": {
+        "question": "Làm sao xử lý khi chi tiết đề xuất không hiển thị phương thức trả gốc bậc thang?",
+        "answer": "ĐVKD ( ĐV/Đơn vị) thực hiện tại bước P9 tạo lịch trả nợ để chọn thời gian trả nợ theo từng giai đoạn phù hợp của phương thức trả nợ gốc bậc thang",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "106"
+        ]
+    },
+    "107": {
+        "question": "Làm thế nào xử lý khi trường thời hạn KUNN hiển thị sai trên ĐXTD đối với khoản vay BĐS?",
+        "answer": "ĐVKD ( ĐV/Đơn vị) tạo requets trên ITSM gửi đến Team ACL để nhờ hỗ trợ ẩn trường thông tin này với ĐXTD (đề xuất tín dụng/tờ trình) của sản phẩm (SP) BĐS",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "107"
+        ]
+    },
+    "108": {
+        "question": "Cách nhập thông tin khi TSBĐ nhận đồng thời thế chấp và giải chấp để không báo TSBĐ không thỏa quy định?",
+        "answer": "Phần thông tin pháp lý BĐS, ĐVKD ( ĐV/Đơn vị) nhập thông tin vào trường GCN BĐS Thông tin pháp lý ( Bổ sung ) để nhập thông tin TS nhận kèm",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "108"
+        ]
+    },
+    "109": {
+        "question": "Làm sao xử lý khi ĐVKD thực hiện đổi TSBĐ của khoản vay Bất động sản nhưng sai luồng phê duyệt?",
+        "answer": "ĐVKD ( ĐV/Đơn vị) tham khảo QĐ 1035.RSK để tham khảo về thẩm quyền phê duyệt đổi TSBĐ (tài sản bảo đảm) .  Trường hợp cần được tư vấn thêm, ĐVKD ( ĐV/Đơn vị) tạo request trên helpdesk và gửi đến Phòng Chính sách tín dụng (CSTD) để được hỗ trợ",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "109"
+        ]
+    },
+    "112": {
+        "question": "Làm thế nào xử lý khi vay kinh doanh bổ sung vốn lưu động (BSVLĐ) - từng lần không điều chỉnh được thời hạn KUNN trên ACL?",
+        "answer": "Vay kinh doanh bổ sung vốn lưu động - từng lần, ngày hết hạn KUNN (khế ước nhận nợ) =  ngày hết hạn của HDTD. Do vậy, KUNN (khế ước nhận nợ) đầu tiên có thời hạn = thời hạn của HĐTD, là trường dữ liệu mặc định trên ACL nên không điều chỉnh.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "115"
+        ]
+    },
+    "119": {
+        "question": "Làm sao để trình tăng hạn mức khoản Vay kinh doanh bổ sung vốn lưu động (BSVLĐ) - Vay nhanh hiện hữu?",
+        "answer": "ĐVKD ( ĐV/Đơn vị) trình Hồ sơ vay mới trên ACL theo QĐsản phẩm (SP) 1021.LEN(2024) với cam kết tất toán Dư nợ vay nhanh trước giải ngân.",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "119"
+        ]
+    },
+    "120": {
+        "question": "Làm sao xử lý khi hồ sơ vay Doanh nghiệp siêu nhỏ (DNSN) vay kinh doanh bổ sung vốn lưu động (BSVLĐ) hiển thị cảnh báo không thỏa tiêu chí tài chính?",
+        "answer": "QĐSP 1021.SME xét điều kiện tài chính theo Báo cáo tài chính nộp thuế, do đó ĐVKD ( ĐV/Đơn vị) nhập liệu Tax Report",
+        "ref": [
+            "Q&A_Testcase_ACL_ChatBot_v1.xlsx",
+            "Sheet Master",
+            "120"
+        ]
+    }
+}

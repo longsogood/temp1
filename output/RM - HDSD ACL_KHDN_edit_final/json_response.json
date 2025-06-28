@@ -1,0 +1,452 @@
+{
+    "1": {
+        "question": "Làm thế nào để tìm kiếm khách hàng MSME đã tồn tại ở VIB trước khi tạo tờ trình đề xuất cấp tín dụng?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) vào menu \"Quản lý thông tin khách hàng\" để thực hiện Tìm kiếm khách hàng đã tồn tại ở VIB chưa (gồm ACL và Corebanking) trước khi tạo tờ trình đề xuất cấp tín dụng - Hành động: 1. Đăng nhập hệ thống ACL (https://acl.vib/) bằng user/mật khẩu máy tính 2. Vào ACL Menu > Chọn \"Cấp tín dụng Bán lẻ\" > Chọn \"Quản lý thông tin khách hàng\" > Chọn \"Tìm kiếm theo MSME\" - Lưu ý:  1. Đăng nhập đúng user/mật khẩu máy tính 2. Chọn đúng \"Tìm kiếm theo MSME\" để thực hiện tìm kiếm khách hàng doanh nghiệp SME, nếu chọn sai sẽ không tìm kiếm được khách hàng",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 1",
+            "1"
+        ]
+    },
+    "2": {
+        "question": "Khi tìm kiếm khách hàng MSME, tôi cần nhập những thông tin gì và cần lưu ý điều gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện tìm kiếm khách hàng MSME theo tiêu chí tìm kiếm đã có từ thông tin của khách hàng sau khi nhấn \"Tìm kiếm theo MSME\" tại menu \"Quản lý thông tin khách hàng\" - Hành động: 1. Sau khi chọn \"Tìm kiếm theo MSME\", hệ thống chuyển tới màn hình \"Tiêu chí tìm kiếm\" để RM thực hiện tìm kiếm. 2. RM nhập thông tin tại các trường tìm kiếm sau để thực hiện tìm kiếm: + \"Mã khách hàng\": RM có thể tra cứu trên Core Banking để nhập CIF của Khách hàng MSME (Nếu có). + \"Loại giấy tờ tùy thân\" và \"Số giấy tờ tùy thân\": RM nhập thông tin Khách hàng cung cấp. 3. Chọn nút \"Tìm kiếm\" để hệ thống tìm kiếm thông tin Khách hàng - Lưu ý: 1. Tìm kiếm Khách hàng và Khách hàng liên quan để đảm bảo xác định KH và KH liên quan đã tồn tại hay chưa.  2. Thực hiện tìm kiếm theo toàn bộ các Loại giấy tờ khách hàng có (bao gồm cũ và mới) để đảm bảo tìm thấy khách hàng SME hiện hữu đã có trên hệ thống.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 1",
+            "2"
+        ]
+    },
+    "3": {
+        "question": "Sau khi nhấn tìm kiếm khách hàng MSME, làm sao để xác định khách hàng đã tồn tại hay chưa và các bước tiếp theo?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện kiểm tra thông tin sau khi nhấn \"Tìm kiếm\" tại màn hình \"Tìm kiếm khách hàng MSME\" - Hành động: 1. Sau khi nhấn \"Tìm kiếm\", RM kiểm tra kết quả mà hệ thống tìm kiếm ra 2. Nếu không ra kết quả tìm kiếm hoặc trạng thái CIF là \"New/Mới\", hệ thống ghi nhận là KH mới, RM thực hiện thao tác theo hướng dẫn \"Tạo mới thông tin khách hàng/khách hàng liên quan\" trước khi tạo tờ trình đề xuất tín dụng - Nếu ra kết quả tìm kiếm,  hệ thống ghi nhận là KH đã tồn tại với trạng thái CIF là \"Khách hàng hiện hữu\", RM thực hiện thao tác theo hướng dẫn \"Tạo số tờ trình, hoàn thiện thông tin và kiểm tra CIC của khách hàng/bên liên quan\". Lưu ý:  1. Đây là bước để kiểm tra trạng thái Khách hàng trên hệ thống (Đã tồn tại hay chưa) 2. Trường hợp kết quả hiện ra 2 dòng thông tin khách hàng hiện hữu/mới trùng một khách hàng (căn cứ theo giấy tờ pháp lý của Khách hàng), RM tiến hành kiểm tra lại thông tin dưới Core Banking để xác nhận chính xác thông tin CIF của khách hàng. Sau đó gửi request lên hệ thống ITSM (https://itsm2.vib/) để được hỗ trợ xử lý nếu cần.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 1",
+            "3"
+        ]
+    },
+    "4": {
+        "question": "Quy trình tạo mới thông tin khách hàng MSME trên hệ thống ACL là gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) vào menu \"Quản lý thông tin khách hàng\" để thực hiện \"Tạo mới thông tin khách hàng/khách hàng liên quan\" trước khi tạo tờ trình đề xuất cấp tín dụng - Hành động: 1. Đăng nhập hệ thống ACL (https://acl.vib/) bằng user/mật khẩu máy tính 2. Vào ACL Menu > Chọn \"Cấp tín dụng Bán lẻ\" > Chọn \"Quản lý thông tin khách hàng\" > Chọn \"Tạo mới\" - Lưu ý:  1. Đăng nhập đúng user/mật khẩu máy tính",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 2",
+            "1"
+        ]
+    },
+    "5": {
+        "question": "Khi tạo mới khách hàng MSME, tôi cần nhập những thông tin gì và cần chú ý điều gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện nhập các thông tin chính và thông tin định danh của khách hàng tại màn hình \"Tạo mới\" để thực hiện \"Tạo mới khách hàng/khách hàng liên quan\" trước khi tạo tờ trình đề xuất tín dụng - Hành động: 1. Tại trường thông tin chính của màn hình \"Tạo mới\" + Tên khách hàng: Nhập thông tin tên Khách hàng, viết chữ in hoa do thông tin này sẽ hiển thị trên hợp đồng tín dụng. + Phân loại Khách hàng: Chọn MSME đối với Khách hàng MSME. 2. Sau khi chọn thông tin \"Phân loại khách hàng\" tại trường \"Thông tin chính\", Hệ thống hiển thị Trường \"Thông tin chính của MSME\" để RM nhập tiếp: + Tên giao dịch Tiếng Anh: Nhập thông tin tên giao dịch Tiếng Anh của doanh nghiệp đã đăng ký + Tên ngắn gọn: Nhập thông tin Tên ngắn gọn của doang nghiệp đã đăng ký + Loại hình doanh nghiệp: Lựa chọn loại hình doanh nghiệp của khách hàng đã đăng ký + Số lượng lao động đóng BHXH: Nhập thông tin số lượng lao động đóng BHXH của doanh nghiệp đã đăng ký. + Mã số thuế: Nhập thông tin mã số thuế mà doanh nghiệp đã đăng ký + Ngày thành lập: Nhập hoặc chọn ngày thành lập của doanh nghiệp đã đăng ký. + Thời gian hoạt động: Hệ thống tự tính toán từ thông tin \"Ngày thành lập\" RM đã nhập ở bên trên => Chọn biểu tượng mũi tên vòng tròn để thông tin tự động hiển thị. 3. Tại trường \"Thông tin định danh của KH\" + Loại giấy tờ: RM chọn theo list hiện hữu + Số giấy tờ: Khai báo theo số giấy tờ pháp lý doanh nghiệp đã khai báo + Ngày cấp giấy tờ: Khai báo theo số giấy tờ pháp lý doanh nghiệp đã khai báo. + Ngày hết hạn giấy tờ: Khai báo theo số giấy tờ pháp lý doanh nghiệp đã khai báo 4. Nhấn \"Lưu\" sau khi đã kiểm tra lại các thông tin - Lưu ý: 1. Tên Khách hàng ở trường \"Thông tin chính\" sẽ xuất hiện trong tờ trình cấp tín dụng nên TUYỆT ĐỐI không viết thường, phải viết hoa TOÀN BỘ tên khách hàng. 2. Các thông tin nhập vào của KH phải khớp với thông tin trên hồ sơ pháp lý của KH. 3. Các trường màu đỏ là các trường bắt buộc phải điền, nếu điền thiếu RM sẽ không thể chuyển tiếp bước và hệ thống sẽ báo lỗi thiếu thông tin tại trường đó.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 2",
+            "2"
+        ]
+    },
+    "6": {
+        "question": "Sau khi nhấn lưu ở màn hình tạo mới khách hàng MSME, tôi cần nhập những thông tin cơ bản nào?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện nhập các thông tin cơ bản của khách hàng tại màn hình \"Thông tin chính\" sau khi ấn \"Lưu\" ở màn hình \"Tạo mới\" khách hàng (KH) MSME. - Hành động: Tại trường thông tin cơ bản của Khách hàng: + Mã Khách hàng ACL: Hệ thống sẽ tự sinh + Mã Khách hàng: Hiển thị trống do KH chưa có CIF trên Core + Tên chi nhánh: Hệ thống hiển thị theo chi nhánh của user RM khởi tạo KH + Tên khách hàng: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", có thể thay đổi tại màn hình này. + Tên giao dịch Tiếng Anh: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", có thể thay đổi tại màn hình này. + Tên ngắn gọn: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", có thể thay đổi tại màn hình này. + Phân loại Khách hàng: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", không thể thay đổi ở bước này. + Loại khách hàng: Hệ thống tự hiển thị + Loại hình doanh nghiệp: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", có thể thay đổi tại màn hình này. + Ngành nghề kinh doanh cấp 1, Ngành nghề kinh doanh cấp 2, Ngành nghề kinh doanh cấp 3: RM lựa chọn theo list tại các trường này + Tình trạng cư trú: RM lựa chọn theo list tại trường này. + Vốn đăng ký: RM nhập theo thông tin KH đăng ký. + Số lượng lao động đóng BHXH: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", có thể thay đổi tại màn hình này. + Ngày thành lập: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", có thể thay đổi tại màn hình này. + Thời gian hoạt động: Hiển thị theo thông tin tại màn hình \"Tạo mới\" + Mã số thuế: Hiển thị theo thông tin RM đã nhập tại màn hình \"Tạo mới\", có thể thay đổi tại màn hình này. + Có kế toán trưởng: RM chọn theo list tại trường này. - Lưu ý: 1. Các trường thông tin đã nhập ở màn hình \"Tạo mới\" nếu cần thay đổi có thể thay đổi tại màn hình \"Thông tin chính của khách hàng\".",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 2",
+            "3"
+        ]
+    },
+    "7": {
+        "question": "Làm thế nào để nhập thông tin định danh của khách hàng MSME sau khi đã tạo mới?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện nhập thông tin định danh của khách hàng tại màn hình \"Thông tin chính\" sau khi ấn \"Lưu\" ở màn hình \"Tạo mới\" khách hàng (KH) MSME. - Hành động: 1. Tại trường thông tin định danh của Khách hàng: Hệ thống đã hiển thị sẵn thông tin định danh của KH đã nhập ở màn hình \"Tạo mới\" trước đó. 2. RM nhấn đúp vào dòng thông tin đã hiển thị sẵn để kiểm tra và chọn/điền bổ sung các thông tin còn thiếu và tích chọn trường \"Hiện hành\" để hệ thống ghi nhận giấy tờ chính của KH sau khi tích chọn. 3. RM nhấn \"Thêm dòng\" để thêm thông tin bổ sung nếu ở bước \"Tạo mới\" điền thiếu giấy tờ pháp lý của KH. 4. RM sau khi Nhập xong nhấn \"Lưu\" để hệ thống ghi nhận thông tin đã nhập - Lưu ý: 1. RM phải nhập đầy đủ các loại giấy tờ pháp lý (Đăng ký kinh doanh, Giấy phép kinh doanh) của khách hàng bao gồm giấy tờ còn hiệu lực và hết hiệu lực. 2. RM không được bỏ qua hành động Tích chọn trường \"Hiện hành\" của giấy tờ, nếu RM bỏ qua sẽ ảnh hưởng tới việc làm tờ trình đề xuất tín dụng cho KH.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 2",
+            "3"
+        ]
+    },
+    "8": {
+        "question": "Cách nhập thông tin địa chỉ của khách hàng MSME sau khi tạo mới là gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện nhập thông tin địa chỉ của khách hàng tại màn hình \"Thông tin chính\" sau khi ấn \"Lưu\" ở màn hình \"Tạo mới\" khách hàng (KH) MSME. - Hành động: Tại trường địa chỉ: 1. RM nhấn \"Thêm dòng\" để thêm thông tin địa chỉ của KH. 2. RM điền đầy đủ \"Địa chỉ hoạt động kinh doanh\" và \"Địa chỉ thường trí/ Địa chỉ đăng ký kinh doanh\" 3. RM sau khi Nhập xong nhấn \"Lưu\" để hệ thống ghi nhận thông tin đã nhập - Lưu ý: 1. RM phải nhập  đầy đủ \"Địa chỉ hoạt động kinh doanh\" và \"Địa chỉ thường trí/ Địa chỉ đăng ký kinh doanh\". Nếu nhập thiếu 1 loại địa chỉ sẽ ảnh hưởng tới việc làm tờ trình đề xuất tín dụng cho KH.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 2",
+            "3"
+        ]
+    },
+    "9": {
+        "question": "Quy trình tạo số tờ trình tín dụng cho khách hàng MSME trên hệ thống ACL là gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) vào menu \"Tạo mới khoản vay\" trên ACL Lending để thực hiện tạo số tờ trình, hoàn thiện thông tin và kiểm tra CIC của Khách hàng/bên liên quan - Hành động: 1. Đăng nhập hệ thống ACL (https://acl.vib/) bằng user/mật khẩu máy tính 2. Vào ACL Menu > Chọn \"Cấp tín dụng Bán lẻ\" > Chọn \"Cho vay có đảm bảo\" > Chọn \" Tạo mới khoản vay\" - Lưu ý:  1. Đăng nhập đúng user/mật khẩu máy tính 2. Chọn đúng \"Cho vay có đảm bảo\" để tạo mới khoản vay. Nếu chọn sai thành \"Thẻ tín dụng\", hệ thống sẽ tạo nhầm hồ sơ và hồ sơ sẽ không tìm kiếm được ở phần \"Cho vay có bảo đảm\"",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "1"
+        ]
+    },
+    "10": {
+        "question": "Làm sao để chọn loại khách hàng khi tạo hồ sơ ACL Lending mới?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện chọn loại khách hàng cho hồ sơ ACL Lending mới cần tạo sau khi chọn \"Tạo mới khoản vay\" - Hành động: 1. Sau khi chọn \"Tạo mới khoản vay\", hệ thống chuyển tới màn hình \"Tạo khách hàng\" để RM thực hiện \"Tạo/Chọn khách hàng\" 2. Tại trường Khách hàng mới/khách hàng hiện hữu: Chọn Khách hàng hiện hữu 3. Trường thông tin \"Chọn một khách hàng hiện tại\" hiện ra để RM thao tác. 4. Tại trường \"Tên khách hàng\", chọn biểu tượng \"Kính lúp\" để thực hiện \"Search/Tìm kiếm\" khách hàng - Lưu ý: 1. Các trường đánh dấu sao đỏ là các trường bắt buộc phải điền 2. Tại trường \"Tên khách hàng\", phải thực hiện tìm kiếm, nếu RM không thực hiện tìm kiếm mà gõ trực tiếp tên khách hàng vào trường này, hệ thống sẽ không hiển thị và không thể đi tiếp.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "2"
+        ]
+    },
+    "11": {
+        "question": "Cách tìm kiếm khách hàng SME hiện hữu khi tạo tờ trình tín dụng là gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện tìm kiếm khách hàng SME hiện hữu tại màn hình \"Tìm kiếm khách hàng MSME\" - Hành động: 1. RM tích chọn vào \"Tìm kiếm khách hàng SME\" 2. Màn hình tìm kiếm hiện ra, RM chọn \"Loại giấy tờ tùy thân/ pháp lý \" và \"Số giấy tờ tùy thân/pháp lý\" tương ứng của khách hàng SME sau đó nhấn \"Tìm kiếm\" 3. Hệ thống xuất hiện bản ghi cần tìm kiếm, RM nhấn đúp chuột vào dữ liệu khách hàng được tìm kiếm để tiếp tục 4. Sau khi RM chọn thông tin khách hàng đã tìm kiếm ra, hệ thống sẽ hiển thị trường \"Tên khách hàng\" theo tên khách hàng đã lựa chọn. 5. RM kiểm tra lại chính xác thông tin sau đó click nút có biểu tượng Mũi tên \">\" để chuyển tiếp bước tiếp theo. - Lưu ý: 1. Thông tin \"Loại giấy tờ tùy thân/ pháp lý \" và \"Số giấy tờ tùy thân/pháp lý\" là thông tin của khách hàng MSME, không phải thông tin của người đại diện pháp luật/kế toán trưởng..... 2. RM cần kiểm tra kỹ các thông tin trước khi chuyển tiếp bước để tránh sai sót.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "3"
+        ]
+    },
+    "12": {
+        "question": "Quy trình khởi tạo đề xuất tín dụng cho khách hàng MSME sau khi chọn khách hàng là gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) thực hiện \"Khởi tạo đề xuất\" sau khi hoàn thành xong việc chọn khách hàng (KH) MSME - Hành động: 1. Sau khi hệ thống chuyển tiếp bước, màn hình sẽ hiển thị thông tin \"Khởi tạo đề xuất\" để RM nhập thông tin 2. Tại trường \"Khởi tạo hồ sơ\", RM kiểm tra và nhập các thông tin sau: + Phân khúc khách hàng cho vay: Hệ thống tự động hiển thị theo thông tin của KH + Dòng sản phẩm: RM chọn theo danh mục sản phẩm có sẵn. + Tên sản phẩm: RM chọn theo danh mục sản phẩm có sẵn + Loại yêu cầu: Hệ thống tự động hiển thị là \"Tạo hồ sơ mới\" + Chi nhánh: Hệ thống hiển thị theo chi nhánh của RM đang thực hiện thao tác + Số tiền vay đề xuất: RM nhập thông tin theo yêu cầu của KH + Kỳ hạn vay (tháng): RM nhập thông tin kỳ hạn vay theo của KH quy đổi ra đơn vị tháng + Kỳ hạn vay tối đa (tháng): Hệ thống tự động hiển thị theo sản phẩm đã chọn  3. RM kiểm tra lại chính xác thông tin đã nhập sau đó click nút có biểu tượng Mũi tên \">\" để chuyển tiếp bước tiếp theo. 4. Hệ thống hiển thị mã số Tờ trình tín dụng (PID) được tạo ra. 5. RM Nhấn đúp chuột vào mã tờ trình hiện ra trên màn hình để bắt đầu quy trình khởi tạo và phê duyệt cho KH MSME. - Lưu ý: 1. Đối với sản phẩm Tiền gửi, GTCG thời gian vay tối thiểu = 5 ngày; và RM chọn Kỳ hạn vay bằng tháng gần nhất với kỳ hạn (ví dụ 10 ngày => kỳ hạn = 1 tháng) và Tại thời điểm soạn thảo khế ước nhận nợ (KUNN), RM sửa Ngày kết thúc khoản vay = ngày đến hạn Tiền gửi, GTCGG  2. RM cần kiểm tra kỹ các thông tin trước khi chuyển tiếp bước để tránh sai sót.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "4"
+        ]
+    },
+    "13": {
+        "question": "Làm thế nào để nhập thông tin người đại diện pháp luật và kế toán trưởng cho khách hàng MSME?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) nhập thông tin người đại diện pháp luật và kế toán trưởng sau khi vào màn hình thông tin hồ sơ vừa được tạo - Hành động: 1. Sau khi RM nhấn đúp chuột vào mã tờ trình, màn hình thông tin hồ sơ cần xử lý sẽ hiển thị. 2. Tại Tab \"Thông tin chính\" > Tại trường \"Thông tin cơ bản của Khách hàng\" > RM click vào biểu tượng chữ \"i\" bên cạnh trường \"Mã Khách hàng ACL\" 3. Hệ thống chuyển sang màn hình thông tin của khách hàng (KH) MSME. 4. Tại màn hình thông tin của KH MSME, RM tiến hành nhập thông tin tại 2 tab \"Đại diện pháp luật\" và \"Kế toán trưởng\" của KH MSME theo thông tin được cung cấp. - Lưu ý: 1. \"Đại diện pháp luật\" và \"Kế toán trưởng\" là Khách hàng cá nhân, không phải là khách hàng doanh nghiệp. 2. Để đảm bảo giảm thiểu sai sót, RM thực hiện theo hướng dẫn \"Tìm kiếm thông tin người Đại diện pháp lý và Kế toán trưởng hiện hữu cho KH MSME\" trước với tất cả các giấy tờ tùy thân cũ/mới/hết hiệu lực của người Đại diện pháp lý và Kế toán trưởng sau đó mới thực hiện theo hướng dẫn \"Tạo mới thông tin người Đại diện pháp lý và Kế toán trưởng cho KH MSME\"",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            ""
+        ]
+    },
+    "14": {
+        "question": "Cách nhập thông tin người đại diện pháp luật và kế toán trưởng đã tồn tại trên ACL là gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) nhập thông tin người đại diện pháp luật và kế toán trưởng sau khi vào màn hình thông tin hồ sơ MSME vừa được tạo với Trường hợp Thông tin Người đại diện pháp lý và Kế toán trưởng đã tồn tại trên ACL - Hành động: 1. Tại Tab \"Đại diện pháp luật\" + RM chọn \"Lưu/thêm mới\" + Hệ thống sẽ hiển thị màn hình để RM thực hiện \"Tìm kiếm\" hoặc \"Thêm mới\" thông tin KH.  + RM nhấn vào biểu tượng kính lúp tại trường \"Tên khách hàng\", hệ thống hiển thị màn hình \"Cập nhật thông tin khách hàng từ CBS\" để RM thực hiện tìm kiếm. + RM nhập thông tin \"Loại giấy tờ\" và \"Số giấy tờ\" của người Đại diện pháp luật của công ty MSME được cung cấp > Chọn \"Tìm kiếm\" > Hệ thống hiển thị ra dòng thông tin khách hàng cần chọn > RM click đúp vào dòng thông tin cần chọn > Hệ thống hiển thị tên của khách hàng cần chọn tại trường \"Tên khách hàng\" + RM click biểu tượng 2 mũi tên vòng tròn ở trường \"Loại giấy tờ tùy thân\" và \"Số giấy tờ tùy thân\" để hệ thống hiển thị thông tin theo thông tin của KH đã tìm thấy. + Sau khi các thông tin đã hiển thị đầy đủ, RM thực hiện kiểm tra thông tin lại 1 lần nữa và nhấn nút \"Lưu/Thêm mới\" ở cuối màn hình hiển thị. 2. Tại tab \"Kế toán trưởng\" + RM thao tác tương tự như thực hiện với Tab \"Đại diện pháp luật\" - Lưu ý: 1. \"Đại diện pháp luật\" và \"Kế toán trưởng\" là Khách hàng cá nhân, không phải là khách hàng doanh nghiệp. 2. Để đảm bảo giảm thiểu sai sót, RM thực hiện theo hướng dẫn \"Tìm kiếm thông tin người Đại diện pháp lý và Kế toán trưởng hiện hữu cho KH MSME\" trước với tất cả các giấy tờ tùy thân cũ/mới/hết hiệu lực của người Đại diện pháp lý và Kế toán trưởng sau đó mới thực hiện theo hướng dẫn \"Tạo mới thông tin người Đại diện pháp lý và Kế toán trưởng cho KH MSME\"",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "3.1"
+        ]
+    },
+    "15": {
+        "question": "Quy trình tạo mới thông tin người đại diện pháp luật và kế toán trưởng chưa tồn tại trên ACL là gì?",
+        "answer": "- Mô tả: Cán bộ quản lý tín dụng (RM) nhập thông tin người đại diện pháp luật và kế toán trưởng sau khi vào màn hình thông tin hồ sơ MSME vừa được tạo với Trường hợp Thông tin Người đại diện pháp lý và Kế toán trưởng chưa tồn tại trên ACL - Hành động: 1. Tại Tab \"Đại diện pháp luật\" + RM chọn \"Lưu/thêm mới\" + Hệ thống sẽ hiển thị màn hình để RM thực hiện \"Tìm kiếm\" hoặc \"Thêm mới\" thông tin KH.  + RM nhấn vào biểu tượng dấu cộng tại trường \"Tên khách hàng\", hệ thống hiển thị màn hình để RM tạo mới thông tin của KH tại đây. + Tại trường \"Thông tin chính\" ở màn hình tạo mới thông tin KH: RM nhập \"Tên khách hàng\" và chọn \"Phân loại khách hàng\" trong danh mục lựa chọn + Tại trường \"Thông tin chính cá nhân\": RM nhập/lựa chọn các thông tin \"Khách hàng là nhân viên VIB\", \"Ngày sinh\" của KH theo giấy tờ, \"Nơi sinh\" theo giấy tờ, \"Tuổi\" hệ thống tự động hiển thị sau khi tính toán, \"Tình trạng hôn nhân\" theo thông tin hiện tại của KH, \"Giới tính\" theo giấy tờ của KH. + Tại trường \"Thông tin định danh của KH\": RM nhập  nhập đầy đủ các loại giấy tờ pháp lý (CMND, CCCD, Hộ chiếu) của khách hàng bao gồm giấy tờ còn hiệu lực và hết hiệu lực. + Sau khi nhập xong \"Thông tin chính\", \"Thông tin chính cá nhân\", \"Thông tin định danh của KH\" > RM nhấn nút \"Lưu\" > Hệ thống quay lại màn hình nhập thông tin khách hàng và hiển thị \"Tên khách hàng\" do RM vừa nhập vào. + RM nhấn chữ \"i\" tại \"Tên khách hàng\" vừa hiển thị để bổ sung tiếp các thông tin khác tại màn hình \"Thông tin chính\" của KH + Tại màn hình \"Thông tin chính\" của KH, RM nhập \"Thông tin Quốc tịch\", \"Thông tin định danh của KH\",\"Địa chỉ\" của KH + Sau khi nhập xong nhấn \"Lưu\" để hệ thống lưu thông tin. 2. Tại tab \"Kế toán trưởng\" + RM thao tác tương tự như thực hiện với Tab \"Đại diện pháp luật\" - Lưu ý: 1. \"Đại diện pháp luật\" và \"Kế toán trưởng\" là Khách hàng cá nhân, không phải là khách hàng doanh nghiệp. 2. Để đảm bảo giảm thiểu sai sót, RM thực hiện theo hướng dẫn \"Tìm kiếm thông tin người Đại diện pháp lý và Kế toán trưởng hiện hữu cho KH MSME\" trước với tất cả các giấy tờ tùy thân cũ/mới/hết hiệu lực của người Đại diện pháp lý và Kế toán trưởng sau đó mới thực hiện theo hướng dẫn \"Tạo mới thông tin người Đại diện pháp lý và Kế toán trưởng cho KH MSME\" 3. RM nhấn Thêm dòng để nhập thông tin 4. Nếu cần thêm thông tin định danh khác, RM nhấn Thêm dòng để thêm thông tin. 5. RM Nhấn đúp chuột vào giấy tờ đang hiện hành, tích chọn trường Hiện hành, nếu không chọn trường này, hồ sơ sẽ bị lỗi ở các bước sau và không thể đi tiếp. 6. RM chọn \"Địa chỉ tạm trú\" trước nếu \"Địa chỉ tạm trú\" giống \"Địa chỉ thường trú\" để giảm thời gian nhập liệu",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "3.2"
+        ]
+    },
+    "16": {
+        "question": "Làm thế nào để bắt đầu quy trình xử lý hồ sơ khách hàng MSME sau khi nhập thông tin?",
+        "answer": "- Mô tả: RM chọn \"Bắt đầu quy trình\" tại màn hình thông tin chính của hồ sơ để chuyển hồ sơ sang bước \"Nhập thông tin cơ bản\" cho hồ sơ KH MSME - Hành động: 1. Sau khi nhập xong thông tin của khách hàng MSME, RM quay lại màn hình thông tin chính của hồ sơ > Chọn \"Bắt đầu quy trình\" 2. Hệ thống hiển thị thông báo > RM chọn \"Yes\" hoặc \"No\" để bắt đầu chuyển bước hồ sơ hoặc không đồng ý để xem lại thông tin. - Lưu ý: 1. RM cần kiểm tra lại tất cả các thông tin đã nhập trước khi bắt đầu quy trình. 2. Tất cả các thông tin cần thiết của hồ sơ cần được điền đầy đủ để đảm bảo khi chuyển bước hồ sơ không gặp lỗi hoặc không thể chuyển về để nhập bổ sung.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "4"
+        ]
+    },
+    "17": {
+        "question": "Sau khi bắt đầu quy trình, làm thế nào để tiếp tục xử lý hồ sơ khách hàng MSME?",
+        "answer": "- Mô tả: RM quay lại màn hình Task inbox/Danh mục Hồ sơ cần xử lý để nhận nhiệm vụ xử lý tiếp hồ sơ sau khi \"Bắt đầu quy trình\" - Hành động: 1. Sau khi đồng ý \"Bắt đầu quy trình\", hồ sơ RM vừa khởi tạo sẽ xuất hiện ở màn hình Danh mục hồ sơ xử lý. 2. RM nhấn biểu tượng hình ngôi nhà trên màn hình hoặc thoát user ra, đăng nhập lại hệ thống ACL để vào Danh mục hồ sơ xử lý. 3. RM nhấn đúp chuột vào tờ trình cần xử lý để thực hiện tác vụ tiếp theo. - Lưu ý: 1. RM có thể nhập số hồ sơ tại trường \"Mã hồ sơ\" và nhấn \"Enter\" để tìm kiếm hồ sơ nếu hồ sơ nhiều. 2. Trong trường hợp chưa thấy/không tìm thấy hồ sơ, RM nhấn biểu tượng Refresh để load hồ sơ về. 3. Trong nhiều trường hợp, hồ sơ cần thêm nhiều thời gian để chuyển bước hơn bình thường nên RM cần đợi khoảng 15 - 30 phút, nếu quá thời gian này hồ sơ vẫn chưa thấy ở Danh mục hồ sơ xử lý, RM có thể yêu cầu lên ITSM (https://itsm2.vib/) để được hỗ trợ kiểm tra.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "5"
+        ]
+    },
+    "18": {
+        "question": "Cách nhập thông tin tab Thông tin chính của hồ sơ MSME sau khi chọn hồ sơ ở màn hình Danh mục hồ sơ xử lý là gì?",
+        "answer": "-Mô tả: RM thực hiện nhập thông tin Tab \"Thông tin chính\" của hồ sơ MSME sau khi chọn hồ sơ ở màn hình Danh mục hồ sơ xử lý - Hành động: 1. Tại tab \"Thông tin chính\", RM cần nhập đầy đủ các thông tin sau: + Thông tin cơ bản của khách hàng: RM nhập tất cả các thông tin theo giấy tờ pháp lý của KH + Thông tin quốc tịch: RM nhập tất cả các thông tin theo giấy tờ pháp lý của KH + Thông tin đề xuất: RM nhập tất cả các thông tin theo giấy tờ pháp lý và yêu cầu của KH 2. Tại trường Mã Khách hàng ACL, RM chọn biểu tượng chữ \"i\" để kiểm tra lại các thông tin của KH và thực hiện chỉnh sửa/thêm mới nếu thông tin sai/thiếu sau đó nhấn \"Lưu\" để lưu thông tin. - Lưu ý: 1. RM cần nhập đầy đủ tất cả các thông tin của KH để đảm bảo hồ sơ không ngắt quãng giữa chừng hoặc không chuyển được bước khi chuyển lên bước tiếp theo.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "5"
+        ]
+    },
+    "19": {
+        "question": "Làm thế nào để kiểm tra và nhập thông tin tại Tab Chi tiết đề xuất của hồ sơ vay MSME?",
+        "answer": "- Mô tả: RM kiểm tra và nhập thông tin tại Tab \"Chi tiết đề xuất\" của hồ sơ vay MSME - Hành động: 1. RM chuyển sang Tab \"Chi tiết đề xuất\" trong hồ sơ. 2. Hệ thống đã hiển thị sẵn 1 dòng \"Đề xuất\" > RM click đúp vào dòng này để kiểm tra thông tin và chỉnh sửa nếu cần. 3. Sau khi chỉnh sửa xong nhấn \"Lưu\" để lưu thông tin. - Lưu ý: 1. RM phải kiểm tra lại chính xác các thông tin để đảm bảo hồ sơ không ngắt quãng giữa chừng hoặc không chuyển được bước khi chuyển lên bước tiếp theo.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "5"
+        ]
+    },
+    "20": {
+        "question": "Cách nhập thông tin người liên quan trong hồ sơ vay MSME là gì?",
+        "answer": "- Mô tả: RM kiểm tra và nhập thông tin người liên quan tại Tab \"Thông tin người liên quan\" của hồ sơ vay MSME - Hành động: 1. RM chọn Tab \"Thông tin người liên quan\" > Click vào \"Lưu/Thêm mới\" để thêm thông tin. 2. Hệ thống hiển thị màn hình giống như với Tab \"Đại diện pháp luật\" và Tab \"Kế toán trưởng\" trước đó. 3. RM cần thực hiện thao tác nhập liệu giống như Tab \"Đại diện pháp luật\" và Tab \"kế toán trưởng\" - Lưu ý: 1. RM cần xác định rõ người liên quan để nhập đầy đủ thông tin: Người đại diện theo pháp luật, Người góp vốn, Công ty con, Cá nhân, tổ chức yêu cầu theo quy định (nếu có)",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "5"
+        ]
+    },
+    "21": {
+        "question": "Làm thế nào để chuyển hồ sơ vay MSME lên bước tiếp theo sau khi hoàn thiện thông tin?",
+        "answer": "- Mô tả: RM quay lại Tab \"Thông tin chính\" để chuyển hồ sơ vay MSME lên bước tiếp theo. - Hành động: 1. RM chuyển lại Tab \"Thông tin chính\" trong màn hình của hồ sơ vay MSME 2. RM chọn \"Kết thúc nhiệm vụ\" > Chọn Decision \"Chuyển xử lý\", Nhập \"Comment\" (nếu có) > Chọn \"Lưu\" 3. Hồ sơ sẽ chuyển tiếp sang bước P2 để Hoàn thiện thông tin KH/người liên quan, Gắn thêm Người đồng vay (Nếu có) - Lưu ý: 1. RM kiểm tra lại tất cả các thông tin đã nhập 1 lần nữa trước khi chuyển bước hồ sơ 2. Nếu RM nhập thiếu thông tin, Khi nhấn \"Kết thúc nhiệm vụ\", hệ thống sẽ báo lỗi trường thông tin còn thiếu và không thể chuyển bước nếu không bổ sung thông tin đã được thông báo 3. Trong nhiều trường hợp, hồ sơ cần thêm nhiều thời gian để chuyển bước hơn bình thường nên RM cần đợi khoảng 15 - 30 phút, nếu quá thời gian này hồ sơ vẫn chưa thấy ở Danh mục hồ sơ xử lý, RM có thể yêu cầu lên ITSM (https://itsm2.vib/) để được hỗ trợ kiểm tra.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 3",
+            "6"
+        ]
+    },
+    "22": {
+        "question": "Làm thế nào để tiếp tục xử lý hồ sơ MSME ở bước P2 sau khi chuyển từ bước P1?",
+        "answer": "- Mô tả: RM quay lại màn hình Task inbox/Danh mục Hồ sơ cần xử lý để nhận nhiệm vụ xử lý tiếp hồ sơ sau khi chuyển tiếp từ bước P1 - Hành động: 1. Sau khi RM chuyển xử lý, hồ sơ sẽ xuất hiện ở màn hình Danh mục hồ sơ xử lý. 2. RM nhấn biểu tượng hình ngôi nhà trên màn hình hoặc thoát user ra, đăng nhập lại hệ thống ACL để vào Danh mục hồ sơ xử lý. 3. RM nhấn đúp chuột vào tờ trình cần xử lý để thực hiện tác vụ tiếp theo. - Lưu ý: 1. RM có thể nhập số hồ sơ tại trường \"Mã hồ sơ\" và nhấn \"Enter\" để tìm kiếm hồ sơ nếu hồ sơ nhiều. 2. Trong trường hợp chưa thấy/không tìm thấy hồ sơ, RM nhấn biểu tượng Refresh để load hồ sơ về. 3. Trong nhiều trường hợp, hồ sơ cần thêm nhiều thời gian để chuyển bước hơn bình thường nên RM cần đợi khoảng 15 - 30 phút, nếu quá thời gian này hồ sơ vẫn chưa thấy ở Danh mục hồ sơ xử lý, RM có thể yêu cầu lên ITSM (https://itsm2.vib/) để được hỗ trợ kiểm tra.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 4",
+            "1"
+        ]
+    },
+    "23": {
+        "question": "Tại bước P2, tôi cần hoàn thiện thông tin ở những tab nào cho hồ sơ MSME?",
+        "answer": "Ở bước này cần lưu ý hoàn thiện thông tin ở các Tab sau:  - Tab thông tin chính  - Tab thông tin bổ sung: Khai báo AML, FATCA - Tab Người liên quan (nếu có)  Hướng dẫn cho từng Tab được giải thích dưới đây:",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 4",
+            "2"
+        ]
+    },
+    "24": {
+        "question": "Cách nhập thông tin Tab Thông tin chính ở bước P2 của hồ sơ MSME là gì?",
+        "answer": "-Mô tả: RM thực hiện nhập thông tin Tab \"Thông tin chính\" của hồ sơ MSME sau khi chọn hồ sơ ở màn hình Danh mục hồ sơ xử lý - Hành động: 1. Tại tab \"Thông tin chính\", RM cần nhập đầy đủ các thông tin sau: + Chính sách không tuân thủ: Hệ thống tự động đánh giá: Điều kiện lịch sử tín dụng, nhóm đội tượng đặc biệt, Danh sách đen. Sau khi đánh giá, hệ thống sẽ hiển thị Chính sách không tuân thủ và có các quyết định tại trường Quyết định của hệ thống:  + Cấp tín dụng chuyên biệt: Đây là trường thông tin bắt buộc. RM nhấn chọn vào các mục và lựa chọn theo danh sách tại các trường. + Thông tin về mục đích sử dụng  vốn: Đây là trường thông tin bắt buộc. RM nhấn thêm dòng để nhập thông tin.  + Thông tin đánh giá rủi ro của KH: Thông tin này lấy từ CIC về (Số Giấy tờ pháp lý: số CMND/CCCD/Hộ chiếu mà RM đã nhập tại màn hình Khách hàng; Nhóm nợ KH) và đã kiểm tra điều kiện CIC. Nếu RM cần xem chi tiết thông tin CIC của khách hàng, nhấn đúp chuột vào từng đối tượng khách hàng để xem - Lưu ý: 1. Trường quyết định của hệ thống sẽ hiển thị: + Đồng ý = hồ sơ thỏa quy định + Đồng ý ngoại lệ - hồ sơ vi phạm, RM có thể trình ngoại lệ + Từ chối  - hồ sơ không thỏa quy định, hệ thống tự động Cancel hồ sơ, PID sẽ không hiển thị trên màn hình Hồ sơ xử lý (RM nhập PID vào phần \"Tìm kiếm\" trên ACL Menu để thực hiện tìm kiếm và kiểm tra trạng thái của hồ sơ). 2. RM cần nhập đầy đủ tất cả các thông tin của KH để đảm bảo hồ sơ không ngắt quãng giữa chừng hoặc không chuyển được bước khi chuyển lên bước tiếp theo. 3. Tại trường Tổng nhu cầu vốn: RM lưu ý nhập Tổng tiền cần cho phương án vay (Ví dụ mua xe tổng 3 tỷ VND, Vốn tự có 1 tỷ, vay VIB 2 tỷ => Nhập 3 tỷ VND) 4. Tại trường Mô tả mục đích vay: RM lưu ý nhập chi tiết, ví dụ \"Vay mua xe để kinh doanh theo HĐMB số ...\"/ \"Vay bổ sung vốn lưu động phục vụ hoạt động kinh doanh\"/... 5. Tổng HMTDRR của KH và NLQ bao gồm các khoản vay và thẻ đã giải ngân, các khoản vay và thẻ được duyệt chưa giải ngân, các khoản vay và thẻ đang trình 6. Tổng HMTDRR của KH và Nhóm KHĐB: không bao gồm hạn mức thẻ 7. RM cần kiểm tra các Tờ trình đang tạo trên hệ thống nếu không xử lý tiếp thì cần Hủy để không bị tính vào Tổng HMTDRR.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 4",
+            "2.1"
+        ]
+    },
+    "25": {
+        "question": "Cách nhập thông tin Tab Thông tin bổ sung ở bước P2 của hồ sơ MSME là gì?",
+        "answer": "- Mô tả: RM thực hiện nhập Tab \"Thông tin bổ sung\" trên màn hình của hồ sơ MSME - Hành động: 1. Tại Tab thông tin bổ sung: + Danh sách kiểm tra FATCA: RM chọn update Mã FATCA 06, 07, 08 + Danh sách kiểm tra AML: RM chọn update Mã AML 03, 04 2. Sau khi chọn xong, RM nhấn \"Lưu\" để hệ thống lưu thông tin. - Lưu ý: 1. Thông tin tài khoản tiền gửi, tiết kiệm, Thông tin tài khoản được hệ thống tự động lấy từ Core Banking lên, user có thể mở ra để xem 2. Trường hợp không có thay đổi thông tin gì tại danh sách kiểm tra FATCA và danh sách kiểm tra AML thì RM vẫn phải click vào từng dòng và chọn update sau đó lưu thông tin.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 4",
+            "2.2"
+        ]
+    },
+    "26": {
+        "question": "Làm thế nào để kiểm tra và chỉnh sửa thông tin người liên quan ở bước P2 của hồ sơ MSME?",
+        "answer": "- Mô tả: RM kiểm tra và chỉnh sửa/thêm mới thông tin người liên quan tại Tab \"Thông tin người liên quan\" của hồ sơ vay MSME - Hành động: 1. RM chọn Tab \"Thông tin người liên quan\" > Click vào \"Lưu/Thêm mới\" để thêm mới thông tin. Hệ thống hiển thị màn hình giống như với Tab \"Đại diện pháp luật\" và Tab \"Kế toán trưởng\" trước đó. RM cần thực hiện thao tác nhập liệu giống như Tab \"Đại diện pháp luật\" và Tab \"kế toán trưởng\" 2. Trường hợp cần chỉnh sửa thông tin, RM click vào dòng thông tin cần chỉnh sửa và thực hiện thao tác sau đó lưu thông tin - Lưu ý: 1. RM cần xác định rõ người liên quan để nhập đầy đủ thông tin: Người đại diện theo pháp luật, Người góp vốn, Công ty con, Cá nhân, tổ chức yêu cầu theo quy định (nếu có)",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 4",
+            "2.3"
+        ]
+    },
+    "27": {
+        "question": "Làm thế nào để chuyển hồ sơ MSME lên bước tiếp theo sau khi hoàn thiện thông tin ở bước P2?",
+        "answer": "- Mô tả: RM quay lại Tab \"Thông tin chính\" để chuyển hồ sơ vay MSME lên bước tiếp theo hoặc chuyển về bước trước đó (P1) xử lý lại hoặc Hủy hồ sơ - Hành động: 1. RM chuyển lại Tab \"Thông tin chính\" trong màn hình của hồ sơ vay MSME 2. Trường hợp muốn chuyển tiếp bước xử lý: RM chọn \"Kết thúc nhiệm vụ\" > Chọn Decision \"Chuyển xử lý\", Nhập \"Comment\" (nếu có) > Chọn \"Lưu\" > Hồ sơ sẽ chuyển tiếp lên bước tiếp theo P3 - Đánh giá KH liên quan. 3. Trường hợp muốn chuyển lại bước trước (P1) để xử lý: RM chọn \"Chuyển về bước trước để bổ sung thông tin\" nếu cần sửa thông tin > Hồ sơ sẽ chuyển tiếp bước về bước trước đó P1 - Tạo số tờ trình, Hoàn thiện thông tin và kiểm tra CIC của khách hàng/bên liên quan. - Lưu ý: 1. RM kiểm tra lại tất cả các thông tin đã nhập 1 lần nữa trước khi chuyển bước hồ sơ 2. Nếu RM nhập thiếu thông tin, Khi nhấn \"Kết thúc nhiệm vụ\", hệ thống sẽ báo lỗi trường thông tin còn thiếu và không thể chuyển bước nếu không bổ sung thông tin đã được thông báo 3. Trong nhiều trường hợp, hồ sơ cần thêm nhiều thời gian để chuyển bước hơn bình thường nên RM cần đợi khoảng 15 - 30 phút, nếu quá thời gian này hồ sơ vẫn chưa thấy ở Danh mục hồ sơ xử lý, RM có thể yêu cầu lên ITSM (https://itsm2.vib/) để được hỗ trợ kiểm tra.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 4",
+            "3"
+        ]
+    },
+    "28": {
+        "question": "Quy trình tạo tài sản xe mới cho hồ sơ vay khách hàng doanh nghiệp là gì?",
+        "answer": "Mô tả: RM chọn Tờ trình tín dụng (PID) khách hàng doanh nghiệp cần xử lý. Hành động:  1. Sau khi đăng nhập vào ACL, hệ thống sẽ hiển thị danh mục \"Hồ sơ xử lý\" 2. Nhấn đúp chuột vào tờ trình cần xử lý, hệ thống sẽ chuyển đến màn hình nhập liệu hồ sơ Lưu ý:  - Nếu đang mở nhiều mục khác nhau trên ACL thì RM cần chọn lại vào biểu tượng hình ngôi nhà ở bên trên góc trái màn hình ACL để quay về danh mục \"Hồ sơ xử lý\".",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "1"
+        ]
+    },
+    "29": {
+        "question": "Làm thế nào để khởi tạo tài sản xe cho hồ sơ vay khách hàng doanh nghiệp?",
+        "answer": "Mô tả: RM khởi tạo tài sản Xe cho hồ sơ vay khách hàng doanh nghiệp Hành động: 1. Tại màn hình nhập liệu hồ sơ RM chọn Tab Danh sách tài sản 2. Chọn vào nút biểu tượng dấu + Tạo tài sản thế chấp để khởi tạo tài sản Xe. hệ thống sẽ hiển thị ra màn hình Thông tin chung của tài sản Lưu ý:  - Tab Danh sách tài sản sẽ hiển thị các tài sản thuộc Khách hàng vay hoặc Người liên quan của người vay. - Chỉ tạo được tài sản mới trên hồ sơ vay tại đúng nhiệm vụ \"Cập nhật thông tin cơ bản của TSBĐ\". - Xe mới là xe chưa có Đăng ký hoặc Xe đã có đăng ký với ngày đăng ký chưa quá 1 tháng so với ngày lập tờ trình/Ngày tạo tài sản mới. - Xe cũ là xe đã có Giấy đăng ký > 30 ngày.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "2"
+        ]
+    },
+    "30": {
+        "question": "Cách nhập thông tin cơ bản của tài sản xe cho hồ sơ vay khách hàng doanh nghiệp là gì?",
+        "answer": "Mô tả: RM nhập thông tin cơ bản của tài sản Xe. Hành động: 1. Tại màn hình Thông tin chung của tài sản RM chọn Nhóm tài sản bảo đảm, Loại tài sản bảo đảm, nhập Mô tả TSBĐ 2. Trường Tên chủ sở hữu tài sản chọn biểu tượng kính lúp, tại màn hình tìm kiếm:  - Chọn Tìm kiếm khách hàng Cá nhân hoặc MSME tùy theo đối tượng khách hàng, chọn Loại giấy tờ, nhập Số giấy tờ tùy thân. - Nhấn nút Tìm kiếm, khi đó Hệ thống sẽ hiển thị danh sách kết quả khách hàng theo tiêu chí tìm kiếm. - Nhấn đúp chuột vào thông tin khách hàng được tìm kiếm. 3. Nhấn nút Lưu Lưu ý:  - Mô tả tài sản sẽ được in trên hợp đồng thế chấp, cần điền đầy đủ thông tin bao gồm (số lượng, Loại phương tiện vận tải, Nhãn hiệu, Model, Kết cấu). - Nếu tạo tài sản mới bị sai chủ sở hữu RM sẽ không sửa lại được.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "3"
+        ]
+    },
+    "31": {
+        "question": "Làm thế nào để liên kết tài sản xe với hồ sơ vay khách hàng doanh nghiệp?",
+        "answer": "Mô tả: RM thực hiện Liên kết tài sản Xe với hồ sơ vay khách hàng doanh nghiệp. Hành động:  - Tại tab Danh sách tài sản tích chọn tài sản bảo đảm cần liên kết. - Tại cột TSBĐ hình thành từ vốn vay, chọn giá trị thích hợp Có/ Không. - Nhấn Kết hợp để gắn tài sản với tờ trình tín dụng. Lưu ý: - Nếu có nhiều tài sản RM có thể di chuột vào dòng tài sản và chọn biểu tượng chữ i để xem thông tin tài sản trước khi liên kết. - Tài sản được gắn thành công sẽ có biểu tượng hình Ghim như bên cạnh.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "4"
+        ]
+    },
+    "32": {
+        "question": "Làm thế nào để bắt đầu quy trình P1 luồng tài sản xe?",
+        "answer": "Mô tả: RM bắt đầu quy trình P1 luồng tài sản. Hành động:  1. Tại tab Danh sách tài sản trên tờ trình tín dụng chọn nút biểu tượng chữ i để vào màn hình hoàn thiện thông tin tài sản bảo đảm 2. Nhấn vào nút Bắt đầu quy trình  3. Chọn quy trình P1.0 Khởi tạo tài sản mới Lưu ý: - Mỗi tài sản tạo mới trên ACL chỉ bắt đầu quy trình P1.0 Khởi tạo tài sản mới một lần nên các thông tin chỉ nhập được ở P1 đơn vị cần kiểm tra nhập chính xác. - Với tài sản là Giấy tờ có giá hay Tiền gửi sẽ không cần bắt đầu quy trình P1 luồng tài sản.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "5"
+        ]
+    },
+    "33": {
+        "question": "Làm thế nào để chọn nhiệm vụ Liên kết tài sản thế chấp trong quy trình P1 luồng tài sản xe?",
+        "answer": "Mô tả: RM chọn nhiệm vụ \"Liên kết tài sản thế chấp\". Hành động:  1.  Sau khi bắt đầu quy trình P1 cán bộ tín dụng vào danh mục Hồ sơ xử lý 2. Nhấn đúp chuột vào nhiệm vụ \"Liên kết tài sản thế chấp\" của hồ sơ tài sản cần xử lý, hệ thống sẽ chuyển sang màn hình nhập liệu chi tiết tài sản.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "6"
+        ]
+    },
+    "34": {
+        "question": "Cách hoàn thiện thông tin tài sản xe cho hồ sơ vay khách hàng doanh nghiệp ở tab Chi tiết là gì?",
+        "answer": "Mô tả: RM hoàn thiện thông tin tài sản Xe cho hồ sơ vay khách hàng doanh nghiệp tab \"Chi tiết\". Hành động:  1. Tại màn hình nhập liệu chi tiết tài sản RM chọn tab Chi tiết 2. Tại phần Địa chỉ tài sản chọn Thêm dòng để nhập thông tin  3. Nhập liệu các phần thông tin khác như  Thông tin bảo hiểm (áp dụng cho Xe và Đất ở), Người ủy quyền của chủ tài sản (bắt buộc đối với KH MSME) tùy theo từng tình huống, loại tài sản. Lưu ý:  - Đối với tài sản bảo đảm là Xe, nhập theo địa chỉ giấy chứng nhận xe hoặc địa chỉ khách hàng. - Cần nhập đủ Địa chỉ thực và Địa chỉ giấy chứng nhận.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "7"
+        ]
+    },
+    "35": {
+        "question": "Cách hoàn thiện thông tin tài sản xe cho hồ sơ vay khách hàng doanh nghiệp ở tab Thông tin bổ sung là gì?",
+        "answer": "Mô tả: RM hoàn thiện thông tin tài sản Xe cho hồ sơ vay khách hàng doanh nghiệp tab \"Thông tin bổ sung\". Hành động:  1. Tại màn hình nhập liệu chi tiết tài sản RM chọn tab Thông tin bổ sung 2. Chọn mục \"Thông tin chi tiết Phương tiện vận tải\" và nhập các thông tin bắt buộc theo qui định (các trường màu đỏ) Lưu ý: - Đối với số hợp đồng mua bán, Ngày mua bán nếu chưa có Hợp đồng mua bán thì nhập thông tin Hóa đơn hoặc các giấy tờ tương đương (Đề xuất, Biên bản cọc tiền) và các thông tin này cần được cập nhật lại theo hợp đồng mua bán thực tế khi Soạn thảo hợp đồng thế chấp tài sản.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "8"
+        ]
+    },
+    "36": {
+        "question": "Làm thế nào để hoàn thiện thông tin tài sản xe ở tab Chủ sở hữu tài sản?",
+        "answer": "Mô tả: Cán bộ quản lý tín dụng (RM) hoàn thiện thông tin tài sản Xe tab \"Chủ sở hữu tài sản\". Hành động:  1. Tại màn hình nhập liệu chi tiết tài sản RM chọn tab \"Chủ sở hữu tài sản\":  2. Chủ sở hữu đã chọn khi khởi tạo mới tài sản sẽ được hiển thị trong danh sách. Trường hợp nếu tài sản có nhiều chủ tài sản, người dùng thực hiện khai báo thêm ở Tab này, trình tự: - Nhất nút \"Thêm mới\". - Chọn Loại giấy tờ. - Nhập thông tin Số giấy tờ. - Bấm nút \"Tìm kiếm\" để hệ thống tìm kiếm và hiển thị KH đồng sở hữu, sau đó nhấn đúp chuột vào dòng kết quả tìm kiếm để chọn khách hàng và Chọn Mối quan hệ với người vay chính. Lưu ý: - Thực hiện tạo Hồ sơ Khách hàng đồng sở hữu trước khi thực hiện thêm mới  đồng sở hữu tài sản tại tab này (nếu khách hàng chưa có thông tin).",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "9"
+        ]
+    },
+    "37": {
+        "question": "Làm thế nào để kết thúc nhiệm vụ Liên kết tài sản thế chấp và đính kèm tài liệu bắt buộc?",
+        "answer": "Mô tả: RM kết thúc nhiệm vụ \"Liên kết tài sản thế chấp\" và đính kèm các tài liệu bắt buộc Hành động:  1. Sau khi hoàn tất nhập thông tin chi tiết tài sản RM quay về tab Chi tiết nhấn nút \"Kết thúc nhiệm vụ\" và chọn \"Chuyển xử lý\" để chuyển hồ sơ sang bước tiếp theo 2. Tại danh mục Hồ sơ xử lý Nhấn đúp chuột vào nhiệm vụ đính kèm các tài liệu bắt buộc của hồ sơ tài sản cần xử lý 3. Tại tab Đính kèm hồ sơ chọn mục Lưu/Thêm mới sau đó chọn Tên hồ sơ, tài liệu cần đính kèm và bấm nút Lưu. 4. Quay về tab \"Chi tiết\" nhấn nút \"Kết thúc nhiệm vụ\" và chọn \"Chuyển xử lý\" để hoàn tất bước.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.1",
+            "10"
+        ]
+    },
+    "38": {
+        "question": "Quy trình tạo tài sản tiền gửi có kỳ hạn hoặc giấy tờ có giá cho hồ sơ vay khách hàng doanh nghiệp là gì?",
+        "answer": "Mô tả: RM chọn Tờ trình tín dụng (PID) khách hàng doanh nghiệp cần xử lý. Hành động:  1. Sau khi đăng nhập vào ACL, hệ thống sẽ hiển thị danh mục \"Hồ sơ xử lý\" 2. Nhấn đúp chuột vào tờ trình cần xử lý, hệ thống sẽ chuyển đến màn hình nhập liệu hồ sơ Lưu ý:  - Nếu đang mở nhiều mục khác nhau trên ACL thì cán bộ quản lý tín dụng cần chọn lại vào biểu tượng hình ngôi nhà ở bên trên góc trái màn hình ACL để quay về danh mục \"Hồ sơ xử lý\".",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.2",
+            "1"
+        ]
+    },
+    "39": {
+        "question": "Làm thế nào để khởi tạo tài sản tiền gửi/sổ tiết kiệm cho hồ sơ vay khách hàng doanh nghiệp?",
+        "answer": "Mô tả: RM khởi tạo tài sản tiền gửi/sổ tiết kiệm cho hồ sơ vay khách hàng doanh nghiệp. Hành động: 1. Tại màn hình nhập liệu hồ sơ RM chọn Tab Thông tin bổ sung 2. tại mục Thông tin tài khoản tiền gửi, tiết kiệm của KH sẽ hiển thị toàn bộ các sổ tiết kiệm còn hiệu lực của Khách hàng. Với những sổ tiết kiệm đang là tài sản sẽ có dấu tick ở cột Chọn 3. Chọn sổ tiết kiệm cần làm tài sản và nhấn đúp chuột 4. Tích Chọn và bấm nút Lưu  để tạo Tài sản 5. Bấm Cập nhật Lưu ý:  - Tab Danh sách tài sản sẽ hiển thị các tài sản thuộc Khách hàng vay hoặc Người liên quan của người vay. - Chỉ tạo được tài sản mới trên hồ sơ vay tại đúng nhiệm vụ \"Cập nhật thông tin cơ bản của TSBĐ\". - Hệ thống sẽ dựa vào sản phẩm của Tài khoản để phân loại tự động Tài sản là Giấy tờ có giá hay Tiền gửi có kỳ hạn.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.2",
+            "2"
+        ]
+    },
+    "40": {
+        "question": "Làm thế nào để liên kết tài sản tiền gửi/sổ tiết kiệm với hồ sơ vay khách hàng doanh nghiệp?",
+        "answer": "Mô tả: RM thực hiện Liên kết tài sản với hồ sơ vay khách hàng doanh nghiệp Hành động:  - Tại tab Danh sách tài sản chọn \"Cập nhập\". - Tài sản bảo đảm được chọn tại tab \"Thông tin bổ sung\" sẽ tự động được liên kết với tờ trình. - Di chuột vào tài sản và chọn nút biểu tượng chữ  i  để xem chi tiết tài sản bảo đảm. Lưu ý: - Nếu sổ tiết kiệm đã chọn tại tab \"Thông tin bổ sung\" nhưng không hiện trong tab \"Danh sách tài sản\" thì RM vào lại mục Thông tin tài khoản tiền gửi, tiết kiệm của KH bỏ tích Chọn trên sổ không hiển thị và bấm nút Lưu, sau đó tích Chọn lại và bấm nút lưu. Thực hiện xong quay lại tab \"Thông tin bổ sung\"  và chọn nút \"Cập nhật\". -Tài sản được gắn thành công sẽ có biểu tượng hình Ghim bên cạnh mã tài sản.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.2",
+            "3"
+        ]
+    },
+    "41": {
+        "question": "Làm thế nào để kết thúc nhiệm vụ Cập nhật thông tin cơ bản của TSBĐ cho tài sản tiền gửi/sổ tiết kiệm?",
+        "answer": "Mô tả: RM kết thúc nhiệm vụ \"Cập nhật thông tin cơ bản của TSBĐ\". Hành động: Sau khi thực hiện Liên kết tài sản với hồ sơ vay RM quay về tab Chi tiết nhấn nút \"Kết thúc nhiệm vụ\" và chọn \"Chuyển xử lý\" để tiếp tục quy trình.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.2",
+            "4"
+        ]
+    },
+    "42": {
+        "question": "Quy trình tạo tài sản bất động sản cho hồ sơ vay khách hàng doanh nghiệp là gì?",
+        "answer": "Mô tả: RM chọn Tờ trình tín dụng (PID) khách hàng doanh nghiệp cần xử lý. Hành động:  1. Sau khi đăng nhập vào ACL, hệ thống sẽ hiển thị danh mục \"Hồ sơ xử lý\" 2. Nhấn đúp chuột vào tờ trình cần xử lý, hệ thống sẽ chuyển đến màn hình nhập liệu hồ sơ Lưu ý:  - Nếu đang mở nhiều mục khác nhau trên ACL thì cán bộ quản lý tín dụng cần chọn lại vào biểu tượng hình ngôi nhà ở bên trên góc trái màn hình ACL để quay về danh mục \"Hồ sơ xử lý\".",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "1"
+        ]
+    },
+    "43": {
+        "question": "Làm thế nào để khởi tạo tài sản bất động sản cho hồ sơ vay khách hàng doanh nghiệp?",
+        "answer": "Mô tả: RM khởi tạo tài sản Bất động sản cho hồ sơ vay khách hàng doanh nghiệp. Hành động: 1. Tại màn hình nhập liệu hồ sơ RM chọn Tab Danh sách tài sản 2. Chọn vào nút biểu tượng dấu + Tạo tài sản thế chấp để khởi tạo tài sản Bất động sản, hệ thống sẽ hiển thị ra màn hình Thông tin chung của tài sản Lưu ý: - Tab Danh sách tài sản sẽ hiển thị các tài sản thuộc Khách hàng vay hoặc Người liên quan của người vay. - Chỉ tạo được tài sản mới trên hồ sơ vay tại đúng nhiệm vụ \"Cập nhật thông tin cơ bản của TSBĐ\".",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "2"
+        ]
+    },
+    "44": {
+        "question": "Cách nhập thông tin cơ bản của tài sản bất động sản cho hồ sơ vay khách hàng doanh nghiệp là gì?",
+        "answer": "Mô tả: RM nhập thông tin cơ bản của tài sản Bất động sản cho hồ sơ vay khách hàng doanh nghiệp. Hành động: 1. Tại màn hình Thông tin chung của tài sản RM chọn Nhóm tài sản bảo đảm, Loại tài sản bảo đảm, nhập Mô tả TSBĐ 2. Trường Tên chủ sở hữu tài sản: chọn biểu tượng kính lúp, tại màn hình tìm kiếm:  - Chọn Tìm kiếm khách hàng Cá nhân hoặc MSME tùy theo đối tượng khách hàng, chọn Loại giấy tờ, nhập Số giấy tờ tùy thân. - Nhấn nút Tìm kiếm, khi đó Hệ thống sẽ hiển thị danh sách kết quả khách hàng theo tiêu chí tìm kiếm. - Nhấn đúp chuột vào thông tin khách hàng được tìm kiếm. 4. Nhấn nút Lưu các thông tin cơ bản của tài sản đã nhập Lưu ý:  - Mô tả tài sản sẽ được in trên hợp đồng thế chấp, cần điền đầy đủ thông tin. - Nếu tạo tài sản mới bị sai chủ sở hữu RM sẽ không sửa lại được.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "3"
+        ]
+    },
+    "45": {
+        "question": "Làm thế nào để liên kết tài sản bất động sản với hồ sơ vay khách hàng doanh nghiệp?",
+        "answer": "Mô tả: RM thực hiện Liên kết tài sản Bất động sản với hồ sơ vay khách hàng doanh nghiệp. Hành động:  1. Sau khi nhập thông tin cơ bản của tài sản Bất động sản, RM chọn tab Danh sách tài sản tích chọn tài sản bảo đảm cần liên kết. 2. Tại cột TSBĐ hình thành từ vốn vay, chọn giá trị thích hợp Có/ Không. 3. Nhấn Kết hợp để gắn tài sản bảo đảm với hồ sơ vay. Lưu ý: - Tab Danh sách tài sản sẽ hiển thị các tài sản thuộc Khách hàng vay hoặc Người liên quan của người vay. - Nếu có nhiều tài sản RM có thể di chuột vào dòng tài sản và chọn biểu tượng chữ i  để xem thông tin tài sản trước khi liên kết.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "4"
+        ]
+    },
+    "46": {
+        "question": "Làm thế nào để bắt đầu quy trình P1 luồng tài sản bất động sản?",
+        "answer": "Mô tả: RM bắt đầu quy trình P1 luồng tài sản Bất động sản cho hồ sơ vay khách hàng doanh nghiệp Hành động:  1. Tại tab Danh sách tài sản trên tờ trình tín dụng chọn nút biểu tượng chữ i để vào màn hình hoàn thiện thông tin tài sản bảo đảm 2. Nhấn vào nút Bắt đầu quy trình  3. Chọn quy trình P1.0 Khởi tạo tài sản mới Lưu ý: - Mỗi tài sản tạo mới trên ACL chỉ bắt đầu quy trình P1.0 Khởi tạo tài sản mới một lần nên các thông tin chỉ nhập được ở P1 đơn vị cần kiểm tra nhập chính xác. - Với tài sản là Giấy tờ có giá hay Tiền gửi sẽ không cần bắt đầu quy trình P1 luồng tài sản.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "5"
+        ]
+    },
+    "47": {
+        "question": "Làm thế nào để chọn nhiệm vụ Liên kết tài sản thế chấp trong quy trình P1 luồng tài sản bất động sản?",
+        "answer": "Mô tả: Cán bộ quản lý tín dụng (RM) chọn nhiệm vụ \"Liên kết tài sản thế chấp\" Hành động:  1.  Sau khi bắt đẩu quy trình P1 cán bộ tín dụng vào danh mục Hồ sơ xử lý 2. Nhấn đúp chuột vào nhiệm vụ \"Liên kết tài sản thế chấp\" của hồ sơ tài sản cần xử lý, hệ thống sẽ chuyển sang màn hình nhập liệu chi tiết tài sản.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "6"
+        ]
+    },
+    "48": {
+        "question": "Cách hoàn thiện thông tin tài sản bất động sản cho hồ sơ vay khách hàng doanh nghiệp ở tab Chi tiết là gì?",
+        "answer": "Mô tả: RM hoàn thiện thông tin tài sản Bất động sản cho hồ sơ vay khách hàng doanh nghiệp tab \"Chi tiết\". Hành động:  1. Tại màn hình nhập liệu chi tiết tài sản RM chọn tab Chi tiết 2. Tại phần Địa chỉ tài sản chọn Thêm dòng để nhập thông tin 3. Các phần thông tin khác như Thông tin bảo hiểm (áp dụng cho Xe và Đất ở), Người ủy quyền của chủ tài sản (bắt buộc đối với KH MSME) tùy theo từng tình huống, loại tài sản. Lưu ý: - Cần nhập đủ Địa chỉ thực và Địa chỉ giấy chứng nhận.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "7"
+        ]
+    },
+    "49": {
+        "question": "Cách hoàn thiện thông tin bất động sản đất cho hồ sơ vay khách hàng doanh nghiệp ở tab Thông tin bổ sung là gì?",
+        "answer": "Mô tả: RM hoàn thiện thông tin Bất động sản Đất  cho hồ sơ vay khách hàng doanh nghiệp tab \"Thông tin bổ sung\". Hành động:  1. Tại màn hình nhập liệu chi tiết tài sản RM chọn tab Thông tin bổ sung 2. Chọn mục \"Thông tin chi tiết bất động sản\" và nhập các thông tin bắt buộc theo qui định (các trường màu đỏ) sau đó chọn Lưu 3. Mục Thông tin chi tiết thửa đất chọn thêm dòng để nhập 4. Mục Thông tin công trình chọn thêm dòng để nhập Lưu ý: - Đối với Đất hợp khối, nhập tất cả giấy chứng nhận.",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "8"
+        ]
+    },
+    "50": {
+        "question": "Cách hoàn thiện thông tin bất động sản căn hộ cho hồ sơ vay khách hàng doanh nghiệp ở tab Thông tin bổ sung là gì?",
+        "answer": "Mô tả: RM hoàn thiện thông tin Bất động sản Căn hộ cho hồ sơ vay khách hàng doanh nghiệp tab \"Thông tin bổ sung\". Hành động:  1. Tại màn hình nhập liệu chi tiết tài sản RM chọn tab Thông tin bổ sung 2. Chọn mục \"Thông tin chi tiết bất động sản\" và nhập các thông tin bắt buộc theo qui định (các trường màu đỏ) sau đó chọn Lưu 3. Mục Thông tin chi tiết căn hộ nhấn thêm dòng để nhập Lưu ý: - Thông tin chi tiết căn hộ chỉ nhập được tại bước P1.0 Khởi tạo tài sản mới",
+        "ref": [
+            "RM - HDSD ACL_KHDN_edit_final.xlsx",
+            "Sheet 5.3",
+            "9"
+        ]
+    }
+}

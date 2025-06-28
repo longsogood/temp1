@@ -1,0 +1,253 @@
+Question,True Answer,Agent Answer,Chat ID,Information Coverage Score,Hallucination Score,Format Score,Language Score,Handling Unknown Score,Average Score,Comment
+Cần làm gì khi hồ sơ bị pending CIC quá lâu?,"Đơn vị kiểm tra tất cả các giấy tờ của khách hàng đã có đủ kết quả cic chưa? Nếu chưa thì đợi, còn có rồi thì req ITSM để được hỗ trợ.","Khi hồ sơ bị pending CIC quá lâu, bạn cần thực hiện các bước sau:
+
+1. Kiểm tra tất cả giấy tờ của khách hàng xem đã có đủ kết quả CIC chưa:
+   - Nếu chưa có kết quả CIC: tiếp tục chờ hệ thống trả tin
+   
+2. Nếu đã chờ lâu nhưng vẫn pending CIC, bạn có thể:
+   - Vào CIS kiểm tra bản tin theo các CMT/CCCD của khách hàng xem đã được trả bản tin đầy đủ chưa
+   - Nếu CIS báo ""Chờ NHNN trả tin"": tiếp tục chờ hoặc gọi hotline CIS yêu cầu kiểm tra nếu đã chờ quá lâu
+   - Nếu đã trả đủ bản tin cho tất cả ID của khách hàng nhưng ACL vẫn báo pending CIC: gửi ITSM để được hỗ trợ
+
+Lưu ý: ACL sẽ gọi thông tin CIC theo từng ID của khách hàng được nhập lên hệ thống, nên cần đảm bảo tất cả các ID đều đã có kết quả CIC đầy đủ.",a4a63b43-2d04-48b0-852a-4f036c686e3f,8,7,10,9,9,8.6,"Agent đã bao phủ thông tin chính từ câu trả lời chuẩn về việc kiểm tra giấy tờ khách hàng đã có đủ kết quả CIC chưa và yêu cầu ITSM hỗ trợ nếu cần. Tuy nhiên, agent đã thêm nhiều thông tin chi tiết không có trong câu trả lời chuẩn như kiểm tra CIS, gọi hotline CIS, và giải thích về cách ACL gọi thông tin CIC. Mặc dù những thông tin này có thể hữu ích, nhưng không được xác nhận trong câu trả lời chuẩn nên có thể gây ra hallucination. Về mặt định dạng và cấu trúc, câu trả lời được trình bày rất rõ ràng với các bước được đánh số và gạch đầu dòng. Ngôn ngữ sử dụng chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng."
+Quy trình xử lý khi TSĐB có lỗi ngoại lệ không thỏa điều kiện nhận tại VIB?,"Đơn vị tìm lại tài sản rồi bắt đầu quy trình P2-định giá tài sản, đi định giá lại tài sản để nhập lại các thông tin còn thiếu. Khi định giá xong mà vẫn bị lỗi ngoại lệ thì liên hệ với chính sách TSDB để được hỗ trợ","Khi TSĐB (Tài sản đảm bảo) có lỗi ngoại lệ không thỏa điều kiện nhận tại VIB, quy trình xử lý như sau:
+
+1. Đơn vị cần tìm lại tài sản và bắt đầu quy trình P2-định giá tài sản, tiến hành định giá lại tài sản để nhập các thông tin còn thiếu.
+
+2. Nếu sau khi định giá xong mà vẫn bị lỗi ngoại lệ, cần liên hệ với phòng Chính sách TSĐB để được hỗ trợ.
+
+3. Trường hợp hệ thống báo lỗi ""Tài sản không thỏa điều kiện nhận của VIB"" (do tài sản chưa tồn tại trên hệ thống), đơn vị cần gửi yêu cầu hỗ trợ qua:
+   - Địa chỉ: https://itsm2.vib > RISK > Category: CSTSBĐ - Phòng Chính sách tín dụng
+
+4. Nếu TSĐB không thỏa điều kiện nhận tại VIB và cần phê duyệt qua UBTD (Ủy ban tín dụng), ĐVKD cần:
+   - Trong tab Khảo sát thực tế, phần thông tin đánh giá TSBĐ, chọn ""Điều kiện nhận = Không phù hợp/Fail""
+   - Nhập chi tiết lý do TSBĐ không thỏa điều kiện nhận theo danh sách LOV trên hệ thống
+   - Hệ thống sẽ đánh giá, cảnh báo và chuyển luồng phê duyệt hồ sơ tín dụng lên UBTD
+
+Bạn cần tôi làm rõ thêm điểm nào trong quy trình này không?",598c7951-6d25-463b-aa0e-8cddecf4c739,7,5,10,10,10,8.4,"Agent đã bao gồm các thông tin chính từ câu trả lời chuẩn về quy trình xử lý khi TSĐB có lỗi ngoại lệ, tuy nhiên đã thêm nhiều thông tin bổ sung không có trong câu trả lời chuẩn (điểm 3 và 4). Những thông tin bổ sung này có thể gây hiểu nhầm vì không rõ nguồn gốc và tính chính xác. Câu trả lời có định dạng rất tốt với các điểm đánh số rõ ràng, ngôn ngữ chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng. Agent đã xử lý tốt việc cung cấp thông tin và không có dấu hiệu của việc không tìm thấy câu trả lời."
+"Làm sao xử lý khi kết thúc qui trình Thay đổi điều kiện phê duyệt báo lỗi ""Tài sản phải đang hoạt động để kết thúc quy trình""?",Với luồng tái cấp hạn mức/Đối tài sản: -  Tài sản mới đưa thêm vào phải nhập kho xong mới kết thúc được quy trình,"Để xử lý lỗi ""Tài sản phải đang hoạt động để kết thúc quy trình"" khi kết thúc quy trình Thay đổi điều kiện phê duyệt, bạn cần thực hiện như sau:
+
+Với luồng tái cấp hạn mức/Đối tài sản:
+- Tài sản mới đưa thêm vào phải nhập kho xong (hoàn tất) mới kết thúc được quy trình.
+- Kiểm tra xem tài sản đã hoàn tất nhập kho chưa, nếu chưa thì cần hoàn tất việc nhập kho tài sản trước khi kết thúc quy trình.
+
+Lỗi này thường xảy ra khi tài sản chưa được cập nhật trạng thái ""complete"" trong hệ thống, mặc dù đã hoàn tất nhập kho.",628af967-5650-48df-aa09-9366f780c1a8,8,6,9,9,10,8.4,"Agent đã bao gồm toàn bộ thông tin từ câu trả lời chuẩn về việc tài sản mới đưa thêm vào phải nhập kho xong mới kết thúc được quy trình. Tuy nhiên, agent đã thêm thông tin không có trong câu trả lời chuẩn như 'Kiểm tra xem tài sản đã hoàn tất nhập kho chưa' và 'Lỗi này thường xảy ra khi tài sản chưa được cập nhật trạng thái ""complete"" trong hệ thống'. Những thông tin này không được xác nhận trong câu trả lời chuẩn nên có thể gây hiểu nhầm. Về định dạng và cấu trúc, câu trả lời được trình bày rõ ràng với các điểm đánh dấu. Ngôn ngữ sử dụng chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng."
+"Cách xử lý khi giải ngân gặp lỗi ""Số tiền trả nợ không đúng với cam kết""?","Kiiểm tra với CA đã hoàn thành thu nợ chưa, hoàn thành vào lúc nào và check với thời gian bắt đầu quy trình KUNN Trường hợp 1: RM tạo KUNN trước thời điểm KH thanh toán nợ như cam kết  - Nếu đang ở bước đầu tiên (Hoàn thiện yêu cầu giải ngân) --> RM hủy KUNN đi tạo lại KUNN mới bằng cách: Kết thúc nhiệm vụ chọn hủy/từ chối vì ACL không thể lấy thông tin dư nợ lại  - Nếu đang ở bước đính kèm tài liệu --> RM trả lại bước trước để ACL lấy lại thông tin dư nợ mới nhất Trường hợp 2: Đã trả về nhưng vẫn báo lỗi sai số tiền  Gửi yêu cầu itsm để chỉnh lại số tiền dự kiên trả nợ bằng đúng số tiền đã trả.","Để xử lý khi giải ngân gặp lỗi ""Số tiền trả nợ không đúng với cam kết"", bạn cần thực hiện các bước sau:
+
+1. Kiểm tra với CA (Credit Admin) xem đã hoàn thành thu nợ chưa, hoàn thành vào lúc nào và so sánh với thời gian bắt đầu quy trình KUNN (Khế ước nhận nợ).
+
+2. Có 2 trường hợp chính:
+
+   **Trường hợp 1: RM tạo KUNN trước thời điểm KH thanh toán nợ như cam kết**
+   - Nếu đang ở bước đầu tiên (Hoàn thiện yêu cầu giải ngân): RM cần hủy KUNN và tạo lại KUNN mới bằng cách kết thúc nhiệm vụ, chọn hủy/từ chối vì ACL không thể lấy thông tin dư nợ lại.
+   - Nếu đang ở bước đính kèm tài liệu: RM cần trả lại bước trước để ACL lấy lại thông tin dư nợ mới nhất.
+
+   **Trường hợp 2: Đã trả về nhưng vẫn báo lỗi sai số tiền**
+   - Gửi yêu cầu ITSM để chỉnh lại số tiền dự kiến trả nợ bằng đúng số tiền đã trả.
+
+3. Nếu tại bước P9, hệ thống vẫn cảnh báo lỗi này dù khách hàng đã tất toán dư nợ theo đúng cam kết:
+   - Kiểm tra xem khách hàng tất toán trước hay sau khi tạo KUNN
+   - Nếu tất toán sau khi tạo KUNN: trả về bước đầu tiên của P9 và đẩy lên lại để hệ thống lấy lại dữ liệu dư nợ mới nhất
+   - Nếu đã trả trước đó nhưng hệ thống vẫn cảnh báo: gửi ITSM để được hỗ trợ kiểm tra",a062c288-77ab-4303-9e9f-b3b919adecba,8,7,9,9,8,8.2,"Agent đã bao phủ hầu hết thông tin quan trọng từ câu trả lời chuẩn, bao gồm các trường hợp và cách xử lý. Tuy nhiên, agent đã thêm thông tin về 'bước P9' và một số chi tiết không có trong câu trả lời chuẩn, điều này có thể gây nhầm lẫn. Định dạng rất rõ ràng với các đánh số và phân chia trường hợp. Ngôn ngữ chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng. Agent đã xử lý tốt thông tin có sẵn mà không đề xuất chuyển đến Admin vì đã có đủ thông tin để trả lời."
+Quy trình xử lý khi tài khoản trung gian không hiển thị trong KUNN?,Nếu đơn vị có chuyển đổi phương thức giải ngân từ  chuyển khoản --> tiền mặt ở P9 thì vui lòng hủy KUNN hiện tại và tạo KUNN mới để hệ thống ghi nhận đúng Phương thức giải ngân và hiển thị tài khoản trung gian theo các bước sau: - RM hủy KUNN bằng cách Kết thúc nhiệm vụ chọn hủy/từ chối - Bắt đầu qui trình để tạo KUNN mới Lưu ý: Trường hợp tạo lại KUNN mới rồi nhưng vẫn không lên Tài khoản trung gian thì req lên ITSM để được hỗ trợ,"Khi tài khoản trung gian không hiển thị trong KUNN, quy trình xử lý như sau:
+
+### Nguyên nhân
+- Thường do thay đổi hình thức giải ngân dẫn đến việc không hiện tài khoản trung gian (TKTG)
+
+### Quy trình xử lý
+1. **Kiểm tra tài khoản trung gian**
+   - Thực hiện truy vấn: `Select * from inter.Beneficiary_Gl_Code where branchcode= [mã chi nhánh]`
+
+2. **Xử lý theo kết quả kiểm tra**:
+   - **Nếu đã có tài khoản trung gian**:
+     - DVKD hủy KUNN hiện tại bằng cách ""Kết thúc nhiệm vụ"" và chọn ""hủy/từ chối""
+     - Tạo KUNN mới để hệ thống ghi nhận đúng phương thức giải ngân và hiển thị tài khoản trung gian
+
+   - **Nếu chưa có tài khoản trung gian**:
+     - Chuyển Line 2 hỗ trợ tạo TKTG
+
+3. **Lưu ý quan trọng**:
+   - Nếu đơn vị có chuyển đổi phương thức giải ngân từ chuyển khoản sang tiền mặt ở P9, cần hủy KUNN hiện tại và tạo KUNN mới
+   - Trường hợp tạo lại KUNN mới rồi nhưng vẫn không hiển thị tài khoản trung gian, cần tạo yêu cầu ITSM để được hỗ trợ",5f82c049-bc62-46b5-a049-6f06f43fcf2e,8,7,10,9,9,8.6,"Agent đã bao quát được thông tin chính từ câu trả lời chuẩn về việc hủy KUNN hiện tại và tạo KUNN mới khi có chuyển đổi phương thức giải ngân, cũng như hướng dẫn tạo yêu cầu ITSM nếu vẫn gặp vấn đề. Tuy nhiên, agent đã thêm một số thông tin không có trong câu trả lời chuẩn như việc truy vấn 'Select * from inter.Beneficiary_Gl_Code where branchcode= [mã chi nhánh]' và phần kiểm tra tài khoản trung gian. Mặc dù thông tin này có thể hữu ích nhưng không được đề cập trong câu trả lời chuẩn nên có thể gây nhầm lẫn. Về định dạng và cấu trúc, agent đã trình bày rất rõ ràng với các đề mục và bước thực hiện cụ thể. Ngôn ngữ sử dụng chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng."
+Làm sao xử lý khi duyệt giải ngân báo lỗi giá trị TSDB không đủ để đảm bảo cho khoản vay?,"1.Với tài sản thế chấp lần đầu tiên: Trường hợp 1: Kiểm tra xem tài sản đã hoàn thành quy trình nhập kho chưa và thời điểm trước hay sau bước đẩy KUNN  - Nếu đã hoàn thành và thực hiện sau thì chuyển xử lý lại KUNN  - Nếu chưa hoàn tất thì thực hiện nhập kho tài sản trước sau đó quay lại đẩy KUNN Trường hợp 2: Tài sản nhập kho rồi thì kiểm tra lại LTV được duyệt đã đủ chưa? - Nếu chưa đủ thì req ITSM để chỉnh lại. - Nếu ltv được duyệt đã đủ cho cả khoản vay hiện tại và khoản vay khác mà vẫn không chuyển xử lý được thì req ITSM với tiêu đề ""Kiểm tra giá trị khả dụng TSĐB khi giải ngân"" kèm các thông tin về mã hồ sơ, mã tài sản và màn hình lỗi 2. Với tài sản đang thế chấp tại VIB Trường hợp 1: Vay thêm trên tài sản đó thì kiểm tra ltv được duyệt đã bao gồm đủ cả khoản đã giải ngân chưa? Chưa thì req ITSM để chỉnh lại. Trường hợp 2: Tất toán khoản vay cũ và giải ngân lại thì cần phải gỡ phân bổ tài sản cho khoản vay cũ. - Cập nhật trạng thái hạn mức (nếu có):  tạo Yêu cầu thay đổi điều kiện phê duyệt/Cập nhật trạng thái hạn mức ( tham chiếu qui trình mục 7 TL HDSD sau giải ngân) - Gỡ phân bổ:  tạo Yêu cầu thay đổi điều kiện phê duyệt/Thay đổi tỷ lệ phân bổ (tham chiếu qui trình mục 8 TL HDSD sau giải ngân) 3. Các trường hợp còn lại đã xử lý hết tình huống 1 và 2 thì gửi lên ITSM với tiêu đề ""Kiểm tra giá trị khả dụng TSĐB khi giải ngân"" kèm các thông tin về mã hồ sơ, mã tài sản và màn hình lỗi","Khi duyệt giải ngân báo lỗi giá trị TSDB không đủ để đảm bảo cho khoản vay, bạn cần xử lý theo các trường hợp sau:
+
+1. **Với tài sản thế chấp lần đầu tiên**:
+   - **Kiểm tra tài sản đã hoàn thành quy trình nhập kho chưa**:
+     - Nếu đã hoàn thành và thực hiện sau bước đẩy KUNN: Chuyển xử lý lại KUNN
+     - Nếu chưa hoàn tất: Thực hiện nhập kho tài sản trước, sau đó quay lại đẩy KUNN
+   - **Kiểm tra LTV được duyệt**:
+     - Nếu chưa đủ: Tạo yêu cầu ITSM để chỉnh lại
+     - Nếu LTV đã đủ nhưng vẫn không chuyển xử lý được: Tạo yêu cầu ITSM với tiêu đề ""Kiểm tra giá trị khả dụng TSĐB khi giải ngân"" kèm thông tin mã hồ sơ, mã tài sản và màn hình lỗi
+
+2. **Với tài sản đang thế chấp tại VIB**:
+   - **Trường hợp vay thêm trên tài sản đó**: Kiểm tra LTV được duyệt đã bao gồm đủ cả khoản đã giải ngân chưa. Nếu chưa, tạo yêu cầu ITSM để chỉnh lại.
+   - **Trường hợp tất toán khoản vay cũ và giải ngân lại**: Cần gỡ phân bổ tài sản cho khoản vay cũ bằng cách:
+     - Tạo Yêu cầu thay đổi điều kiện phê duyệt/Cập nhật trạng thái hạn mức (để cập nhật trạng thái hồ sơ về hết hiệu lực)
+     - Tạo Yêu cầu thay đổi điều kiện phê duyệt/Thay đổi tỷ lệ phân bổ (để thay đổi giá trị phân bổ về 0)
+
+3. **Trường hợp tài sản đã nhập kho nhưng vẫn bị lỗi**: Do tài sản hoàn tất nhập kho rồi nhưng vẫn bị lỗi chưa cập nhật trạng thái complete, cách xử lý là Add note chuyển line update.
+
+4. **Các trường hợp khác**: Sau khi đã xử lý các tình huống trên mà vẫn không được, gửi yêu cầu ITSM với tiêu đề ""Kiểm tra giá trị khả dụng TSĐB khi giải ngân"" kèm thông tin mã hồ sơ, mã tài sản và màn hình lỗi.",f277c836-8e8c-438c-bd93-5bae4c6ad440,8,7,10,10,9,8.8,"Agent đã bao phủ hầu hết thông tin quan trọng từ câu trả lời chuẩn, bao gồm các trường hợp xử lý với tài sản thế chấp lần đầu và tài sản đang thế chấp tại VIB. Tuy nhiên, agent đã thêm thông tin về 'Trường hợp tài sản đã nhập kho nhưng vẫn bị lỗi' (mục 3) không có trong câu trả lời chuẩn, đây là một hallucination nhẹ. Định dạng và cấu trúc rất tốt với việc sử dụng bullet points và phân chia rõ ràng các trường hợp. Ngôn ngữ chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng. Agent đã xử lý tốt việc hướng dẫn người dùng tạo yêu cầu ITSM khi cần thiết."
+Các bước để hủy hồ sơ trên hệ thống ACL?,"Trường hợp 1: Hồ sơ đang có trạng thái hiệu lực thì đi đơn vị đi luồng thay đổi điều kiện phê duyệt, loại yêu cầu cập nhật trạng thái hạn mức để chuyển hồ sơ về hết hiệu lực. Trường hợp 2: Hồ sơ có trạng thái đang chờ giải ngân thì đơn vị lấy nhiệm vụ, chọn hủy/từ chối để hủy KUNN để cho hồ sơ về trạng thái hiệu lực sau đó làm như trường hợp 1. Trường hợp 3: Hồ sơ trước P8, vẫn trong luồng xử lý thì đơn vị lấy nhiệm vụ chọn hủy/từ chối để hủy hồ sơ. Trường hợp 4: Các trường hợp hồ sơ bị treo thì req ITSM để được hỗ trợ","Để hủy hồ sơ trên hệ thống ACL, bạn cần thực hiện theo các bước khác nhau tùy thuộc vào trạng thái hiện tại của hồ sơ:
+
+**Trường hợp 1: Hồ sơ đang có trạng thái hiệu lực**
+1. Vào Menu → Đề xuất Thay đổi điều kiện phê duyệt
+2. Chọn Loại yêu cầu: Cập nhật trạng thái hạn mức
+3. Chọn hồ sơ cần Hủy (trạng thái Active/disbursed/freezing/limit expired)
+4. Lưu lại, sau đó tìm kiếm lại hồ sơ và bắt đầu quy trình để làm
+5. Thay đổi trạng thái từ Hiệu lực → Hết hiệu lực
+6. Kết thúc nhiệm vụ chuyển lên CA phê duyệt
+
+**Trường hợp 2: Hồ sơ có trạng thái đang chờ giải ngân**
+- Lấy nhiệm vụ, chọn hủy/từ chối để hủy KUNN
+- Sau đó hồ sơ sẽ về trạng thái hiệu lực, tiếp tục làm như trường hợp 1
+
+**Trường hợp 3: Hồ sơ trước P8, vẫn trong luồng xử lý**
+- Lấy nhiệm vụ, chọn hủy/từ chối để hủy hồ sơ
+
+**Trường hợp 4: Hồ sơ đã lên P9 và chưa qua bước cuối của CA Checker**
+1. DVKD bấm Kết thúc nhiệm vụ chọn hủy/từ chối để hủy KUNN
+2. DVKD tạo mới hồ sơ để trình hủy hồ sơ qua CA phê duyệt theo các bước tương tự trường hợp 1
+
+**Trường hợp 5: Các trường hợp hồ sơ bị treo**
+- Gửi yêu cầu ITSM để được hỗ trợ
+
+Bạn cần tôi làm rõ bước nào trong quy trình này không?",d25afed3-6353-49c1-8e28-7928328a875e,8,7,10,10,10,9.0,"Agent đã bao phủ tất cả 4 trường hợp từ câu trả lời chuẩn, nhưng có thêm một trường hợp 5 không có trong câu trả lời chuẩn. Về nội dung, agent đã bổ sung thêm chi tiết cụ thể cho trường hợp 1 (các bước thực hiện) mà không có trong câu trả lời chuẩn. Thông tin bổ sung này có thể hữu ích nhưng không thể xác minh được độ chính xác từ câu trả lời chuẩn. Trường hợp 4 trong câu trả lời của agent (Hồ sơ đã lên P9 và chưa qua bước cuối của CA Checker) không có trong câu trả lời chuẩn, đây có thể là thông tin không chính xác. Định dạng và cấu trúc rất rõ ràng với các đánh dấu cho từng trường hợp và các bước thực hiện. Ngôn ngữ chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng."
+Cách chỉnh sửa thông tin địa chỉ của khách hàng trên hệ thống ACL?,"Thông tin địa chỉ của KH có thể điều chỉnh ở bước P2 - Cập nhật thông tin cơ bản và P8 - Soạn HĐTD. User kiểm tra lại hồ sơ vay đang ở bước nào rồi tự điều chỉnh về các bước có thể chỉnh sửa được Nếu hồ sơ vay đang ở bước giải ngân (P9), user tạo ITSM cung cấp thông tin đúng và bản scan QR của giấy tờ cho BTS hỗ trợ.","Để chỉnh sửa thông tin địa chỉ của khách hàng trên hệ thống ACL, bạn có thể thực hiện theo các cách sau tùy thuộc vào trạng thái hiện tại của hồ sơ:
+
+1. **Nếu hồ sơ đang ở bước P2 hoặc P8**:
+   - Thông tin địa chỉ của khách hàng có thể được điều chỉnh tại:
+     - Bước P2 - Cập nhật thông tin cơ bản
+     - Bước P8 - Soạn HĐTD
+   - Bạn cần kiểm tra hồ sơ vay đang ở bước nào và tự điều chỉnh về các bước có thể chỉnh sửa được.
+
+2. **Nếu hồ sơ đã đến bước giải ngân (P9)**:
+   - Bạn cần tạo ITSM cung cấp thông tin đúng và bản scan QR của giấy tờ cho BTS hỗ trợ.
+
+3. **Đối với thông tin địa chỉ của người đồng vay**:
+   - Nếu là hồ sơ tạo mới tại P8: Có thể đẩy về P2 để đơn vị tự cập nhật
+   - Nếu là hồ sơ tái cấp tại P8: Không thể đẩy về P2 (chỉ có 2 tùy chọn Duyệt hoặc Từ chối), cần báo đơn vị cung cấp hình ảnh giấy tờ pháp lý và add note chuyển line 2 hỗ trợ cập nhật.
+
+4. **Đối với địa chỉ kinh doanh của khách hàng SME**:
+   - Nếu hồ sơ đã đến P9: Chuyển line 2 hỗ trợ cập nhật.
+
+Vui lòng tham khảo các hình ảnh hướng dẫn trong hệ thống nếu cần thêm thông tin chi tiết.",2c013b19-fa71-4869-9090-f0e6a4270ee1,7,6,10,10,10,8.6,"Agent đã bao phủ các thông tin chính từ câu trả lời chuẩn về việc chỉnh sửa địa chỉ ở bước P2, P8 và tạo ITSM ở bước P9. Tuy nhiên, agent đã thêm thông tin không có trong câu trả lời chuẩn về cách xử lý với người đồng vay và địa chỉ kinh doanh của khách hàng SME (điểm 3 và 4). Mặc dù thông tin bổ sung có thể hữu ích, nhưng không thể xác minh được độ chính xác từ câu trả lời chuẩn. Về định dạng và cấu trúc, agent trình bày rất rõ ràng với các đánh số, in đậm các phần quan trọng. Ngôn ngữ sử dụng chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng."
+Quy trình chỉnh sửa thông tin Tên của khách hàng trên hệ thống ACL?,"Nếu KH là KH hiện hữu đã có CIF ở VIB, RM thông báo với KH cần ra quầy cập nhật thông tin trên CIF, sau đó chuyển hồ sơ vay về P1 và đẩy lên lại, hoặc Tạo mới lại hồ sơ vay khác. Nếu KH là KH tạo mới ở ACL. RM thực hiện chuyển hồ sơ vay về P1 hoặc P2 để có thể tự chỉnh sửa thông tin Tên Khách hàng. Lưu ý: Việc chỉnh sửa tên của KH không làm thay đổi tên KH ở phần Mô tả nhiệm vụ, mục Mô tả nhiệm vụ không ảnh hưởng tới thông tin hồ sơ giải ngân nhưng nếu bắt buộc phải chỉnh sửa, RM vui lòng tạo lại hồ sơ vay mới.","Quy trình chỉnh sửa thông tin Tên của khách hàng trên hệ thống ACL Lending phụ thuộc vào trạng thái hiện tại của hồ sơ:
+
+1. **Đối với hồ sơ chưa đến bước P9:**
+   - **Bước 1:** Kiểm tra tên khách hàng trên hồ sơ và trên Core
+   - **Bước 2:** Xác định nguyên nhân sai sót:
+     - Nếu tên trên Core là tên sai: Phản hồi người dùng cần sửa trên Core trước, sau đó trả hồ sơ về P1 và đẩy lên lại để link thông tin mới
+     - Nếu tên trên Core đã đúng: Phản hồi người dùng trả hồ sơ về P1 và đẩy lên lại để link thông tin mới
+
+2. **Đối với khách hàng hiện hữu đã có CIF ở VIB:**
+   - RM thông báo với khách hàng cần ra quầy cập nhật thông tin trên CIF
+   - Sau đó chuyển hồ sơ vay về P1 và đẩy lên lại, hoặc tạo mới lại hồ sơ vay khác
+
+3. **Đối với khách hàng tạo mới ở ACL:**
+   - RM thực hiện chuyển hồ sơ vay về P1 hoặc P2 để có thể tự chỉnh sửa thông tin Tên Khách hàng
+
+**Lưu ý quan trọng:** Việc chỉnh sửa tên của khách hàng không làm thay đổi tên khách hàng ở phần Mô tả nhiệm vụ. Mục Mô tả nhiệm vụ không ảnh hưởng tới thông tin hồ sơ giải ngân, nhưng nếu bắt buộc phải chỉnh sửa, RM vui lòng tạo lại hồ sơ vay mới.
+
+Bạn cần tôi làm rõ bước nào trong quy trình này không?",16b13477-ccc2-4996-b58e-3a30fcf74c1e,8,7,10,10,9,8.8,"Agent đã bao phủ tất cả thông tin quan trọng từ câu trả lời chuẩn, bao gồm quy trình xử lý cho KH hiện hữu và KH mới, cũng như lưu ý về phần Mô tả nhiệm vụ. Tuy nhiên, agent đã thêm thông tin về 'Đối với hồ sơ chưa đến bước P9' và các bước chi tiết không có trong câu trả lời chuẩn, có thể gây nhầm lẫn. Định dạng rất rõ ràng với các đề mục, đánh số và in đậm phù hợp. Ngôn ngữ chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng. Agent có câu hỏi cuối cùng để xác nhận nhu cầu hỗ trợ thêm, thể hiện khả năng xử lý tốt."
+Làm thế nào để giải chấp tài sản khi khách hàng đổi tài sản?,"Tình trạng: toàn bộ liên kết của tài sản với các Mã hồ sơ vay đều ở trạng thái Đã hủy liên kết Xem chi tiết tài sản: Tab Thông tin phân bổ trên tài sản còn PPID liên kết với trạng thái ""Đã hủy liên kết"" Tạo yêu cầu giải chấp tài sản (P8-TS)","Để giải chấp tài sản khi khách hàng đổi tài sản, bạn cần thực hiện các bước sau:
+
+1. Đối với hồ sơ đang ở bước P8 (giải chấp) mà cần đổi sang tài sản thế chấp khác:
+   - Trả hồ sơ về bước P2
+   - Thực hiện liên kết lại tài sản đúng
+
+2. Trường hợp cần thay đổi tỷ lệ phân bổ tài sản:
+   - Tạo yêu cầu ""Đề xuất thay đổi điều kiện phê duyệt""
+   - Chọn loại yêu cầu ""Thay đổi tỷ lệ phân bổ"" để chỉnh lại giá trị phân bổ
+
+3. Lưu ý khi giải chấp tài sản:
+   - Kiểm tra trạng thái tài sản (phải ở trạng thái hiệu lực)
+   - Tài sản mới qua bước định giá, chưa được nhập kho thì không giải chấp được
+   - Nếu tài sản đã chuyển chi nhánh, cần đảm bảo không còn nhiệm vụ pending ở chi nhánh cũ
+
+Bạn cần tôi làm rõ bước nào trong quy trình này không?",a322f826-e459-4581-ade1-3db6e3a652d9,4,3,9,9,8,6.6,"Câu trả lời của agent không phản ánh chính xác thông tin từ câu trả lời chuẩn. True answer đề cập đến việc kiểm tra trạng thái liên kết tài sản ('Đã hủy liên kết'), xem chi tiết tài sản trong tab Thông tin phân bổ, và tạo yêu cầu giải chấp tài sản (P8-TS). Tuy nhiên, agent đưa ra quy trình hoàn toàn khác về việc trả hồ sơ về bước P2, thay đổi tỷ lệ phân bổ và các lưu ý không có trong câu trả lời chuẩn. Định dạng và cấu trúc câu trả lời rất tốt với các đánh số rõ ràng, ngôn ngữ chuyên nghiệp và lịch sự. Agent có hỏi xem người dùng có cần làm rõ thêm không, thể hiện khả năng xử lý trường hợp không chắc chắn, nhưng thông tin cung cấp không khớp với câu trả lời chuẩn."
+Quy trình giải chấp tài sản khi khách hàng tất toán khoản vay trong ngày?,"Trường hợp 1: tất toán trong ngày (vay món đã giải ngân toàn bộ hoặc vay kinh doanh đã hết thời hạn giải ngân) --> thông tin phân bổ chưa giảm về 0 trên khoản vay và các tài sản đang liên kết + Trạng thái hồ sơ là Freezing/Đống băng hoặc Limit Expired/hết hạn hạn mức hoặc Disbursed/Đã giải ngân Cách xử lý Bước 1: Tạo yêu cầu thay đổi điều kiện phê duyệt, Thay đổi tỷ  lệ phân bổ  - Đẩy lên CA giảm số tiền phân bổ về 0 Bước 2: sau khi 1 hoàn thành mới Tạo yêu cầu giải chấp TS (P8.0-TS)  Trường hợp 2: tất toán với khoản vay kinh doanh còn hiệu lực --> trạng thái hồ sơ vay = Hiệu lực, thông tin phân bổ chưa giảm về 0 trên khoản vay và các tài sản đang liên kết Cách xử lý Bước 1: - Tạo yêu cầu thay đổi điều kiện phê duyệt, chọn Cập nhật trạng thái hạn mức - Chuyển trạng thái từ Active/Hiệu lực sang Inactive/Hết hiệu lực Bước 2: Tạo yêu cầu thay đổi điều kiện phê duyệt, Thay đổi tỷ  lệ phân bổ  - Đẩy lên CA giảm số tiền phân bổ về 0 Bước 3: sau khi 1&2 hoàn thành mới Tạo yêu cầu giải chấp TS (P8.0-TS)","Khi khách hàng tất toán khoản vay trong ngày và cần giải chấp tài sản, quy trình xử lý như sau:
+
+1. Trường hợp khách hàng tất toán trong ngày, đơn vị cần thực hiện 2 luồng sau:
+
+   - **Luồng 1: Thay đổi tỷ lệ phân bổ**
+     - Tạo yêu cầu thay đổi điều kiện phê duyệt
+     - Chọn ""Thay đổi tỷ lệ phân bổ""
+     - Đẩy lên CA giảm số tiền phân bổ về 0
+     - (Chi tiết có thể tham khảo tại Sheet 8.1, HDSD ACL trên intranet)
+
+   - **Luồng 2: Cập nhật trạng thái hạn mức**
+     - Tạo yêu cầu thay đổi điều kiện phê duyệt
+     - Chọn ""Cập nhật trạng thái hạn mức""
+     - Chuyển trạng thái từ Active/Hiệu lực sang Inactive/Hết hiệu lực
+     - (Chi tiết có thể tham khảo tại Sheet 7.1, HDSD ACL trên intranet)
+
+2. Sau khi thực hiện 2 luồng trên:
+   - Tài sản sẽ được hủy liên kết với khoản vay cũ
+   - Giá trị phân bổ sẽ được nhả
+   - Khoản vay cũ sẽ được chuyển sang trạng thái Hết hiệu lực
+
+Lưu ý: Hệ thống ACL đã có thể tự động cập nhật thông tin dư nợ tất toán trong ngày. Sau khi thu nợ và xuất tài sản xong, người dùng có thể tạo hồ sơ vay mới và chuyển hồ sơ vay lên bước P6 để kiểm tra lại HMRR.",03aac56c-a815-427a-b801-135f811b1a68,6,7,9,10,10,8.4,"Câu trả lời của agent thiếu một số thông tin quan trọng từ câu trả lời chuẩn. Cụ thể, agent không phân biệt rõ 2 trường hợp như trong câu trả lời chuẩn (vay món đã giải ngân toàn bộ/vay kinh doanh đã hết thời hạn giải ngân vs khoản vay kinh doanh còn hiệu lực). Agent cũng không đề cập đến bước cuối cùng là 'Tạo yêu cầu giải chấp TS (P8.0-TS)' sau khi hoàn thành các bước trước. Tuy nhiên, agent có thêm thông tin về hệ thống ACL tự động cập nhật thông tin dư nợ tất toán trong ngày, điều này không có trong câu trả lời chuẩn và có thể gây nhầm lẫn. Về mặt định dạng và cấu trúc, câu trả lời được trình bày rõ ràng với các đầu mục và gạch đầu dòng. Ngôn ngữ sử dụng chuyên nghiệp và phù hợp với ngữ cảnh ngân hàng."
+Làm thế nào xử lý khi TSBĐ không thỏa tiêu chí nhận tại VIB?,"ĐVKD thực hiện như sau: 1. ĐVKD nhập liệu đúng thông tin mô tả trong tab Khảo sát thực tế, bộ tiêu chí nhận được check tự động trên hệ thống  2. Hệ thống sẽ đánh giá và cảnh báo TSBĐ không thỏa tiêu của VIB và chuyển luồng phê duyệt hồ sơ tín dụng theo đúng Quy định 3. Trường hợp cấp phê duyệt chưa đúng, ĐVKD liên hệ RB - BO để được hỗ trợ","Khi TSBĐ không thỏa tiêu chí nhận tại VIB, ĐVKD cần thực hiện các bước sau:
+
+1. Trong tab Khảo sát thực tế, phần thông tin đánh giá TSBĐ:
+   - Lựa chọn ""Điều kiện nhận = Không phù hợp/Fail""
+   - Nhập chi tiết lý do TSBĐ không thỏa điều kiện nhận tại VIB theo danh sách LOV có sẵn trên hệ thống
+
+2. Hệ thống sẽ tự động:
+   - Đánh giá và cảnh báo TSBĐ không thỏa quy định nhận của VIB
+   - Chuyển luồng phê duyệt hồ sơ tín dụng lên UBTD (Ủy ban tín dụng)
+
+Trường hợp TSBĐ có lỗi ngoại lệ không thỏa điều kiện nhận:
+- Đơn vị cần tìm lại tài sản và bắt đầu quy trình P2-định giá tài sản
+- Thực hiện định giá lại tài sản để nhập các thông tin còn thiếu
+- Nếu sau khi định giá xong vẫn bị lỗi ngoại lệ, cần liên hệ với phòng Chính sách TSĐB để được hỗ trợ",17934a38-c995-4d43-b623-ebc1207a57cb,7,6,10,10,10,8.6,"Agent đã bao phủ được các điểm chính từ câu trả lời chuẩn như việc nhập liệu thông tin, hệ thống tự động đánh giá và chuyển luồng phê duyệt, và hướng dẫn liên hệ để được hỗ trợ. Tuy nhiên, agent đã thêm nhiều thông tin chi tiết không có trong câu trả lời chuẩn như 'Lựa chọn Điều kiện nhận = Không phù hợp/Fail', 'Nhập chi tiết lý do TSBĐ', 'chuyển luồng phê duyệt lên UBTD', và phần 'Trường hợp TSBĐ có lỗi ngoại lệ'. Mặc dù thông tin bổ sung có thể hữu ích, nhưng không rõ liệu chúng có chính xác hoàn toàn không vì không có trong câu trả lời chuẩn. Agent cũng không đề cập đến việc 'Trường hợp cấp phê duyệt chưa đúng, ĐVKD liên hệ RB - BO để được hỗ trợ' như trong câu trả lời chuẩn. Định dạng và ngôn ngữ của câu trả lời rất tốt, rõ ràng và chuyên nghiệp."
+Quy trình chuyển đổi tài sản từ LOS lên ACL?,Áp dụng với sản phẩm Vay kinh doanh và bất động sản RM tạo đề xuất trên Sales Support RM chủ động kiểm tra kết quả chuyển đổi sau 17:30 hàng ngày,"Để chuyển đổi tài sản từ LOS lên ACL, bạn cần thực hiện theo quy trình sau:
+
+1. ĐVKD cần đăng ký chuyển đổi tài sản thông qua link: https://forms.office.com/pages/responsepage.aspx?id=u-gsZtuFoku6mL4iIxi4PlGNjKtP_5RDmbkm06G1PS1UNEwxRjRBMFJKVE1SSlNUR1VZS1ZHSkNNVS4u&route=shorturl
+
+2. Lưu ý về thời gian đăng ký:
+   - Đăng ký trước 11:30 AM để được xử lý trong ngày
+   - Nếu đăng ký sau thời gian này, việc chuyển đổi sẽ được thực hiện vào ngày làm việc tiếp theo
+   - Thời gian dự kiến hoàn thành chuyển đổi: 17h - 17h30
+
+3. Sau khi tài sản được chuyển từ LOS lên ACL, bạn có thể kiểm tra bằng cách xem trường ""Mã TSBĐ CBS"" (nếu có dữ liệu thì tài sản đã được chuyển từ LOS sang ACL).
+
+4. Nếu cần điều chỉnh thông tin tài sản sau khi chuyển từ LOS lên ACL:
+   - Đối với thay đổi chủ sở hữu: Tìm tài sản và bắt đầu quy trình P7 (cập nhật thông tin tài sản), kết thúc nhiệm vụ chọn mục đích ""thay đổi chủ sở hữu"" và đẩy lên CA để chỉnh sửa.
+   - Đối với thay đổi loại tài sản đảm bảo: Tìm tài sản và start luồng P7, chọn mục đích ""thay đổi loại tài sản đảm bảo"", rồi đẩy luồng lên CA maker.
+
+Bạn cần tôi làm rõ bước nào trong quy trình này không?",bee01b36-f754-4343-a90c-3817f8571093,3,2,9,9,8,6.2,"Câu trả lời của agent có nhiều thông tin không chính xác và không khớp với câu trả lời chuẩn. Câu trả lời chuẩn chỉ đề cập đến việc áp dụng cho sản phẩm Vay kinh doanh và bất động sản, RM tạo đề xuất trên Sales Support và kiểm tra kết quả sau 17:30 hàng ngày. Trong khi đó, agent đưa ra quy trình hoàn toàn khác với link đăng ký, thời gian xử lý, và các bước kiểm tra/điều chỉnh thông tin tài sản không có trong câu trả lời chuẩn. Agent đã tạo ra thông tin sai lệch (hallucination) nghiêm trọng. Mặc dù định dạng và ngôn ngữ tốt, nhưng nội dung hoàn toàn không chính xác so với câu trả lời chuẩn."
+Làm sao để trình tăng hạn mức khoản Vay kinh doanh bổ sung vốn lưu động (BSVLĐ) - Vay nhanh hiện hữu?,ĐVKD ( ĐV/Đơn vị) trình Hồ sơ vay mới trên ACL theo QĐsản phẩm (SP) 1021.LEN(2024) với cam kết tất toán Dư nợ vay nhanh trước giải ngân.,"Để trình tăng hạn mức khoản Vay kinh doanh bổ sung vốn lưu động (BSVLĐ) - Vay nhanh hiện hữu, bạn cần thực hiện quy trình ""Đề xuất thay đổi điều kiện phê duyệt"" trên hệ thống ACL Lending. Cụ thể:
+
+1. Vào Menu → Cho vay → Tạo mới → Đề xuất thay đổi điều kiện phê duyệt
+2. Tìm kiếm khách hàng cần thực hiện tăng hạn mức (theo ID)
+3. Chọn loại yêu cầu: ""Tái cấp hạn mức"" để điều chỉnh hạn mức
+4. Điền thông tin hạn mức mới (tăng lên so với hiện tại)
+5. Kiểm tra và điều chỉnh tỷ lệ LTV của tài sản đảm bảo nếu cần thiết
+6. Đẩy hồ sơ lên các cấp phê duyệt để hoàn tất phụ lục HĐTD
+
+Lưu ý:
+- Đối với sản phẩm Vay nhanh, LTV tối đa của khoản vay dự kiến phát sinh không được vượt LTV vay nhanh trước đó
+- Nếu là sản phẩm vay thường, bạn cần tạo request trên helpdesk và gửi đến Phòng QLTSBĐ để được hỗ trợ tư vấn
+- Hồ sơ cần đảm bảo có trạng thái là Hiệu lực để thực hiện tăng hạn mức",28be99d4-97be-4b45-af2b-67fc9c19faec,3,2,9,8,8,6.0,"Câu trả lời của agent hoàn toàn không phù hợp với câu trả lời chuẩn. Theo câu trả lời chuẩn, để tăng hạn mức khoản vay BSVLĐ - Vay nhanh hiện hữu, đơn vị kinh doanh cần trình hồ sơ vay mới trên ACL theo QĐ sản phẩm 1021.LEN(2024) với cam kết tất toán dư nợ vay nhanh trước giải ngân. Tuy nhiên, agent đã đưa ra một quy trình hoàn toàn khác là 'Đề xuất thay đổi điều kiện phê duyệt' với các bước chi tiết không có trong câu trả lời chuẩn. Agent đã tạo ra thông tin sai lệch về quy trình, các bước thực hiện và các lưu ý không có trong câu trả lời chuẩn. Mặc dù câu trả lời được định dạng tốt và ngôn ngữ chuyên nghiệp, nhưng nội dung hoàn toàn không chính xác so với câu trả lời chuẩn."
+Làm sao xử lý khi hồ sơ vay Doanh nghiệp siêu nhỏ (DNSN) vay kinh doanh bổ sung vốn lưu động (BSVLĐ) hiển thị cảnh báo không thỏa tiêu chí tài chính?,"QĐSP 1021.SME xét điều kiện tài chính theo Báo cáo tài chính nộp thuế, do đó ĐVKD ( ĐV/Đơn vị) nhập liệu Tax Report","Khi hồ sơ vay Doanh nghiệp siêu nhỏ (DNSN) vay kinh doanh bổ sung vốn lưu động (BSVLĐ) hiển thị cảnh báo không thỏa tiêu chí tài chính, bạn cần thực hiện các bước sau:
+
+1. **Kiểm tra DTI (tỷ lệ nợ trên thu nhập)**:
+   - Nếu hồ sơ đang ở bước P4: Kiểm tra lại thông tin DTI thu nhập
+   - Nếu hồ sơ đang ở bước P5: Kiểm tra các yếu tố sau:
+     - Tài sản đã hoàn thành định giá chưa
+     - LTV (tỷ lệ cho vay) được duyệt có đủ không
+     - Kiểm tra tài sản có đang được dùng đảm bảo cho nhiều khoản vay khác không (LTV phải bằng tổng LTV các món)
+     - Xem xét DTI thu nhập-chi phí
+
+2. **Kiểm tra kế hoạch kinh doanh**:
+   - Đối với hồ sơ vay hạn mức: Kiểm tra thông tin kế hoạch kinh doanh
+   - Xem xét số tiền đề xuất theo năng lực trả nợ
+
+3. **Kiểm tra tài sản đảm bảo**:
+   - Kiểm tra tài sản đã đi định giá xong chưa
+   - Xác nhận LTV được duyệt có đủ không
+   - Kiểm tra xem có đang trình nhiều hồ sơ cùng lúc không
+
+Nếu sau khi kiểm tra các yếu tố trên mà vẫn không giải quyết được vấn đề, bạn có thể liên hệ bộ phận hỗ trợ để được tư vấn thêm.",630bae5f-6e25-457d-a39f-020306f65b84,2,2,9,9,7,5.8,"Câu trả lời của agent hoàn toàn không đề cập đến nội dung chính trong câu trả lời chuẩn về việc 'QĐSP 1021.SME xét điều kiện tài chính theo Báo cáo tài chính nộp thuế, do đó ĐVKD (ĐV/Đơn vị) nhập liệu Tax Report'. Thay vào đó, agent đưa ra nhiều thông tin không liên quan như kiểm tra DTI, kế hoạch kinh doanh, tài sản đảm bảo mà không có trong câu trả lời chuẩn. Đây là một trường hợp hallucination nghiêm trọng khi agent tự tạo ra thông tin không có trong nguồn. Mặc dù định dạng và ngôn ngữ tốt, nhưng nội dung hoàn toàn sai lệch so với câu trả lời chuẩn. Agent nên đề xuất chuyển đến Admin khi không chắc chắn về thông tin."
