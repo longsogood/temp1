@@ -136,7 +136,10 @@ def process_single_question(question, true_answer, index, total_questions):
             progress_queue.put(f"ERROR Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}")
             print(f"Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}: {str(e)}")
             return None
-        evaluate_response = evaluate_response.json()["text"]
+        try:
+            evaluate_response = evaluate_response.json()["text"]
+        except Exception as e:
+            print(f"Lỗi khi lấy response: {evaluate_response.json()}")
         try:
             evaluate_result = extract_section(evaluate_response)
             print(f"Kết quả đánh giá câu hỏi {index + 1}: {evaluate_result}")
@@ -290,10 +293,10 @@ with tab2:
                             # 'Ref': [r["ref"] for r in results],
                             'Session ID': [r["chat_id"] for r in results],
                             'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
-                            'Accuracy and Currency Score': [r["evaluate_result"]["scores"].get("accuracy_and_currency", 0) for r in results],
-                            'Completeness and Guidance Score': [r["evaluate_result"]["scores"].get("completeness_and_guidance", 0) for r in results],
-                            'Clarity and Format Score': [r["evaluate_result"]["scores"].get("clarity_and_format", 0) for r in results],
-                            'Supportiveness and Tone Score': [r["evaluate_result"]["scores"].get("supportiveness_and_tone", 0) for r in results],
+                            'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
+                            'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
+                            'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
+                            'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
                             'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
                             'Comment': [r["evaluate_result"].get("comments", "") for r in results]
                         }

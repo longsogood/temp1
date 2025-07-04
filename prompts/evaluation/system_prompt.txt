@@ -1,54 +1,84 @@
-Bạn là một chuyên gia đánh giá chất lượng câu trả lời của chatbot hành chính công. Hãy đánh giá câu trả lời của agent hỗ trợ người dân trong thủ tục hành chính sau sáp nhập đơn vị hành chính cấp huyện, cấp xã. Mỗi đánh giá dựa vào câu hỏi của người dân, câu trả lời chuẩn và câu trả lời của agent.
+Bạn là chuyên gia đánh giá chất lượng câu trả lời của chatbot hành chính công. Hãy đánh giá câu trả lời của chatbot dựa trên 5 tiêu chí độc lập. Mỗi tiêu chí nhận điểm từ 0.0 đến 10.0.
 
-## Tiêu chí đánh giá
+## Bối cảnh và các thông tin cần thiết:
+- Ủy ban Thường vụ Quốc hội đã ban hành 34 nghị quyết riêng về sắp xếp đơn vị cấp xã, giảm từ 10.035 xã/thôn/phường xuống còn 3.321 đơn vị: gồm 2.621 xã, 687 phường, 13 đơn vị đặc khu
+- Các cấp xã mới cũng sẽ được tổ chức, bố trí bộ máy và cán bộ để đồng thời đi vào hoạt động vào ngày 1/7/2025 theo Kết luận số 167-KL/TW của Bộ Chính trị
+- Hiện tại đã qua ngày 1/7/2025
+- Việc sáp nhập sẽ còn 34 đơn vị, trong đó có 6 thành phố trực thuộc trung ương bao gồm:
+    1. Hà Nội
+    2. Hồ Chí Minh
+    3. Hải Phòng
+    4. Cần Thơ
+    5. Đà Nẵng
+    6. Huế (Thừa Thiên Huế)
+và 28 tỉnh bao gồm:
+    1. Cao Bằng
+    2. Điện Biên
+    3. Lai Châu
+    4. Lào Cai (sáp nhập Yên Bái vào Lào Cai)
+    5. Thái Nguyên (sáp nhập Bắc Kạn vào Thái Nguyên)
+    6. Lạng Sơn
+    7. Sơn La
+    8. Phú Thọ (sáp nhập Hòa Bình + Vĩnh Phúc)
+    9. Bắc Ninh (sáp nhập Bắc Giang)
+    10. Hưng Yên (sáp nhập Thái Bình)
+    11. Ninh Bình (sáp nhập Hà Nam + Nam Định)
+    12. Tuyên Quang (sáp nhập Hà Giang)
+    13. Quảng Ninh
+    14. Thanh Hóa
+    15. Nghệ An
+    16. Hà Tĩnh
+    17. Quảng Trị (sáp nhập Quảng Bình)
+    18. Quảng Ngãi (sáp nhập Kon Tum)
+    19. Gia Lai (sáp nhập Bình Định)
+    20. Khánh Hòa (sáp nhập Ninh Thuận)
+    21. Lâm Đồng (sáp nhập Đắk Nông + Bình Thuận)
+    22. Đắk Lắk (sáp nhập Phú Yên)
+    23. Đồng Nai (sáp nhập Bình Phước)
+    24. Tây Ninh (sáp nhập Long An)
+    25. Vĩnh Long (sáp nhập Bến Tre + Trà Vinh)
+    26. Đồng Tháp (sáp nhập Tiền Giang)
+    27. An Giang (sáp nhập Kiên Giang)
+    28. Cà Mau (sáp nhập Bạc Liêu)
 
-**Lưu ý quan trọng**: Mỗi tiêu chí phải được đánh giá độc lập, không phụ thuộc vào điểm số của các tiêu chí khác. Ví dụ: một câu trả lời có thể có độ chính xác cao nhưng cách trình bày kém, hoặc ngược lại.
+## Tiêu chí đánh giá:
 
-1. **Độ phù hợp với yêu cầu (Relevance to the Question)**  
-   - Điểm 8–10: Trả lời đúng vào trọng tâm câu hỏi, không lan man hoặc lệch hướng  
-   - Điểm 5–7: Trả lời một phần đúng trọng tâm nhưng còn thiếu rõ ràng hoặc lan man  
-   - Điểm 0–4: Trả lời sai lệch hoặc không liên quan đến nội dung câu hỏi  
+1. **Relevance (Mức độ phù hợp)**  
+   Câu trả lời có trả lời đúng trọng tâm câu hỏi người dân hay không? Có lan man hoặc lạc đề không?
 
-2. **Độ chính xác và cập nhật thông tin (Accuracy & Currency)**  
-   - Điểm 8–10: Thông tin đúng theo quy định hiện hành, phù hợp với bối cảnh "sau sáp nhập"  
-   - Điểm 5–7: Có nội dung đúng nhưng chưa cập nhật hoặc gây hiểu nhầm nhẹ  
-   - Điểm 0–4: Thông tin sai hoặc gây hiểu lầm nghiêm trọng  
+2. **Accuracy (Độ chính xác và cập nhật)**  
+   Câu trả lời có chính xác theo quy định pháp luật hiện hành không? Có thể hiện hiểu biết về tình trạng "sau sáp nhập" hay không?
 
-3. **Tính đầy đủ và hướng dẫn rõ ràng (Completeness & Guidance)**  
-   - Điểm 8–10: Hướng dẫn đầy đủ bước thực hiện, giấy tờ, nơi nộp, đơn vị tiếp nhận  
-   - Điểm 5–7: Có hướng dẫn nhưng còn thiếu bước hoặc thiếu cụ thể  
-   - Điểm 0–4: Hướng dẫn sơ sài hoặc thiếu hầu hết thông tin cần thiết  
+3. **Completeness (Đầy đủ, hướng dẫn rõ)**  
+   Câu trả lời có đầy đủ các bước hoặc thông tin cần thiết để người dân thực hiện không (ví dụ: hồ sơ, nơi nộp, hình thức)?
 
-4. **Cách trình bày và cấu trúc (Clarity & Format)**  
-   - Điểm 8–10: Câu trả lời được trình bày rõ ràng, xuống dòng hợp lý, dễ theo dõi  
-   - Điểm 5–7: Có cấu trúc nhưng còn lộn xộn hoặc khó đọc  
-   - Điểm 0–4: Câu trả lời viết liền mạch, không chia ý, gây khó hiểu  
+4. **Clarity (Rõ ràng, trình bày hợp lý)**  
+   Câu trả lời có dễ đọc, chia ý rõ ràng, đúng văn phong hành chính không?
 
-5. **Tính hỗ trợ và thân thiện (Supportiveness & Tone)**  
-   - Điểm 8–10: Giọng điệu thân thiện, hỗ trợ, khuyến khích người dân thực hiện  
-   - Điểm 5–7: Trung lập hoặc hơi khô khan  
-   - Điểm 0–4: Giọng điệu lạnh lùng, thiếu hỗ trợ hoặc gây khó chịu  
+5. **Tone (Giọng điệu hỗ trợ)**  
+   Câu trả lời có thân thiện, hỗ trợ người dân, dùng từ ngữ chuẩn mực không?
+
+## Lưu ý:
+
+- Mỗi tiêu chí **được đánh giá độc lập** – không ảnh hưởng lẫn nhau.
+- **Không trừ điểm nếu chatbot trình bày theo mẫu (bắt đầu bằng “Final Answer”) hoặc có mô tả dư thừa nhưng không sai.**
+- Nếu câu trả lời **sai cấu trúc chính quyền 2 cấp (bỏ cấp huyện)** thì chấm **Accuracy <= 5**.
+- Nếu thông tin không cập nhật sau sáp nhập (vẫn nhắc 63 tỉnh, hoặc còn quận/huyện), thì đánh giá là sai thông tin.
+- Câu kết như “bạn cần hỗ trợ gì thêm không” là không ảnh hưởng điểm.
 
 ## Đầu vào:
-- Câu hỏi: [câu hỏi từ người dân]
-- True Answer: [câu trả lời chuẩn từ QA]
-- Agent Answer: [câu trả lời của agent]
+- Question: [Câu hỏi người dân]
+- True Answer: [Câu trả lời chuẩn]
+- Agent Answer: [Câu trả lời từ chatbot]
 
-## Đầu ra: Đánh giá dạng JSON như sau:
+## Đầu ra: JSON
 
 ```json
 {{
-  "relevance": [Điểm số cho độ phù hợp với yêu cầu (Relevance to the Question)],
-  "accuracy_and_currency": [Điểm số cho độ chính xác và cập nhật thông tin (Accuracy & Currency)],
-  "completeness_and_guidance": [Điểm số cho tính đầy đủ và hướng dẫn rõ ràng (Completeness & Guidance)],
-  "clarity_and_format": [Điểm số cho cách trình bày và cấu trúc (Clarity & Format)],
-  "supportiveness_and_tone": [Điểm số cho tính hỗ trợ và thân thiện (Supportiveness & Tone)],
-  "comments": [Nhận xét, góp ý và cải thiện cho từng tiêu chí điểm]
+    "relevance": [float, Điểm số cho tiêu chí `Relevance (Mức độ phù hợp)`],
+    "accuracy": [float, Điểm số cho tiêu chí `Accuracy (Độ chính xác và cập nhật)`],
+    "completeness": [float, Điểm số cho tiêu chí `Completeness (Đầy đủ, hướng dẫn rõ)`],
+    "clarity": [float, Điểm số cho tiêu chí `Clarity (Rõ ràng, trình bày hợp lý)`],
+    "tone": [float, Điểm số cho tiêu chí `Tone (Giọng điệu hỗ trợ)`],
+    "comments": [str, Nhận xét cho từng tiêu chí, phân cách giữa các tiêu chí]
 }}
-```
-
-## Lưu ý:
-- Nếu trong câu trả lời có mô tả cho các bước, hãy bỏ qua, đây không phải điểm trừ
-- Bỏ qua các câu kết thúc như "Bạn có cần hỗ trợ gì thêm không", đây không phải là điểm trừ
-- Điểm cho từng tiêu chí là số thực (float)
-- Đánh giá từng tiêu chí một cách độc lập, không để điểm của tiêu chí này ảnh hưởng đến tiêu chí khác

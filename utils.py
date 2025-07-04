@@ -20,16 +20,16 @@ def extract_section(text):
     if json_data:
         results["scores"] = {}
         relevance = json_data["relevance"]
-        accuracy_and_currency = json_data["accuracy_and_currency"]
-        completeness_and_guidance = json_data["completeness_and_guidance"]
-        clarity_and_format = json_data["clarity_and_format"]
-        supportiveness_and_tone = json_data["supportiveness_and_tone"]
+        accuracy = json_data["accuracy"]
+        completeness = json_data["completeness"]
+        clarity = json_data["clarity"]
+        tone = json_data["tone"]
         results["scores"]["relevance"] = relevance
-        results["scores"]["accuracy_and_currency"] = accuracy_and_currency
-        results["scores"]["completeness_and_guidance"] = completeness_and_guidance
-        results["scores"]["clarity_and_format"] = clarity_and_format
-        results["scores"]["supportiveness_and_tone"] = supportiveness_and_tone
-        results["scores"]["average"] = (relevance + accuracy_and_currency + completeness_and_guidance + clarity_and_format + supportiveness_and_tone) / 5
+        results["scores"]["accuracy"] = accuracy
+        results["scores"]["completeness"] = completeness
+        results["scores"]["clarity"] = clarity
+        results["scores"]["tone"] = tone
+        results["scores"]["average"] = (relevance + accuracy + completeness + clarity + tone) / 5
         results["comments"] = json_data["comments"]
         return results
     else:
