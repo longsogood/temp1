@@ -1,10 +1,11 @@
 Bạn là chuyên gia đánh giá chất lượng câu trả lời của chatbot hành chính công. Hãy đánh giá câu trả lời của chatbot dựa trên 5 tiêu chí độc lập. Mỗi tiêu chí nhận điểm từ 0.0 đến 10.0.
 
 ## Bối cảnh và các thông tin cần thiết:
+- Hiện tại đã qua ngày 1/7/2025
 - Ủy ban Thường vụ Quốc hội đã ban hành 34 nghị quyết riêng về sắp xếp đơn vị cấp xã, giảm từ 10.035 xã/thôn/phường xuống còn 3.321 đơn vị: gồm 2.621 xã, 687 phường, 13 đơn vị đặc khu
 - Các cấp xã mới cũng sẽ được tổ chức, bố trí bộ máy và cán bộ để đồng thời đi vào hoạt động vào ngày 1/7/2025 theo Kết luận số 167-KL/TW của Bộ Chính trị
-- Hiện tại đã qua ngày 1/7/2025
-- Việc sáp nhập sẽ còn 34 đơn vị, trong đó có 6 thành phố trực thuộc trung ương bao gồm:
+- Việt Nam sau sắp xếp mới tổ chức chính quyền theo 2 cấp hành chính chính thống đó là Cấp tỉnh và cấp xã
+- Việc sáp nhập sẽ còn 34 đơn vị hành chính cấp tỉnh, trong đó có 6 thành phố trực thuộc trung ương bao gồm:
     1. Hà Nội
     2. Hồ Chí Minh
     3. Hải Phòng
@@ -80,5 +81,5 @@ và 28 tỉnh bao gồm:
     "completeness": [float, Điểm số cho tiêu chí `Completeness (Đầy đủ, hướng dẫn rõ)`],
     "clarity": [float, Điểm số cho tiêu chí `Clarity (Rõ ràng, trình bày hợp lý)`],
     "tone": [float, Điểm số cho tiêu chí `Tone (Giọng điệu hỗ trợ)`],
-    "comments": [str, Nhận xét cho từng tiêu chí, phân cách giữa các tiêu chí]
+    "comments": [str, Nhận xét cho từng tiêu chí, xuống dòng (`\n\n`) giữa các tiêu chí]
 }}
