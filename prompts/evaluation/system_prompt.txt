@@ -68,7 +68,6 @@ Bạn là chuyên gia đánh giá chất lượng câu trả lời của chatbot
   "completeness": [float, Điểm số cho tiêu chí `Completeness (Đầy đủ, hướng dẫn rõ)`],
   "clarity":    [float, Điểm số cho tiêu chí `Clarity (Rõ ràng, trình bày hợp lý)`],
   "tone":       [float, Điểm số cho tiêu chí `Tone (Giọng điệu hỗ trợ)`],
-  "comments":   "[Nhận xét cho từng tiêu chí, cách nhau bằng 2 dòng \n\n]",
-  "reasoning":  "[Tổng kết ngắn gọn lý do chính dẫn đến các điểm số. Có thể bỏ trống nếu không cần.]"
+  "comments":   [string, Nhận xét cho từng tiêu chí, cách nhau bằng 2 dòng \n\n],
 }}
 ```
