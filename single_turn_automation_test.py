@@ -42,12 +42,12 @@ def filter_results():
 
 # Cấu hình trang
 st.set_page_config(
-    page_title="VPCP Agent Testing",
+    page_title="HPDQ Agent Testing",
     page_icon="🤖",
     layout="wide"
 )
 GENERAL_PURPOSE_API_URL = st.text_input("GENERAL_PURPOSE_API_URL")
-VPCP_API_URL = st.text_input("VPCP_API_URL")
+HPDQ_API_URL = st.text_input("HPDQ_API_URL")
 
 # Tự động xác định số workers tối ưu
 CPU_COUNT = multiprocessing.cpu_count()
@@ -96,7 +96,7 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
             print("Đang gọi API...")
             response = session.post(url, json=payload, timeout=120, verify=False)
             response.raise_for_status()
-            # print("Gọi VPCP API thành công: ", response.json())
+            # print("Gọi HPDQ API thành công: ", response.json())
             return response
         except requests.exceptions.RequestException as e:
             if attempt == max_retries - 1:
@@ -107,20 +107,20 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
 def process_single_question(question, true_answer, index, total_questions):
     try:
         chat_id = str(uuid4())
-        vpcp_resposne = query_with_retry(VPCP_API_URL,
+        hpdq_response = query_with_retry(HPDQ_API_URL,
                                         {"question": question.replace("ACL", "ACL - Khách hàng cá nhân"),
                                          "overrideConfig": {
                                              "sessionId": chat_id
                                          }})
-        if not vpcp_resposne:
+        if not hpdq_response:
             progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {index + 1}")
             return None
-        vpcp_resposne = vpcp_resposne.json()["text"]
+        hpdq_response = hpdq_response.json()["text"]
         
         evaluate_human_prompt = evaluate_human_prompt_template.format(
             question=question,
             true_answer=true_answer.replace("ACL", "ACL - Khách hàng cá nhân"),
-            agent_answer=vpcp_resposne
+            agent_answer=hpdq_response
         )
         
         payload = {
@@ -154,7 +154,7 @@ def process_single_question(question, true_answer, index, total_questions):
             "chat_id": chat_id,
             "question": question,
             "true_answer": true_answer,
-            "vpcp_response": vpcp_resposne,
+            "hpdq_response": hpdq_response,
             "evaluate_result": evaluate_result,
             # "ref": ref
         }
@@ -201,7 +201,7 @@ def process_questions_batch(questions, true_answers):
 
 
 # Giao diện Streamlit
-st.title("🤖 VPCP Agent Testing")
+st.title("🤖 HPDQ Agent Testing")
 
 # Tạo các tab
 tab1, tab2 = st.tabs(["Test đơn lẻ", "Test hàng loạt"])
@@ -222,8 +222,8 @@ with tab1:
                 
                 # Hiển thị kết quả
                 st.subheader("Kết quả")
-                st.write("**Câu trả lời từ VPCP Agent:**")
-                st.write(result["vpcp_response"])
+                st.write("**Câu trả lời từ HPDQ Agent:**")
+                st.write(result["hpdq_response"])
                 
                 st.write("**Đánh giá:**")
                 scores = result["evaluate_result"]["scores"]
@@ -295,7 +295,7 @@ with tab2:
                         data = {
                             'Question': [r["question"] for r in results],
                             'True Answer': [r["true_answer"] for r in results],
-                            'Agent Answer': [r["vpcp_response"] for r in results],
+                            'Agent Answer': [r["hpdq_response"] for r in results],
                             # 'Ref': [r["ref"] for r in results],
                             'Session ID': [r["chat_id"] for r in results],
                             'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
