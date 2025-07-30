@@ -248,9 +248,15 @@ with tab2:
                 st.error("File Excel phải có ít nhất 2 cột: câu hỏi và câu trả lời chuẩn")
                 st.stop()
                 
-            questions = df.iloc[:, 1].tolist()
-            true_answers = df.iloc[:, 2].tolist()
+            questions = df.iloc[:, 0].tolist()
+            true_answers = df.iloc[:, 1].tolist()
             # refs = df.iloc[:,2].tolist()
+            
+            # Làm sạch DataFrame: loại bỏ các hàng có cell là null
+            clean_df = df.dropna(subset=[df.columns[0], df.columns[1]])
+            questions = clean_df.iloc[:, 0].tolist()
+            true_answers = clean_df.iloc[:, 1].tolist()
+            # refs = clean_df.iloc[:,2].tolist()
             
             # Tạo DataFrame để hiển thị
             display_df = pd.DataFrame({
