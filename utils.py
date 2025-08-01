@@ -17,6 +17,9 @@ def extract_json(response_text):
         except:
             obj = json_repair.loads(match.group(1))
         return obj
+    else:
+        obj = json_repair.loads(response_text)
+        return obj
     return None
 
 def extract_section(text):
