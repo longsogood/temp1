@@ -2,6 +2,7 @@ import requests
 import re
 from datetime import datetime
 import json
+import json_repair
 
 def query(API_URL, payload):
     response = requests.post(API_URL, json=payload)
@@ -11,7 +12,11 @@ def extract_json(response_text):
     pattern = r"```json\s*([\[{].*?[\]}])\s*```"
     match = re.search(pattern, response_text, re.DOTALL)
     if match:
-        return json.loads(match.group(1))
+        try:
+            obj = json.loads(match.group(1))
+        except:
+            obj = json_repair.loads(match.group(1))
+        return obj
     return None
 
 def extract_section(text):

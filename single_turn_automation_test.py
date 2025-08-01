@@ -108,7 +108,7 @@ def process_single_question(question, true_answer, index, total_questions):
     try:
         chat_id = str(uuid4())
         hpdq_response = query_with_retry(HPDQ_API_URL,
-                                        {"question": question.replace("ACL", "ACL - Khách hàng cá nhân"),
+                                        {"question": question,
                                          "overrideConfig": {
                                              "sessionId": chat_id
                                          }})
@@ -119,7 +119,7 @@ def process_single_question(question, true_answer, index, total_questions):
         
         evaluate_human_prompt = evaluate_human_prompt_template.format(
             question=question,
-            true_answer=true_answer.replace("ACL", "ACL - Khách hàng cá nhân"),
+            true_answer=true_answer,
             agent_answer=hpdq_response
         )
         
