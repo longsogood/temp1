@@ -211,29 +211,30 @@ with tab1:
     true_answer = st.text_area("Câu trả lời chuẩn:", height=200)
     add_chat_history = st.checkbox("Add chat history (giả lập đã cung cấp thông tin)")
 
-    # Khởi tạo session_state cho chat_history nếu chưa có
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = [
-            {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
-            {"role": "userMessage", "content": "[Cung cấp thông tin]"}
-        ]
+    # Reset chat_history nếu bỏ tick
+    if not add_chat_history:
+        st.session_state.chat_history = None
 
     if add_chat_history:
+        # Khởi tạo nếu chưa có
+        if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
+            st.session_state.chat_history = [
+                {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
+                {"role": "userMessage", "content": "[Cung cấp thông tin]"}
+            ]
         st.markdown("**Thiết lập chat history:**")
         to_delete = []
         for i, msg in enumerate(st.session_state.chat_history):
             cols = st.columns([2, 8, 1])
             with cols[0]:
-                role = st.selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
+                role = st.selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_{i}_{id(msg)}", index=["apiMessage", "userMessage"].index(msg["role"]))
             with cols[1]:
-                content = st.text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_{i}")
+                content = st.text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_{i}_{id(msg)}")
             with cols[2]:
-                if st.button("Xoá", key=f"delete_{i}"):
+                if st.button("Xoá", key=f"delete_{i}_{id(msg)}"):
                     to_delete.append(i)
-            # Cập nhật lại session_state nếu có chỉnh sửa
             st.session_state.chat_history[i]["role"] = role
             st.session_state.chat_history[i]["content"] = content
-        # Xoá các message được chọn
         for idx in sorted(to_delete, reverse=True):
             st.session_state.chat_history.pop(idx)
         if st.button("Thêm message"):
@@ -243,7 +244,7 @@ with tab1:
         if question and true_answer:
             progress_container = st.empty()
             progress_container.text("Đang xử lý...")
-            history = st.session_state.chat_history if add_chat_history else None
+            history = st.session_state.chat_history if (add_chat_history and st.session_state.chat_history) else None
             result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history, custom_history=history)
             
             if result:
