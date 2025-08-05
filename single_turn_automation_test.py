@@ -7,7 +7,7 @@ import concurrent.futures
 import os
 import multiprocessing
 from utils import extract_section
-from streamlit.runtime.scriptrunner_utils.script_run_context import add_script_run_ctx, get_script_run_ctx
+from streamlit.runtime.scriptrunner_utils.script_run_ctx import add_script_run_ctx, get_script_run_ctx
 import queue
 from uuid import uuid4
 from threading import Lock
@@ -165,7 +165,7 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         print(f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}")
         return None
 
-def process_questions_batch(questions, true_answers, add_chat_history=False):
+def process_questions_batch(questions, true_answers, add_chat_history=False, custom_history=None):
     results = []
     failed_questions = []
     
@@ -175,7 +175,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False):
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = []
         for i, (question, true_answer) in enumerate(zip(questions, true_answers)):
-            future = executor.submit(process_single_question, question, true_answer, i, len(questions), add_chat_history)
+            future = executor.submit(process_single_question, question, true_answer, i, len(questions), add_chat_history, custom_history)
             futures.append(future)
         
         # Hiển thị tiến trình tổng thể
@@ -343,7 +343,8 @@ with tab2:
             if st.button("Test hàng loạt"):
                 if len(selected_questions) > 0:
                     # Xử lý đa luồng
-                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, add_chat_history=add_chat_history_batch)
+                    history = st.session_state.chat_history if (add_chat_history_batch and st.session_state.chat_history) else None
+                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, add_chat_history=add_chat_history_batch, custom_history=history)
                     print("Đã xử lý đa luồng")
                     if results:
                         # Lưu kết quả vào session state
