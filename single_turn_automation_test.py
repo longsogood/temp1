@@ -104,21 +104,12 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
             time.sleep(delay * (attempt + 1))
     return None
 
-def process_single_question(question, true_answer, index, total_questions, add_chat_history=False):
+def process_single_question(question, true_answer, index, total_questions, add_chat_history=False, custom_history=None):
     try:
         chat_id = str(uuid4())
         site_payload = {"question": question, "overrideConfig": {"sessionId": chat_id}}
-        if add_chat_history:
-            site_payload["history"] = [
-                {
-                    "role": "apiMessage",
-                    "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."
-                },
-                {
-                    "role": "userMessage",
-                    "content": "[Cung cấp thông tin]"
-                }
-            ]
+        if add_chat_history and custom_history:
+            site_payload["history"] = custom_history
         site_response = query_with_retry(SITE_API_URL, site_payload)
         if not site_response:
             progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {index + 1}")
@@ -219,12 +210,41 @@ with tab1:
     question = st.text_area("Câu hỏi:", height=100)
     true_answer = st.text_area("Câu trả lời chuẩn:", height=200)
     add_chat_history = st.checkbox("Add chat history (giả lập đã cung cấp thông tin)")
-    
+
+    # Khởi tạo session_state cho chat_history nếu chưa có
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = [
+            {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
+            {"role": "userMessage", "content": "[Cung cấp thông tin]"}
+        ]
+
+    if add_chat_history:
+        st.markdown("**Thiết lập chat history:**")
+        to_delete = []
+        for i, msg in enumerate(st.session_state.chat_history):
+            cols = st.columns([2, 8, 1])
+            with cols[0]:
+                role = st.selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
+            with cols[1]:
+                content = st.text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_{i}")
+            with cols[2]:
+                if st.button("Xoá", key=f"delete_{i}"):
+                    to_delete.append(i)
+            # Cập nhật lại session_state nếu có chỉnh sửa
+            st.session_state.chat_history[i]["role"] = role
+            st.session_state.chat_history[i]["content"] = content
+        # Xoá các message được chọn
+        for idx in sorted(to_delete, reverse=True):
+            st.session_state.chat_history.pop(idx)
+        if st.button("Thêm message"):
+            st.session_state.chat_history.append({"role": "userMessage", "content": ""})
+
     if st.button("Test"):
         if question and true_answer:
             progress_container = st.empty()
             progress_container.text("Đang xử lý...")
-            result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history)
+            history = st.session_state.chat_history if add_chat_history else None
+            result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history, custom_history=history)
             
             if result:
                 progress_container.success("Xử lý thành công!")
