@@ -112,6 +112,7 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         site_payload = {"question": question, "overrideConfig": {"sessionId": chat_id}}
         if add_chat_history and custom_history:
             site_payload["history"] = custom_history
+        print(f"site_payload: {site_payload}")
         site_response = query_with_retry(SITE_API_URL, site_payload)
         if not site_response:
             progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {index + 1}")
