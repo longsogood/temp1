@@ -46,6 +46,8 @@ st.set_page_config(
     page_icon="🤖",
     layout="wide"
 )
+# Checkbox toàn cục cho cả hai tab
+add_chat_history_global = st.checkbox("Add chat history cho tất cả câu hỏi (giả lập đã cung cấp thông tin)")
 GENERAL_PURPOSE_API_URL = st.text_input("GENERAL_PURPOSE_API_URL")
 SITE_API_URL = st.text_input("TESTING_SITE_API_URL")
 
@@ -209,12 +211,11 @@ with tab1:
     st.subheader("Nhập câu hỏi và câu trả lời chuẩn")
     question = st.text_area("Câu hỏi:", height=100)
     true_answer = st.text_area("Câu trả lời chuẩn:", height=200)
-    add_chat_history = st.checkbox("Add chat history (giả lập đã cung cấp thông tin)")
-
+    # Sử dụng biến toàn cục thay cho checkbox riêng
+    add_chat_history = add_chat_history_global
     # Reset chat_history nếu bỏ tick
     if not add_chat_history:
         st.session_state.chat_history = None
-
     if add_chat_history:
         # Khởi tạo nếu chưa có
         if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
@@ -244,6 +245,7 @@ with tab1:
         if question and true_answer:
             progress_container = st.empty()
             progress_container.text("Đang xử lý...")
+            # Khi gửi API:
             history = st.session_state.chat_history if (add_chat_history and st.session_state.chat_history) else None
             result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history, custom_history=history)
             
@@ -267,10 +269,36 @@ with tab1:
 
 with tab2:
     st.subheader("Test hàng loạt từ file Excel")
+    # Không cần checkbox riêng nữa
+    # add_chat_history_batch = st.checkbox("Add chat history cho tất cả câu hỏi (giả lập đã cung cấp thông tin)")
+    add_chat_history_batch = add_chat_history_global
+    # Hiển thị phần chỉnh sửa chat history nếu có chọn
+    if add_chat_history_batch:
+        if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
+            st.session_state.chat_history = [
+                {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
+                {"role": "userMessage", "content": "[Cung cấp thông tin]"}
+            ]
+        st.markdown("**Thiết lập chat history cho tất cả câu hỏi:**")
+        to_delete = []
+        for i, msg in enumerate(st.session_state.chat_history):
+            cols = st.columns([2, 8, 1])
+            with cols[0]:
+                role = st.selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_batch_{i}_{id(msg)}", index=["apiMessage", "userMessage"].index(msg["role"]))
+            with cols[1]:
+                content = st.text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_batch_{i}_{id(msg)}")
+            with cols[2]:
+                if st.button("Xoá", key=f"delete_batch_{i}_{id(msg)}"):
+                    to_delete.append(i)
+            st.session_state.chat_history[i]["role"] = role
+            st.session_state.chat_history[i]["content"] = content
+        for idx in sorted(to_delete, reverse=True):
+            st.session_state.chat_history.pop(idx)
+        if st.button("Thêm message", key="add_message_batch"):
+            st.session_state.chat_history.append({"role": "userMessage", "content": ""})
     
     # Thêm chức năng tải lên file
     uploaded_file = st.file_uploader("Chọn file Excel", type=['xlsx', 'xls'])
-    add_chat_history_batch = st.checkbox("Add chat history cho tất cả câu hỏi (giả lập đã cung cấp thông tin)")
     
     if uploaded_file is not None:
         try:
