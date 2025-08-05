@@ -104,14 +104,22 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
             time.sleep(delay * (attempt + 1))
     return None
 
-def process_single_question(question, true_answer, index, total_questions):
+def process_single_question(question, true_answer, index, total_questions, add_chat_history=False):
     try:
         chat_id = str(uuid4())
-        site_response = query_with_retry(SITE_API_URL,
-                                        {"question": question,
-                                         "overrideConfig": {
-                                             "sessionId": chat_id
-                                         }})
+        site_payload = {"question": question, "overrideConfig": {"sessionId": chat_id}}
+        if add_chat_history:
+            site_payload["history"] = [
+                {
+                    "role": "apiMessage",
+                    "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."
+                },
+                {
+                    "role": "userMessage",
+                    "content": "[Cung cấp thông tin]"
+                }
+            ]
+        site_response = query_with_retry(SITE_API_URL, site_payload)
         if not site_response:
             progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {index + 1}")
             return None
@@ -163,7 +171,7 @@ def process_single_question(question, true_answer, index, total_questions):
         print(f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}")
         return None
 
-def process_questions_batch(questions, true_answers):
+def process_questions_batch(questions, true_answers, add_chat_history=False):
     results = []
     failed_questions = []
     
@@ -173,7 +181,7 @@ def process_questions_batch(questions, true_answers):
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = []
         for i, (question, true_answer) in enumerate(zip(questions, true_answers)):
-            future = executor.submit(process_single_question, question, true_answer, i, len(questions))
+            future = executor.submit(process_single_question, question, true_answer, i, len(questions), add_chat_history)
             futures.append(future)
         
         # Hiển thị tiến trình tổng thể
@@ -210,12 +218,13 @@ with tab1:
     st.subheader("Nhập câu hỏi và câu trả lời chuẩn")
     question = st.text_area("Câu hỏi:", height=100)
     true_answer = st.text_area("Câu trả lời chuẩn:", height=200)
+    add_chat_history = st.checkbox("Add chat history (giả lập đã cung cấp thông tin)")
     
     if st.button("Test"):
         if question and true_answer:
             progress_container = st.empty()
             progress_container.text("Đang xử lý...")
-            result = process_single_question(question, true_answer, 0, 1)
+            result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history)
             
             if result:
                 progress_container.success("Xử lý thành công!")
@@ -240,6 +249,7 @@ with tab2:
     
     # Thêm chức năng tải lên file
     uploaded_file = st.file_uploader("Chọn file Excel", type=['xlsx', 'xls'])
+    add_chat_history_batch = st.checkbox("Add chat history cho tất cả câu hỏi (giả lập đã cung cấp thông tin)")
     
     if uploaded_file is not None:
         try:
@@ -283,7 +293,7 @@ with tab2:
             if st.button("Test hàng loạt"):
                 if len(selected_questions) > 0:
                     # Xử lý đa luồng
-                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers)
+                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, add_chat_history=add_chat_history_batch)
                     print("Đã xử lý đa luồng")
                     if results:
                         # Lưu kết quả vào session state
