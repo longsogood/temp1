@@ -7,7 +7,7 @@ import concurrent.futures
 import os
 import multiprocessing
 from utils import extract_section
-from streamlit.runtime.scriptrunner_utils.script_run_ctx import add_script_run_ctx, get_script_run_ctx
+from streamlit.runtime.scriptrunner_utils.script_run_context import add_script_run_ctx, get_script_run_ctx
 import queue
 from uuid import uuid4
 from threading import Lock
