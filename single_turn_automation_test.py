@@ -42,12 +42,12 @@ def filter_results():
 
 # Cấu hình trang
 st.set_page_config(
-    page_title="HPDQ Agent Testing",
+    page_title="Agent Testing",
     page_icon="🤖",
     layout="wide"
 )
 GENERAL_PURPOSE_API_URL = st.text_input("GENERAL_PURPOSE_API_URL")
-HPDQ_API_URL = st.text_input("HPDQ_API_URL")
+SITE_API_URL = st.text_input("TESTING_SITE_API_URL")
 
 # Tự động xác định số workers tối ưu
 CPU_COUNT = multiprocessing.cpu_count()
@@ -107,20 +107,20 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
 def process_single_question(question, true_answer, index, total_questions):
     try:
         chat_id = str(uuid4())
-        hpdq_response = query_with_retry(HPDQ_API_URL,
+        site_response = query_with_retry(SITE_API_URL,
                                         {"question": question,
                                          "overrideConfig": {
                                              "sessionId": chat_id
                                          }})
-        if not hpdq_response:
+        if not site_response:
             progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {index + 1}")
             return None
-        hpdq_response = hpdq_response.json()["text"]
+        site_response = site_response.json()["text"]
         
         evaluate_human_prompt = evaluate_human_prompt_template.format(
             question=question,
             true_answer=true_answer,
-            agent_answer=hpdq_response
+            agent_answer=site_response
         )
         
         payload = {
@@ -154,7 +154,7 @@ def process_single_question(question, true_answer, index, total_questions):
             "chat_id": chat_id,
             "question": question,
             "true_answer": true_answer,
-            "hpdq_response": hpdq_response,
+            "site_response": site_response,
             "evaluate_result": evaluate_result,
             # "ref": ref
         }
@@ -201,7 +201,7 @@ def process_questions_batch(questions, true_answers):
 
 
 # Giao diện Streamlit
-st.title("🤖 HPDQ Agent Testing")
+st.title("🤖 Agent Testing")
 
 # Tạo các tab
 tab1, tab2 = st.tabs(["Test đơn lẻ", "Test hàng loạt"])
@@ -222,8 +222,8 @@ with tab1:
                 
                 # Hiển thị kết quả
                 st.subheader("Kết quả")
-                st.write("**Câu trả lời từ HPDQ Agent:**")
-                st.write(result["hpdq_response"])
+                st.write("**Câu trả lời từ Agent:**")
+                st.write(result["site_response"])
                 
                 st.write("**Đánh giá:**")
                 scores = result["evaluate_result"]["scores"]
@@ -295,7 +295,7 @@ with tab2:
                         data = {
                             'Question': [r["question"] for r in results],
                             'True Answer': [r["true_answer"] for r in results],
-                            'Agent Answer': [r["hpdq_response"] for r in results],
+                            'Agent Answer': [r["site_response"] for r in results],
                             # 'Ref': [r["ref"] for r in results],
                             'Session ID': [r["chat_id"] for r in results],
                             'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
