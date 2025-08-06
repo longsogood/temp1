@@ -117,6 +117,7 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         if not site_response:
             progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {index + 1}")
             return None
+        time.sleep(5)  # Thêm delay 5 giây sau khi gửi request tới site API
         site_response = site_response.json()["text"]
         
         evaluate_human_prompt = evaluate_human_prompt_template.format(
@@ -138,6 +139,7 @@ def process_single_question(question, true_answer, index, total_questions, add_c
             progress_queue.put(f"ERROR Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}")
             print(f"Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}: {str(e)}")
             return None
+        time.sleep(5)  # Thêm delay 5 giây sau khi gửi request tới evaluate API
         try:
             evaluate_response = evaluate_response.json()["text"]
         except Exception as e:
