@@ -56,12 +56,12 @@ Người dùng sẽ cung cấp bối cảnh cụ thể cho từng trường hợ
 ## Output format: JSON
 Trả về chuỗi JSON hợp lệ có format như sau:
 ```json
-{
-{  "relevance":  [float, Điểm số cho tiêu chí `Relevance (Mức độ phù hợp)`],
+{{
+  "relevance":  [float, Điểm số cho tiêu chí `Relevance (Mức độ phù hợp)`],
   "accuracy":   [float, Điểm số cho tiêu chí `Accuracy (Độ chính xác)`],
   "completeness": [float, Điểm số cho tiêu chí `Completeness (Đầy đủ, rõ ràng)`],
   "clarity":    [float, Điểm số cho tiêu chí `Clarity (Rõ ràng, trình bày hợp lý)`],
   "tone":       [float, Điểm số cho tiêu chí `Tone (Giọng điệu phù hợp)`],
   "comments":   [string, Nhận xét cho từng tiêu chí, cách nhau bằng 2 lần xuống dòng, lưu ý hãy escape ký tự xuống dòng để đảm bảo chuỗi JSON hợp lệ],
-}
+}}
 ```

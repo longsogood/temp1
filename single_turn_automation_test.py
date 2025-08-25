@@ -118,7 +118,7 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         site_response = query_with_retry(SITE_API_URL, site_payload)
         if not site_response:
             progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {index + 1}")
-            return None
+            return site_response.text
         time.sleep(5)  # Thêm delay 5 giây sau khi gửi request tới site API
         site_response = site_response.json()["text"]
         
@@ -140,19 +140,19 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         if not evaluate_response:
             progress_queue.put(f"ERROR Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}")
             print(f"Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}")
-            return None
+            return f"Lỗi khi đánh giá câu trả lời cho câu hỏi: {evaluate_response.text}"
         time.sleep(5)  # Thêm delay 5 giây sau khi gửi request tới evaluate API
         try:
-            evaluate_response = evaluate_response.json()["text"]
+            evaluate_response = evaluate_response.text
         except Exception as e:
-            print(f"Lỗi khi lấy response: {evaluate_response.json()}")
+            print(f"Lỗi khi lấy response: {evaluate_response}")
         try:
             evaluate_result = extract_section(evaluate_response)
-            print(f"Kết quả đánh giá câu hỏi {index + 1}: {evaluate_result}")
+            print(f"Kết quả đánh giá câu hỏi {index + 1}: {evaluate_response}")
         except Exception as e:
             st.error(f"Lỗi khi trích xuất kết quả đánh giá: {str(e)}")
             print(f"Lỗi khi trích xuất kết quả đánh giá: {str(e)}")
-            return None
+            return f"Lỗi khi trích xuất kết quả đánh giá: {str(e)}"
         
         progress_queue.put(f"SUCCESS Đã xử lý thành công câu hỏi {index + 1}/{total_questions}")
         print(f"Đã xử lý thành công câu hỏi {index + 1}/{total_questions}: {evaluate_result}")
@@ -169,11 +169,11 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         
         progress_queue.put(f"ERROR Lỗi khi xử lý câu hỏi {index + 1}: {error_message}")
         print(f"Lỗi khi xử lý câu hỏi {index + 1}: {error_message}")
-        return None
+        return f"Lỗi khi xử lý câu hỏi {index + 1}: {error_message}"
     except Exception as e:
         progress_queue.put(f"ERROR Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}")
         print(f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}")
-        return None
+        return f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}"
 
 def process_questions_batch(questions, true_answers, add_chat_history=False, custom_history=None):
     results = []
@@ -202,21 +202,11 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
         for i, future in enumerate(futures):
             try:
                 result = future.result()
-                if result:
+                if isinstance(result, dict):
                     print("Cập nhật kết quả...")
                     results.append(result)
                 else:
-                    # Thêm kết quả lỗi vào danh sách kết quả với thông tin chi tiết về lỗi
-                    error_message = "Không thể xử lý câu hỏi này"
-                    try:
-                        # Lấy thông tin lỗi từ future nếu có
-                        if future.exception():
-                            error_message = str(future.exception())
-                        else:
-                            error_message = "Lỗi không xác định khi xử lý câu hỏi"
-                    except Exception as e:
-                        error_message = f"Lỗi: {str(e)}"
-                        
+                    # Thêm kết quả lỗi vào danh sách kết quả với thông tin chi tiết về lỗi                        
                     error_result = {
                         "chat_id": str(uuid4()),
                         "question": questions[i],
