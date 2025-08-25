@@ -67,8 +67,8 @@ session.mount('https://', requests.adapters.HTTPAdapter(
 # Load prompts
 try:
     # evaluate_prompt = json.load(open("prompts/evaluation/prompt.json", "r"))
-    evaluate_system_prompt = open("prompts/evaluation/system_prompt.txt").read()
-    evaluate_human_prompt_template = open("prompts/evaluation/human_prompt.txt").read()
+    evaluate_system_prompt = open("prompts/evaluation/system_prompt.txt", encoding="utf-8").read()
+    evaluate_human_prompt_template = open("prompts/evaluation/human_prompt.txt", encoding="utf-8").read()
 except Exception as e:
     st.error(f"Lỗi khi đọc file prompt: {str(e)}")
     st.stop()
@@ -102,6 +102,8 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
             return response
         except requests.exceptions.RequestException as e:
             if attempt == max_retries - 1:
+                # Lưu thông tin lỗi chi tiết vào exception để hiển thị sau này
+                print(f"Lỗi API sau {max_retries} lần thử: {str(e)}")
                 raise
             time.sleep(delay * (attempt + 1))
     return None
@@ -137,7 +139,7 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         evaluate_response = query_with_retry(GENERAL_PURPOSE_API_URL, payload)
         if not evaluate_response:
             progress_queue.put(f"ERROR Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}")
-            print(f"Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}: {str(e)}")
+            print(f"Lỗi khi đánh giá câu trả lời cho câu hỏi {index + 1}")
             return None
         time.sleep(5)  # Thêm delay 5 giây sau khi gửi request tới evaluate API
         try:
@@ -162,6 +164,12 @@ def process_single_question(question, true_answer, index, total_questions, add_c
             "evaluate_result": evaluate_result,
             # "ref": ref
         }
+    except requests.exceptions.RequestException as e:
+        error_message = f"Lỗi API: {str(e)}"
+        
+        progress_queue.put(f"ERROR Lỗi khi xử lý câu hỏi {index + 1}: {error_message}")
+        print(f"Lỗi khi xử lý câu hỏi {index + 1}: {error_message}")
+        return None
     except Exception as e:
         progress_queue.put(f"ERROR Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}")
         print(f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}")
@@ -191,15 +199,67 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
         # Cập nhật lần cuối
         update_progress(progress_container, len(questions))
         
-        for future in futures:
+        for i, future in enumerate(futures):
             try:
                 result = future.result()
                 if result:
                     print("Cập nhật kết quả...")
                     results.append(result)
+                else:
+                    # Thêm kết quả lỗi vào danh sách kết quả với thông tin chi tiết về lỗi
+                    error_message = "Không thể xử lý câu hỏi này"
+                    try:
+                        # Lấy thông tin lỗi từ future nếu có
+                        if future.exception():
+                            error_message = str(future.exception())
+                        else:
+                            error_message = "Lỗi không xác định khi xử lý câu hỏi"
+                    except Exception as e:
+                        error_message = f"Lỗi: {str(e)}"
+                        
+                    error_result = {
+                        "chat_id": str(uuid4()),
+                        "question": questions[i],
+                        "true_answer": true_answers[i],
+                        "site_response": "[Lỗi khi xử lý]",
+                        "evaluate_result": {
+                            "scores": {
+                                "relevance": 0,
+                                "accuracy": 0,
+                                "completeness": 0,
+                                "clarity": 0,
+                                "tone": 0,
+                                "average": 0
+                            },
+                            "comments": f"Lỗi khi xử lý câu hỏi này: {error_message}"
+                        }
+                    }
+                    results.append(error_result)
+                    failed_questions.append((questions[i], error_message))
             except Exception as e:
-                st.error(f"Lỗi khi thu thập kết quả: {str(e)}")
-                failed_questions.append((question, str(e)))
+                error_message = f"Lỗi: {str(e)}"
+                
+                st.error(error_message)
+                # Thêm kết quả lỗi vào danh sách kết quả với thông tin chi tiết về lỗi
+                error_result = {
+                    "chat_id": str(uuid4()),
+                    "question": questions[i],
+                    "true_answer": true_answers[i],
+                    "site_response": "[Lỗi khi xử lý]",
+                    "evaluate_result": {
+                        "scores": {
+                            "relevance": 0,
+                            "accuracy": 0,
+                            "completeness": 0,
+                            "clarity": 0,
+                            "tone": 0,
+                            "average": 0
+                        },
+                        "comments": error_message
+                    }
+                }
+                results.append(error_result)
+                failed_questions.append((questions[i], str(e)))
     
     return results, failed_questions
 
@@ -348,81 +408,82 @@ with tab2:
                     history = st.session_state.chat_history if (add_chat_history_batch and st.session_state.chat_history) else None
                     results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, add_chat_history=add_chat_history_batch, custom_history=history)
                     print("Đã xử lý đa luồng")
-                    if results:
-                        # Lưu kết quả vào session state
-                        st.session_state.results = results
+                    # Lưu kết quả vào session state (kể cả khi có lỗi)
+                    st.session_state.results = results
+                    
+                    with open("results.pkl", "wb") as f:
+                        pickle.dump(results, f)
+                    # Tạo DataFrame từ kết quả
+                    data = {
+                        'Question': [r["question"] for r in results],
+                        'True Answer': [r["true_answer"] for r in results],
+                        'Agent Answer': [r["site_response"] for r in results],
+                        # 'Ref': [r["ref"] for r in results],
+                        'Session ID': [r["chat_id"] for r in results],
+                        'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
+                        'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
+                        'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
+                        'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
+                        'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
+                        'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
+                        'Comment': [r["evaluate_result"].get("comments", "") for r in results]
+                    }
+                    print("Đã tạo DataFrame từ kết quả")
+                    results_df = pd.DataFrame(data)
+                    
+                    # Lưu DataFrame vào session state
+                    st.session_state.results_df = results_df
+                    
+                    # Hiển thị kết quả
+                    st.subheader(f"Kết quả đánh giá ({len(results)} câu hỏi)")
+                    st.dataframe(results_df, use_container_width=True)
+                    
+                    # Thêm nút tải xuống kết quả
+                    st.download_button(
+                        label="Tải xuống kết quả",
+                        data=results_df.to_csv(index=False).encode('utf-8'),
+                        file_name='evaluation_results.csv',
+                        mime='text/csv'
+                    )
+                    
+                    # # Thêm phần lọc kết quả theo điểm
+                    # st.subheader("Lọc kết quả theo điểm")
+                    
+                    # # Lấy tất cả tiêu chí điểm
+                    # score_columns = [col for col in results_df.columns if 'Score' in col]
+                    
+                    # col1, col2 = st.columns(2)
+                    # with col1:
+                    #     selected_criterion = st.selectbox("Chọn tiêu chí điểm", score_columns)
+                    # with col2:
+                    #     threshold = st.slider("Ngưỡng điểm", 0.0, 10.0, 5.0, 0.5)
+                    
+                    # filter_type = st.radio("Loại lọc", ["Lớn hơn hoặc bằng", "Nhỏ hơn hoặc bằng"])
+                    
+                    # if st.button("Áp dụng bộ lọc"):
+                    #     # Lọc DataFrame dựa trên tiêu chí đã chọn
+                    #     if filter_type == "Lớn hơn hoặc bằng":
+                    #         filtered_df = results_df[results_df[selected_criterion] >= threshold]
+                    #     else:
+                    #         filtered_df = results_df[results_df[selected_criterion] <= threshold]
                         
-                        with open("results.pkl", "wb") as f:
-                            pickle.dump(results, f)
-                        # Tạo DataFrame từ kết quả
-                        data = {
-                            'Question': [r["question"] for r in results],
-                            'True Answer': [r["true_answer"] for r in results],
-                            'Agent Answer': [r["site_response"] for r in results],
-                            # 'Ref': [r["ref"] for r in results],
-                            'Session ID': [r["chat_id"] for r in results],
-                            'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
-                            'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
-                            'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
-                            'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
-                            'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
-                            'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
-                            'Comment': [r["evaluate_result"].get("comments", "") for r in results]
-                        }
-                        print("Đã tạo DataFrame từ kết quả")
-                        results_df = pd.DataFrame(data)
+                    #     # Hiển thị kết quả đã lọc
+                    #     st.write(f"Tìm thấy {len(filtered_df)} kết quả phù hợp với bộ lọc")
+                    #     st.dataframe(filtered_df, use_container_width=True)
                         
-                        # Lưu DataFrame vào session state
-                        st.session_state.results_df = results_df
-                        
-                        # Hiển thị kết quả
-                        st.dataframe(results_df, use_container_width=True)
-                        
-                        # Thêm nút tải xuống kết quả
-                        st.download_button(
-                            label="Tải xuống kết quả",
-                            data=results_df.to_csv(index=False).encode('utf-8'),
-                            file_name='evaluation_results.csv',
-                            mime='text/csv'
-                        )
-                        
-                        # # Thêm phần lọc kết quả theo điểm
-                        # st.subheader("Lọc kết quả theo điểm")
-                        
-                        # # Lấy tất cả tiêu chí điểm
-                        # score_columns = [col for col in results_df.columns if 'Score' in col]
-                        
-                        # col1, col2 = st.columns(2)
-                        # with col1:
-                        #     selected_criterion = st.selectbox("Chọn tiêu chí điểm", score_columns)
-                        # with col2:
-                        #     threshold = st.slider("Ngưỡng điểm", 0.0, 10.0, 5.0, 0.5)
-                        
-                        # filter_type = st.radio("Loại lọc", ["Lớn hơn hoặc bằng", "Nhỏ hơn hoặc bằng"])
-                        
-                        # if st.button("Áp dụng bộ lọc"):
-                        #     # Lọc DataFrame dựa trên tiêu chí đã chọn
-                        #     if filter_type == "Lớn hơn hoặc bằng":
-                        #         filtered_df = results_df[results_df[selected_criterion] >= threshold]
-                        #     else:
-                        #         filtered_df = results_df[results_df[selected_criterion] <= threshold]
-                            
-                        #     # Hiển thị kết quả đã lọc
-                        #     st.write(f"Tìm thấy {len(filtered_df)} kết quả phù hợp với bộ lọc")
-                        #     st.dataframe(filtered_df, use_container_width=True)
-                            
-                        #     # Tùy chọn xuất kết quả đã lọc
-                        #     st.download_button(
-                        #         label="Tải xuống kết quả đã lọc",
-                        #         data=filtered_df.to_csv(index=False).encode('utf-8'),
-                        #         file_name=f'filtered_results_{selected_criterion}_{threshold}.csv',
-                        #         mime='text/csv'
-                        #     )
-                        
-                        # if failed_questions:
-                        #     st.warning(f"Có {len(failed_questions)} câu hỏi xử lý thất bại")
-                    else:
-                        print("Không có kết quả")
+                    #     # Tùy chọn xuất kết quả đã lọc
+                    #     st.download_button(
+                    #         label="Tải xuống kết quả đã lọc",
+                    #         data=filtered_df.to_csv(index=False).encode('utf-8'),
+                    #         file_name=f'filtered_results_{selected_criterion}_{threshold}.csv',
+                    #         mime='text/csv'
+                    #     )
+                    
+                    if failed_questions:
+                        st.warning(f"Có {len(failed_questions)} câu hỏi xử lý thất bại")
+                    
+                    # Hiển thị thông báo hoàn thành
+                    st.success(f"Đã hoàn thành đánh giá {len(results)} câu hỏi")
                 else:
                     st.warning("Vui lòng chọn ít nhất một câu hỏi để test")
         except Exception as e:
@@ -442,4 +503,4 @@ st.sidebar.markdown("""
 1. Chọn các câu hỏi muốn test từ bảng
 2. Nhấn nút "Test hàng loạt" để bắt đầu đánh giá
 3. Kết quả sẽ được hiển thị dưới dạng bảng và có thể tải về Excel
-""") 
+""")

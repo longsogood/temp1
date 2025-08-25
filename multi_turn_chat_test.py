@@ -65,8 +65,8 @@ session.mount('https://', requests.adapters.HTTPAdapter(
 # Load prompts
 try:
     # evaluate_prompt = json.load(open("prompts/evaluation/prompt.json", "r"))
-    evaluate_system_prompt = open("prompts/evaluation/system_prompt.txt").read()
-    evaluate_human_prompt_template = open("prompts/evaluation/system_prompt.txt").read()
+    evaluate_system_prompt = open("prompts/evaluation/system_prompt.txt", encoding="utf-8").read()
+    evaluate_human_prompt_template = open("prompts/evaluation/human_prompt.txt", encoding="utf-8").read()
 except Exception as e:
     st.error(f"Lỗi khi đọc file prompt: {str(e)}")
     st.stop()

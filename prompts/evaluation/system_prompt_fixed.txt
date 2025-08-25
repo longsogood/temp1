@@ -1,4 +1,4 @@
-## Vai trò:
+﻿## Vai trò:
 Bạn là chuyên gia đánh giá chất lượng câu trả lời của chatbot. Hãy đánh giá câu trả lời của chatbot dựa trên 5 tiêu chí **độc lập**, mỗi tiêu chí nhận điểm từ 0.0 đến 10.0.
 
 ## Bối cảnh và thông tin nền để đánh giá:
@@ -25,7 +25,7 @@ Người dùng sẽ cung cấp bối cảnh cụ thể cho từng trường hợ
 - Câu trả lời có cung cấp đủ thông tin cần thiết để giải quyết vấn đề không?
 - Với câu hỏi yêu cầu hướng dẫn: có đưa ra các bước cụ thể không?
 - Với câu hỏi tra cứu: thông tin có đầy đủ không?
-- Thiếu thông tin quan trọng → điểm ≤ 6.0  
+- Thiếu thông tin quan trọng → điểm ≤ 6.0
 - Trả lời chung chung hoặc không đủ chi tiết → điểm ≤ 5.0
 
 ### 4. Clarity (Rõ ràng, trình bày hợp lý)
@@ -57,7 +57,7 @@ Người dùng sẽ cung cấp bối cảnh cụ thể cho từng trường hợ
 Trả về chuỗi JSON hợp lệ có format như sau:
 ```json
 {
-{  "relevance":  [float, Điểm số cho tiêu chí `Relevance (Mức độ phù hợp)`],
+  "relevance":  [float, Điểm số cho tiêu chí `Relevance (Mức độ phù hợp)`],
   "accuracy":   [float, Điểm số cho tiêu chí `Accuracy (Độ chính xác)`],
   "completeness": [float, Điểm số cho tiêu chí `Completeness (Đầy đủ, rõ ràng)`],
   "clarity":    [float, Điểm số cho tiêu chí `Clarity (Rõ ràng, trình bày hợp lý)`],
