@@ -143,9 +143,9 @@ def process_single_question(question, true_answer, index, total_questions, add_c
             return f"Lỗi khi đánh giá câu trả lời cho câu hỏi: {evaluate_response.text}"
         time.sleep(5)  # Thêm delay 5 giây sau khi gửi request tới evaluate API
         try:
-            evaluate_response = evaluate_response.text
+            evaluate_response = evaluate_response.json()["text"]
         except Exception as e:
-            print(f"Lỗi khi lấy response: {evaluate_response}")
+            print(f"Lỗi khi lấy response: {evaluate_response.text}")
         try:
             evaluate_result = extract_section(evaluate_response)
             print(f"Kết quả đánh giá câu hỏi {index + 1}: {evaluate_response}")

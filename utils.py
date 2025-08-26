@@ -24,6 +24,7 @@ def extract_json(response_text):
 
 def extract_section(text):
     json_data = extract_json(text)
+    print(f"JSON data:\n{json_data}")
     results = {}
     if json_data:
         results["scores"] = {}
