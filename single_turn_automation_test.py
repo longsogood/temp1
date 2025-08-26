@@ -221,11 +221,11 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                                 "tone": 0,
                                 "average": 0
                             },
-                            "comments": f"Lỗi khi xử lý câu hỏi này: {error_message}"
+                            "comments": f"Lỗi khi xử lý câu hỏi này: {result}"
                         }
                     }
                     results.append(error_result)
-                    failed_questions.append((questions[i], error_message))
+                    failed_questions.append((questions[i], result))
             except Exception as e:
                 error_message = f"Lỗi: {str(e)}"
                 
