@@ -77,12 +77,12 @@ st.markdown("""
 # Load environment variables
 load_dotenv(".env")
 
-AWS_ACCESS_KEY_ID = st.secrets("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = st.secrets("AWS_SECRET_ACCESS_KEY")
-AWS_REGION = st.secrets("AWS_REGION")
-LANGFUSE_PUBLIC_KEY = st.secrets("LANGFUSE_PUBLIC_KEY")
-LANGFUSE_SECRET_KEY = st.secrets("LANGFUSE_SECRET_KEY")
-LANGFUSE_HOST = st.secrets("LANGFUSE_HOST")
+AWS_ACCESS_KEY_ID = st.secrets["AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = st.secrets["AWS_SECRET_ACCESS_KEY"]
+AWS_REGION = st.secrets["AWS_REGION"]
+LANGFUSE_PUBLIC_KEY = st.secrets["LANGFUSE_PUBLIC_KEY"]
+LANGFUSE_SECRET_KEY = st.secrets["LANGFUSE_SECRET_KEY"]
+LANGFUSE_HOST = st.secrets["LANGFUSE_HOST"]
 
 class TokenCounter:
     def __init__(self, model_id, aws_access_key_id, aws_secret_access_key, region_name,
