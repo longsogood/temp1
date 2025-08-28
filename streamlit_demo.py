@@ -632,11 +632,11 @@ def main():
             session1_id = st.text_input(
                 "Session 1 ID:",
                 value="cd388252-6004-4fe1-b3eb-4113e0e986a2",
-                help="Session ID đầu tiên (ví dụ: không có memory)"
+                help="Session ID đầu tiên (ví dụ: không có summary)"
             )
             session1_label = st.text_input(
                 "Nhãn Session 1:",
-                value="Không có Memory",
+                value="Không bật Summary",
                 help="Nhãn để hiển thị cho session 1"
             )
         
@@ -644,11 +644,11 @@ def main():
             session2_id = st.text_input(
                 "Session 2 ID:",
                 value="",
-                help="Session ID thứ hai (ví dụ: có memory)"
+                help="Session ID thứ hai (ví dụ: có summary)"
             )
             session2_label = st.text_input(
                 "Nhãn Session 2:",
-                value="Có Memory",
+                value="Bật summary",
                 help="Nhãn để hiển thị cho session 2"
             )
         
