@@ -183,6 +183,48 @@ class TokenCounter:
             print("\tTrace result:", trace_result)
         return result
 
+    def count_tokens_for_observation(self, observation):
+        """Tính số tokens cho một observation"""
+        try:
+            system = [{"text": ""}]
+            messages = []
+            
+            # Tạo system prompt
+            for system_text in observation["system"]:
+                system[0]["text"] += f"{system_text['text']}\n"
+            
+            # Tạo messages
+            for message_text in observation["messages"]:
+                message_temp = {"role": message_text["role"]}
+
+                if isinstance(message_text["content"], str):
+                    message_temp.update({
+                        "content": [
+                            {"text": message_text["content"]}
+                        ]
+                    })
+                else:
+                    message_temp.update({
+                        "content": [message_text["content"]]
+                    })
+
+                messages.append(message_temp)
+            
+            # Đếm tokens
+            response = self.client.count_tokens(
+                modelId=self.model_id,
+                input={
+                    "converse": {
+                        "messages": messages,
+                        "system": system
+                    }
+                }
+            )
+            return response["inputTokens"]
+        except Exception as e:
+            print(f"Error counting tokens: {e}")
+            return 0
+
 def load_trace_data(session_id):
     """Load trace data using TokenCounter.get_tracing_result()"""
     try:
@@ -199,6 +241,12 @@ def load_trace_data(session_id):
         
         # Get tracing result
         data = token_counter.get_tracing_result(session_id)
+        
+        # Tính tokens cho mỗi observation
+        for trace in data["traces"]:
+            for observation in trace["observations"]:
+                observation["input_tokens"] = token_counter.count_tokens_for_observation(observation)
+        
         return data
     except Exception as e:
         st.error(f"Lỗi khi lấy dữ liệu trace: {str(e)}")
@@ -221,14 +269,17 @@ def format_message_content(content):
             return f"📋 Tool Result: {content['toolResult']['status']}"
     return str(content)
 
-def display_trace_analysis(trace_data):
+def display_trace_analysis(trace_data, session_label=""):
     """Hiển thị phân tích trace"""
     
     # Header
-    st.markdown('<h1 class="main-header">🔍 Trace Analysis Dashboard</h1>', unsafe_allow_html=True)
+    if session_label:
+        st.markdown(f'<h1 class="main-header">🔍 Trace Analysis Dashboard - {session_label}</h1>', unsafe_allow_html=True)
+    else:
+        st.markdown('<h1 class="main-header">🔍 Trace Analysis Dashboard</h1>', unsafe_allow_html=True)
     
     # Thông tin session
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Session ID", trace_data['session_id'][:8] + "...")
     with col2:
@@ -236,6 +287,54 @@ def display_trace_analysis(trace_data):
     with col3:
         total_observations = sum(len(trace['observations']) for trace in trace_data['traces'])
         st.metric("Tổng Observations", total_observations)
+    with col4:
+        total_tokens = sum(
+            sum(obs.get('input_tokens', 0) for obs in trace['observations']) 
+            for trace in trace_data['traces']
+        )
+        st.metric("Tổng Input Tokens", f"{total_tokens:,}")
+    
+    st.divider()
+    
+    # Biểu đồ tổng quan tokens cho toàn bộ session
+    st.markdown("### 📊 Token Usage Overview")
+    
+    # Chuẩn bị dữ liệu cho biểu đồ
+    trace_tokens = []
+    trace_labels = []
+    for i, trace in enumerate(trace_data['traces']):
+        total_trace_tokens = sum(obs.get('input_tokens', 0) for obs in trace['observations'])
+        trace_tokens.append(total_trace_tokens)
+        trace_labels.append(f"Trace {i+1}")
+    
+    # Biểu đồ cột tokens theo trace
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        fig = go.Figure(data=[
+            go.Bar(x=trace_labels, y=trace_tokens, marker_color='lightcoral')
+        ])
+        fig.update_layout(
+            title="Input Tokens per Trace",
+            xaxis_title="Trace",
+            yaxis_title="Input Tokens",
+            height=400
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        # Thống kê tổng quan
+        st.markdown("#### 📊 Thống kê tổng quan:")
+        if sum(trace_tokens) > 0:
+            col2_1, col2_2 = st.columns(2)
+            with col2_1:
+                st.metric("Tổng tokens", f"{sum(trace_tokens):,}")
+                st.metric("Trung bình/trace", f"{sum(trace_tokens)/len(trace_tokens):.0f}")
+            with col2_2:
+                st.metric("Cao nhất", f"{max(trace_tokens):,}")
+                st.metric("Thấp nhất", f"{min(trace_tokens):,}")
+        else:
+            st.info("Không có dữ liệu tokens để hiển thị")
     
     st.divider()
     
@@ -246,43 +345,42 @@ def display_trace_analysis(trace_data):
             continue
             
         # Tạo expander cho trace
-        with st.expander(f"📊 Trace {i+1}: {trace['trace_id'][:8]}...", expanded=False):
+        with st.expander(f"📊 Trace {i+1}: {trace['trace_id'][:8]}... (Tokens: {sum(obs.get('input_tokens', 0) for obs in trace['observations']):,})", expanded=False):
             
-            # Hiển thị system prompt
+            # Hiển thị system prompt trong expander
             if last_obs.get('system'):
-                st.markdown("#### 🎯 System Prompt:")
-                for system_item in last_obs['system']:
-                    st.markdown(f"""
-                    <div style="background-color: #f0f8ff; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #0066cc;">
-                        <strong>System:</strong><br>
-                        <pre style="background-color: #f5f5f5; padding: 0.5rem; border-radius: 4px; overflow-x: auto; white-space: pre-wrap;">
+                with st.expander("🎯 System Prompt", expanded=False):
+                    for system_item in last_obs['system']:
+                        st.markdown(f"""
+                        <div style="background-color: #f0f8ff; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; border-left: 3px solid #0066cc;">
+                            <strong>System:</strong><br>
+                            <pre style="background-color: #f5f5f5; padding: 0.5rem; border-radius: 4px; overflow-x: auto; white-space: pre-wrap;">
 {system_item['text']}
-                        </pre>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            </pre>
+                        </div>
+                        """, unsafe_allow_html=True)
             
             # Tạo tabs cho trace
-            tab1, tab2, tab3 = st.tabs(["💬 Messages", "📈 Analytics", "🔧 Tools"])
+            tab1, tab2, tab3, tab4 = st.tabs(["💬 Messages", "📈 Analytics", "🔧 Tools", "🎯 Tokens"])
             
             with tab1:
-                # Hiển thị messages
-                st.markdown("#### Lịch sử hội thoại:")
-                
-                for j, message in enumerate(last_obs['messages']):
-                    if message['role'] == 'user':
-                        st.markdown(f"""
-                        <div class="user-message">
-                            <strong>👤 User:</strong><br>
-                            {format_message_content(message['content'])}
-                        </div>
-                        """, unsafe_allow_html=True)
-                    elif message['role'] == 'assistant':
-                        st.markdown(f"""
-                        <div class="assistant-message">
-                            <strong>🤖 Assistant:</strong><br>
-                            {format_message_content(message['content'])}
-                        </div>
-                        """, unsafe_allow_html=True)
+                # Hiển thị messages trong expander
+                with st.expander("💬 Lịch sử hội thoại", expanded=False):
+                    for j, message in enumerate(last_obs['messages']):
+                        if message['role'] == 'user':
+                            st.markdown(f"""
+                            <div class="user-message">
+                                <strong>👤 User:</strong><br>
+                                {format_message_content(message['content'])}
+                            </div>
+                            """, unsafe_allow_html=True)
+                        elif message['role'] == 'assistant':
+                            st.markdown(f"""
+                            <div class="assistant-message">
+                                <strong>🤖 Assistant:</strong><br>
+                                {format_message_content(message['content'])}
+                            </div>
+                            """, unsafe_allow_html=True)
             
             with tab2:
                 # Analytics
@@ -302,7 +400,7 @@ def display_trace_analysis(trace_data):
                     st.plotly_chart(fig, use_container_width=True)
                 
                 with col2:
-                    # Tool usage
+                    # Tool usage summary
                     tool_calls = [m for m in last_obs['messages'] 
                                 if isinstance(m['content'], dict) and 'toolUse' in m['content']]
                     
@@ -310,10 +408,9 @@ def display_trace_analysis(trace_data):
                         tool_names = [m['content']['toolUse']['name'] for m in tool_calls]
                         tool_counts = pd.Series(tool_names).value_counts()
                         
-                        fig = px.pie(values=tool_counts.values, 
-                                   names=tool_counts.index,
-                                   title="Tool Usage Distribution")
-                        st.plotly_chart(fig, use_container_width=True)
+                        st.markdown("#### 🔧 Tool Usage Summary:")
+                        for tool_name, count in tool_counts.items():
+                            st.metric(f"{tool_name}", count)
                     else:
                         st.info("Không có tool calls trong trace này")
             
@@ -354,47 +451,237 @@ def display_trace_analysis(trace_data):
                                 </div>
                                 """, unsafe_allow_html=True)
                                 break
+            
+            with tab4:
+                # Token analysis
+                st.markdown("#### 🎯 Token Analysis:")
+                
+                # Hiển thị tokens cho observation cuối cùng
+                if last_obs.get('input_tokens'):
+                    st.metric("Input Tokens (Last Observation)", f"{last_obs['input_tokens']:,}")
+                
+                # Hiển thị tokens cho tất cả observations trong trace
+                if trace['observations']:
+                    obs_tokens = []
+                    obs_ids = []
+                    for obs in trace['observations']:
+                        tokens = obs.get('input_tokens', 0)
+                        obs_tokens.append(tokens)
+                        obs_ids.append(f"Obs {obs['observation_id'][:8]}...")
+                    
+                    # Biểu đồ tokens theo observation
+                    fig = go.Figure(data=[
+                        go.Bar(x=obs_ids, y=obs_tokens, marker_color='lightblue')
+                    ])
+                    fig.update_layout(
+                        title="Input Tokens per Observation",
+                        xaxis_title="Observation",
+                        yaxis_title="Input Tokens",
+                        height=400
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # Thống kê tokens
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("Tổng Tokens", f"{sum(obs_tokens):,}")
+                    with col2:
+                        st.metric("Trung bình", f"{sum(obs_tokens)/len(obs_tokens):.0f}")
+                    with col3:
+                        st.metric("Cao nhất", f"{max(obs_tokens):,}")
+
+def display_comparison(session1_data, session2_data, session1_label, session2_label):
+    """Hiển thị so sánh giữa 2 session"""
+    
+    st.markdown('<h1 class="main-header">🔄 Session Comparison</h1>', unsafe_allow_html=True)
+    
+    # Thống kê tổng quan so sánh
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown(f"### 📊 {session1_label}")
+        total_tokens_1 = sum(
+            sum(obs.get('input_tokens', 0) for obs in trace['observations']) 
+            for trace in session1_data['traces']
+        )
+        st.metric("Tổng Tokens", f"{total_tokens_1:,}")
+        st.metric("Số Trace", len(session1_data['traces']))
+        st.metric("Tổng Observations", sum(len(trace['observations']) for trace in session1_data['traces']))
+    
+    with col2:
+        st.markdown(f"### 📊 {session2_label}")
+        total_tokens_2 = sum(
+            sum(obs.get('input_tokens', 0) for obs in trace['observations']) 
+            for trace in session2_data['traces']
+        )
+        st.metric("Tổng Tokens", f"{total_tokens_2:,}")
+        st.metric("Số Trace", len(session2_data['traces']))
+        st.metric("Tổng Observations", sum(len(trace['observations']) for trace in session2_data['traces']))
+    
+    # So sánh tokens
+    st.divider()
+    st.markdown("### 📈 Token Comparison")
+    
+    # Chuẩn bị dữ liệu cho biểu đồ so sánh
+    trace_tokens_1 = []
+    trace_tokens_2 = []
+    max_traces = max(len(session1_data['traces']), len(session2_data['traces']))
+    
+    for i in range(max_traces):
+        if i < len(session1_data['traces']):
+            total_trace_tokens_1 = sum(obs.get('input_tokens', 0) for obs in session1_data['traces'][i]['observations'])
+            trace_tokens_1.append(total_trace_tokens_1)
+        else:
+            trace_tokens_1.append(0)
+            
+        if i < len(session2_data['traces']):
+            total_trace_tokens_2 = sum(obs.get('input_tokens', 0) for obs in session2_data['traces'][i]['observations'])
+            trace_tokens_2.append(total_trace_tokens_2)
+        else:
+            trace_tokens_2.append(0)
+    
+    # Biểu đồ so sánh
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        name=session1_label,
+        x=[f"Trace {i+1}" for i in range(max_traces)],
+        y=trace_tokens_1,
+        marker_color='lightcoral'
+    ))
+    fig.add_trace(go.Bar(
+        name=session2_label,
+        x=[f"Trace {i+1}" for i in range(max_traces)],
+        y=trace_tokens_2,
+        marker_color='lightblue'
+    ))
+    
+    fig.update_layout(
+        title="Token Usage Comparison",
+        xaxis_title="Trace",
+        yaxis_title="Input Tokens",
+        barmode='group',
+        height=500
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Thống kê so sánh
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        diff_tokens = total_tokens_2 - total_tokens_1
+        diff_percent = (diff_tokens / total_tokens_1 * 100) if total_tokens_1 > 0 else 0
+        st.metric("Chênh lệch Tokens", f"{diff_tokens:+,}", f"{diff_percent:+.1f}%")
+    with col2:
+        avg_tokens_1 = total_tokens_1 / len(session1_data['traces']) if session1_data['traces'] else 0
+        avg_tokens_2 = total_tokens_2 / len(session2_data['traces']) if session2_data['traces'] else 0
+        diff_avg = avg_tokens_2 - avg_tokens_1
+        st.metric("Chênh lệch TB/Trace", f"{diff_avg:+.0f}")
+    with col3:
+        max_tokens_1 = max(trace_tokens_1) if trace_tokens_1 else 0
+        max_tokens_2 = max(trace_tokens_2) if trace_tokens_2 else 0
+        diff_max = max_tokens_2 - max_tokens_1
+        st.metric("Chênh lệch Max", f"{diff_max:+,}")
 
 def main():
     st.sidebar.title("🎯 Trace Analysis")
     
-    # Input session ID
-    session_id = st.sidebar.text_input(
-        "Nhập Session ID:",
-        value="cd388252-6004-4fe1-b3eb-4113e0e986a2",
-        help="Nhập session ID để phân tích trace"
+    # Chọn mode
+    mode = st.sidebar.selectbox(
+        "Chọn chế độ:",
+        ["Phân tích đơn", "So sánh 2 session"],
+        help="Phân tích một session hoặc so sánh 2 session"
     )
     
-    if st.sidebar.button("🔍 Phân tích", type="primary"):
-        if session_id:
-            with st.spinner("Đang tải dữ liệu..."):
-                trace_data = load_trace_data(session_id)
-                
-                if trace_data:
-                    display_trace_analysis(trace_data)
-                else:
-                    st.error("Không thể tải dữ liệu trace")
-        else:
-            st.warning("Vui lòng nhập Session ID")
+    if mode == "Phân tích đơn":
+        # Input session ID
+        session_id = st.sidebar.text_input(
+            "Nhập Session ID:",
+            value="cd388252-6004-4fe1-b3eb-4113e0e986a2",
+            help="Nhập session ID để phân tích trace"
+        )
+        
+        if st.sidebar.button("🔍 Phân tích", type="primary"):
+            if session_id:
+                with st.spinner("Đang tải dữ liệu..."):
+                    trace_data = load_trace_data(session_id)
+                    
+                    if trace_data:
+                        display_trace_analysis(trace_data)
+                    else:
+                        st.error("Không thể tải dữ liệu trace")
+            else:
+                st.warning("Vui lòng nhập Session ID")
+    
+    else:  # So sánh 2 session
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            session1_id = st.text_input(
+                "Session 1 ID:",
+                value="cd388252-6004-4fe1-b3eb-4113e0e986a2",
+                help="Session ID đầu tiên (ví dụ: không có memory)"
+            )
+            session1_label = st.text_input(
+                "Nhãn Session 1:",
+                value="Không có Memory",
+                help="Nhãn để hiển thị cho session 1"
+            )
+        
+        with col2:
+            session2_id = st.text_input(
+                "Session 2 ID:",
+                value="",
+                help="Session ID thứ hai (ví dụ: có memory)"
+            )
+            session2_label = st.text_input(
+                "Nhãn Session 2:",
+                value="Có Memory",
+                help="Nhãn để hiển thị cho session 2"
+            )
+        
+        if st.button("🔄 So sánh", type="primary"):
+            if session1_id and session2_id:
+                with st.spinner("Đang tải dữ liệu..."):
+                    session1_data = load_trace_data(session1_id)
+                    session2_data = load_trace_data(session2_id)
+                    
+                    if session1_data and session2_data:
+                        display_comparison(session1_data, session2_data, session1_label, session2_label)
+                        
+                        # Hiển thị chi tiết từng session
+                        st.divider()
+                        col1, col2 = st.columns(2)
+                        
+                        with col1:
+                            display_trace_analysis(session1_data, session1_label)
+                        
+                        with col2:
+                            display_trace_analysis(session2_data, session2_label)
+                    else:
+                        st.error("Không thể tải dữ liệu từ một hoặc cả hai session")
+            else:
+                st.warning("Vui lòng nhập cả hai Session ID")
     
     # Thông tin thêm
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📋 Hướng dẫn")
     st.sidebar.markdown("""
-    1. Nhập Session ID vào ô input
-    2. Nhấn nút "Phân tích"
-    3. Xem kết quả trong các tab:
-       - **Messages**: Lịch sử hội thoại
-       - **Analytics**: Thống kê và biểu đồ
-       - **Tools**: Tool calls và results
+    **Phân tích đơn:**
+    1. Nhập Session ID
+    2. Nhấn "Phân tích"
+    
+    **So sánh 2 session:**
+    1. Nhập 2 Session ID
+    2. Đặt nhãn cho từng session
+    3. Nhấn "So sánh"
     """)
     
     st.sidebar.markdown("### 📊 Metrics")
     st.sidebar.markdown("""
     - **Trace**: Một lần chat hoàn chỉnh
-    - **Observation**: Các action của LLM trong một lần invoke
+    - **Observation**: Các action của LLM
     - **Tool Call**: Lời gọi công cụ
     - **Tool Result**: Kết quả từ công cụ
+    - **Tokens**: Số lượng input tokens
     """)
 
 if __name__ == "__main__":

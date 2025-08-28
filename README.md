@@ -5,10 +5,12 @@
 ## 🚀 Tính năng
 
 - **Phân tích Trace**: Hiển thị observation cuối cùng của mỗi trace
-- **System Prompt**: Hiển thị system prompt của mỗi observation
-- **Lịch sử hội thoại**: Xem toàn bộ messages giữa user và assistant
+- **System Prompt**: Hiển thị system prompt của mỗi observation (có thể expand)
+- **Lịch sử hội thoại**: Xem toàn bộ messages giữa user và assistant (có thể expand)
 - **Tool Analysis**: Phân tích các tool calls và results
-- **Visualization**: Biểu đồ thống kê và phân tích
+- **Token Analysis**: Tính toán và hiển thị số lượng input tokens
+- **Session Comparison**: So sánh 2 session để phân tích hiệu quả memory
+- **Visualization**: Biểu đồ thống kê và phân tích tokens
 - **Expander UI**: Mỗi trace được hiển thị dưới dạng expander có thể mở/đóng
 
 ## 📋 Cài đặt
@@ -25,14 +27,25 @@ streamlit run streamlit_demo.py
 
 ## 🎯 Cách sử dụng
 
+### Phân tích đơn session:
 1. Mở trình duyệt và truy cập `http://localhost:8501`
-2. Nhập Session ID vào ô input (mặc định đã có sẵn)
-3. Nhấn nút "🔍 Phân tích" (sẽ gọi `TokenCounter.get_tracing_result()`)
-4. Xem kết quả trong các expander:
-   - **🎯 System Prompt**: System prompt của observation
-   - **💬 Messages**: Lịch sử hội thoại
+2. Chọn "Phân tích đơn" trong sidebar
+3. Nhập Session ID vào ô input (mặc định đã có sẵn)
+4. Nhấn nút "🔍 Phân tích" (sẽ gọi `TokenCounter.get_tracing_result()`)
+5. Xem kết quả trong các expander:
+   - **🎯 System Prompt**: System prompt của observation (có thể expand)
+   - **💬 Messages**: Lịch sử hội thoại (có thể expand)
    - **📈 Analytics**: Thống kê và biểu đồ
    - **🔧 Tools**: Tool calls và results
+   - **🎯 Tokens**: Phân tích tokens cho từng observation
+
+### So sánh 2 session:
+1. Chọn "So sánh 2 session" trong sidebar
+2. Nhập Session ID 1 (ví dụ: không có memory)
+3. Nhập Session ID 2 (ví dụ: có memory)
+4. Đặt nhãn cho từng session
+5. Nhấn "🔄 So sánh"
+6. Xem biểu đồ so sánh tokens và chi tiết từng session
 
 ## 📊 Cấu trúc dữ liệu
 
@@ -51,6 +64,16 @@ streamlit run streamlit_demo.py
 ### Tool Result
 - Kết quả trả về từ công cụ
 - Status và content
+
+### Token Analysis
+- Tính toán số lượng input tokens cho mỗi observation
+- Biểu đồ phân tích tokens theo trace và observation
+- Thống kê tổng quan về token usage
+
+### Session Comparison
+- So sánh tokens giữa 2 session
+- Biểu đồ so sánh tokens theo trace
+- Phân tích chênh lệch để đánh giá hiệu quả memory
 
 ## 🎨 Giao diện
 
