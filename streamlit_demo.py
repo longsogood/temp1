@@ -587,7 +587,7 @@ def main():
     st.sidebar.markdown("### 🔑 Langfuse Credentials")
     langfuse_public_key = st.sidebar.text_input(
         "Langfuse Public Key:",
-        type="text",
+        type="default",
         help="Nhập Langfuse Public Key"
     )
     langfuse_secret_key = st.sidebar.text_input(
