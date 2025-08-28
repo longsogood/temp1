@@ -6,9 +6,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import boto3
+from botocore.config import Config as BotoConfig
 from dotenv import load_dotenv
 import os
+import time
+import random
+from collections import deque
+import traceback
 from langfuse import Langfuse
+import json_repair
 
 # Cấu hình trang
 st.set_page_config(
@@ -85,26 +91,93 @@ LANGFUSE_HOST = os.getenv("LANGFUSE_HOST") or st.secrets.get("LANGFUSE_HOST", ""
 
 class TokenCounter:
     def __init__(self, model_id, aws_access_key_id, aws_secret_access_key, region_name,
-                 langfuse_public_key, langfuse_secret_key, langfuse_host):
+                 langfuse_public_key, langfuse_secret_key, langfuse_host,
+                 max_requests_per_minute: int = 60):
         self.model_id = model_id
         self.client = boto3.client('bedrock-runtime',
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
-            region_name=region_name
+            region_name=region_name,
+            config=BotoConfig(
+                read_timeout=360,
+                connect_timeout=10,
+                retries={"max_attempts": 3, "mode": "standard"}
+            )
         )
         self.langfuse = Langfuse(
             public_key=langfuse_public_key,
             secret_key=langfuse_secret_key,
             host=langfuse_host
         )
+        self._rate_limit_window_seconds = 60.0
+        self._max_requests_per_minute = max_requests_per_minute
+        self._request_timestamps = deque()
+        # Delay cố định mỗi request để né rate limit burst (2-3s)
+        self._per_request_delay_min_seconds = 0.1
+        self._per_request_delay_max_seconds = 1
+
+    def _acquire_rate_limit_slot(self):
+        now = time.time()
+        # Loại bỏ các request cũ hơn cửa sổ 60s
+        while self._request_timestamps and now - self._request_timestamps[0] > self._rate_limit_window_seconds:
+            self._request_timestamps.popleft()
+        # Nếu đạt ngưỡng, ngủ tới khi đủ chỗ trống
+        if len(self._request_timestamps) >= self._max_requests_per_minute:
+            sleep_for = self._rate_limit_window_seconds - (now - self._request_timestamps[0]) + 0.01
+            if sleep_for > 0:
+                time.sleep(sleep_for)
+        # Ghi nhận request
+        self._request_timestamps.append(time.time())
+
+    def _call_with_retries(self, func, *args, **kwargs):
+        delay_seconds = 0.5
+        max_attempts = 8
+        for attempt in range(max_attempts):
+            self._acquire_rate_limit_slot()
+            # Thêm delay cố định 2-3s trước mỗi request
+            fixed_delay = random.uniform(self._per_request_delay_min_seconds, self._per_request_delay_max_seconds)
+            print(f"[RATE] Waiting fixed delay {fixed_delay:.2f}s before calling {getattr(func, '__name__', str(func))}, attempt {attempt+1}/{max_attempts}")
+            time.sleep(fixed_delay)
+            try:
+                print(f"[CALL] -> {getattr(func, '__name__', str(func))} args={str(args)[:120]} kwargs={{{', '.join(list(kwargs)[:3])}}}")
+                result = func(*args, **kwargs)
+                print(f"[CALL] <- {getattr(func, '__name__', str(func))} OK")
+                return result
+            except Exception as e:
+                message = str(e)
+                lower = message.lower()
+                is_rate = ('429' in message) or ('rate' in lower) or ('too many requests' in lower)
+                is_timeout = ('timed out' in lower) or ('timeout' in lower)
+                if is_rate and attempt < max_attempts - 1:
+                    sleep_for = delay_seconds + random.uniform(0.0, 0.3)
+                    print(f"[RETRY] Rate limited: {message}. Backoff {sleep_for:.2f}s (attempt {attempt+1})")
+                    time.sleep(sleep_for)
+                    delay_seconds = min(delay_seconds * 2.0, 8.0)
+                    continue
+                if is_timeout and attempt < max_attempts - 1:
+                    sleep_for = delay_seconds + random.uniform(0.2, 0.6)
+                    print(f"[RETRY] Timeout: {message}. Backoff {sleep_for:.2f}s (attempt {attempt+1})")
+                    time.sleep(sleep_for)
+                    delay_seconds = min(delay_seconds * 2.0, 10.0)
+                    continue
+                raise
 
     def get_tracing_result(self, session_id):
         result = {"session_id": session_id, "traces": []}
 
         # Lấy thông tin session
         print(f"Session id: {session_id}")
-        session = self.langfuse.api.sessions.get(session_id)
-        session_json = json.loads(session.json())
+        print(f"[SESSION] Fetching session {session_id}")
+        session = self._call_with_retries(self.langfuse.api.sessions.get, session_id)
+        # Parse JSON an toàn: hỗ trợ khi .json() trả về dict hoặc chuỗi rỗng
+        try:
+            session_raw = session.json() if hasattr(session, "json") else session
+            if isinstance(session_raw, (dict, list)):
+                session_json = session_raw
+            else:
+                session_json = json_repair.loads(session_raw or "{}")
+        except Exception as e:
+            raise ValueError(f"Không parse được session JSON: {e}")
 
         # Lấy trace id
         traces = session_json['traces']
@@ -117,8 +190,20 @@ class TokenCounter:
             }
             print(f"\tGetting observation of trace id: {trace['id']}")
             # Lấy thông tin trace
-            trace = self.langfuse.api.trace.get(trace['id'])
-            trace_json = json.loads(trace.json())
+            print(f"[TRACE] Fetching trace {trace['id']}")
+            try:
+                trace = self._call_with_retries(self.langfuse.api.trace.get, trace['id'])
+            except Exception as e:
+                print(f"[TRACE] Skip trace {trace['id']} due to error: {e}")
+                continue
+            try:
+                trace_raw = trace.json() if hasattr(trace, "json") else trace
+                if isinstance(trace_raw, (dict, list)):
+                    trace_json = trace_raw
+                else:
+                    trace_json = json_repair.loads(trace_raw or "{}")
+            except Exception as e:
+                raise ValueError(f"Không parse được trace JSON: {e}")
             observations = trace_json['observations']
             observations = sorted([obs for obs in observations if obs['type'] == 'GENERATION'], key=lambda x: x["startTime"])
             for obs in observations:
@@ -149,23 +234,73 @@ class TokenCounter:
                                     "toolUse": {
                                         "toolUseId": inp['additional_kwargs']['tool_calls'][0]['id'],
                                         "name": inp['additional_kwargs']['tool_calls'][0]['function']['name'],
-                                        "input": json.loads(inp['additional_kwargs']['tool_calls'][0]['function']['arguments'])
+                                        "input": (
+                                            json_repair.loads(inp['additional_kwargs']['tool_calls'][0]['function']['arguments'])
+                                            if isinstance(inp['additional_kwargs']['tool_calls'][0]['function']['arguments'], str)
+                                            else inp['additional_kwargs']['tool_calls'][0]['function']['arguments']
+                                        )
                                     }
                                 }
                                 obs_result['messages'].append(message_temp)
                                 print("\t\t\tMessage temp:", message_temp)
                                 current_tool_id = inp['additional_kwargs']['tool_calls'][0]['id']
                             else:
-                                tool_result = json.loads(inp['content'])[0]
-                                if tool_result['type'] == "text":
-                                    tool_result_content = tool_result['text']
+                                # Parse tool result linh hoạt: hỗ trợ string/dict/list và list rỗng
+                                try:
+                                    content_raw = inp.get('content') if isinstance(inp, dict) else inp
+                                    parsed = None
+                                    if isinstance(content_raw, str):
+                                        # Thử parse JSON; nếu không phải JSON hợp lệ, giữ nguyên string
+                                        try:
+                                            parsed = json_repair.loads(content_raw)
+                                        except Exception:
+                                            parsed = content_raw
+                                    else:
+                                        parsed = content_raw
+
+                                    # Chuẩn hóa thành dict tool_result
+                                    tool_result = None
+                                    if isinstance(parsed, list):
+                                        if len(parsed) > 0:
+                                            tool_result = parsed[0]
+                                            # Nếu phần tử đầu là chuỗi → bọc thành dict kiểu text
+                                            if isinstance(tool_result, str):
+                                                tool_result = {"type": "text", "text": tool_result}
+                                            # Nếu là dict nhưng thiếu 'type' → mặc định 'text'
+                                            elif isinstance(tool_result, dict) and 'type' not in tool_result:
+                                                tool_result = {"type": "text", "text": tool_result.get('text', str(tool_result))}
+                                        else:
+                                            # Không có nội dung → bỏ qua block này
+                                            continue
+                                    elif isinstance(parsed, dict):
+                                        tool_result = parsed
+                                    elif isinstance(parsed, str):
+                                        # Quấn string thành block kiểu text
+                                        tool_result = {"type": "text", "text": parsed}
+                                    else:
+                                        # Kiểu không hỗ trợ → bỏ qua
+                                        continue
+                                except Exception as e:
+                                    raise ValueError(f"Không parse được tool result content: {e}")
+
+                                # Lấy nội dung hiển thị theo type
+                                if tool_result.get('type') == "text":
+                                    tool_result_content = tool_result.get('text', '')
                                 else:
-                                    tool_result_content = json.loads(tool_result['text'])
+                                    # Có thể 'text' là JSON string hoặc đã là object; nếu không có 'text', dùng toàn bộ tool_result
+                                    tr_text = tool_result.get('text')
+                                    if tr_text is None:
+                                        tool_result_content = tool_result
+                                    else:
+                                        try:
+                                            tool_result_content = json_repair.loads(tr_text) if isinstance(tr_text, str) else tr_text
+                                        except Exception:
+                                            tool_result_content = tr_text
                                 message_temp['role'] = 'user'
                                 message_temp['content'] = {
                                     "toolResult": {
                                         "toolUseId": current_tool_id,
-                                        "content": [{tool_result["type"]: tool_result_content}],
+                                        "content": [{tool_result.get("type", "text"): tool_result_content}],
                                         "status": "success"
                                     }
                                 }
@@ -210,7 +345,13 @@ class TokenCounter:
                 messages.append(message_temp)
             
             # Đếm tokens
-            response = self.client.count_tokens(
+            try:
+                obs_id = observation['observation_id'] if isinstance(observation, dict) and 'observation_id' in observation else 'unknown'
+            except Exception:
+                obs_id = 'unknown'
+            print(f"[TOKENS] Counting tokens for observation {obs_id}")
+            response = self._call_with_retries(
+                self.client.count_tokens,
                 modelId=self.model_id,
                 input={
                     "converse": {
@@ -224,7 +365,7 @@ class TokenCounter:
             print(f"Error counting tokens: {e}")
             return 0
 
-def load_trace_data(session_id, langfuse_public_key, langfuse_secret_key):
+def load_trace_data(session_id, langfuse_public_key, langfuse_secret_key, max_traces: int = None, max_obs_per_trace: int = None):
     """Load trace data using TokenCounter.get_tracing_result()"""
     try:
         # Initialize TokenCounter
@@ -242,13 +383,20 @@ def load_trace_data(session_id, langfuse_public_key, langfuse_secret_key):
         data = token_counter.get_tracing_result(session_id)
         
         # Tính tokens cho mỗi observation
-        for trace in data["traces"]:
-            for observation in trace["observations"]:
+        for t_idx, trace in enumerate(data["traces"]):
+            if max_traces is not None and t_idx >= max_traces:
+                break
+            for o_idx, observation in enumerate(trace["observations"]):
+                if max_obs_per_trace is not None and o_idx >= max_obs_per_trace:
+                    break
                 observation["input_tokens"] = token_counter.count_tokens_for_observation(observation)
         
         return data
     except Exception as e:
-        st.error(f"Lỗi khi lấy dữ liệu trace: {str(e)}")
+        # Hiển thị lỗi rõ ràng hơn trên UI kèm traceback để xác định vị trí lỗi
+        st.error(f"Lỗi khi lấy dữ liệu trace: {type(e).__name__}: {str(e)}")
+        with st.expander("Chi tiết lỗi (traceback)", expanded=False):
+            st.code(traceback.format_exc())
         return None
 
 def get_last_observation(trace):
@@ -319,7 +467,7 @@ def display_trace_analysis(trace_data, session_label=""):
             yaxis_title="Input Tokens",
             height=400
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key=f"overview_tokens_{trace_data['session_id']}")
     
     with col2:
         # Thống kê tổng quan
@@ -396,7 +544,7 @@ def display_trace_analysis(trace_data, session_label=""):
                                marker_color=['#4caf50', '#ff9800'])
                     ])
                     fig.update_layout(title="Số lượng messages", height=300)
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=True, key=f"msg_count_{trace['trace_id']}")
                 
                 with col2:
                     # Tool usage summary
@@ -478,7 +626,7 @@ def display_trace_analysis(trace_data, session_label=""):
                         yaxis_title="Input Tokens",
                         height=400
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=True, key=f"obs_tokens_{trace['trace_id']}")
                     
                     # Thống kê tokens
                     col1, col2, col3 = st.columns(3)
@@ -561,7 +709,7 @@ def display_comparison(session1_data, session2_data, session1_label, session2_la
         barmode='group',
         height=500
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key=f"comparison_{session1_data['session_id']}_{session2_data['session_id']}")
     
     # Thống kê so sánh
     col1, col2, col3 = st.columns(3)
@@ -602,6 +750,13 @@ def main():
         ["Phân tích đơn", "So sánh 2 session"],
         help="Phân tích một session hoặc so sánh 2 session"
     )
+
+    # Tuỳ chọn giảm tải để né rate limit
+    st.sidebar.markdown("### ⚙️ Giới hạn tải")
+    max_traces = st.sidebar.number_input("Số trace tối đa", min_value=1, max_value=200, value=20, step=1,
+        help="Giới hạn số trace lấy về mỗi session để né rate limit")
+    max_obs_per_trace = st.sidebar.number_input("Số observation tối đa/trace", min_value=1, max_value=200, value=10, step=1,
+        help="Giới hạn số observation xử lý mỗi trace để né rate limit")
     
     if mode == "Phân tích đơn":
         # Input session ID
@@ -614,7 +769,7 @@ def main():
         if st.sidebar.button("🔍 Phân tích", type="primary"):
             if session_id and langfuse_public_key and langfuse_secret_key:
                 with st.spinner("Đang tải dữ liệu..."):
-                    trace_data = load_trace_data(session_id, langfuse_public_key, langfuse_secret_key)
+                    trace_data = load_trace_data(session_id, langfuse_public_key, langfuse_secret_key, max_traces=int(max_traces), max_obs_per_trace=int(max_obs_per_trace))
                     
                     if trace_data:
                         display_trace_analysis(trace_data)
@@ -655,8 +810,8 @@ def main():
         if st.button("🔄 So sánh", type="primary"):
             if session1_id and session2_id and langfuse_public_key and langfuse_secret_key:
                 with st.spinner("Đang tải dữ liệu..."):
-                    session1_data = load_trace_data(session1_id, langfuse_public_key, langfuse_secret_key)
-                    session2_data = load_trace_data(session2_id, langfuse_public_key, langfuse_secret_key)
+                    session1_data = load_trace_data(session1_id, langfuse_public_key, langfuse_secret_key, max_traces=int(max_traces), max_obs_per_trace=int(max_obs_per_trace))
+                    session2_data = load_trace_data(session2_id, langfuse_public_key, langfuse_secret_key, max_traces=int(max_traces), max_obs_per_trace=int(max_obs_per_trace))
                     
                     if session1_data and session2_data:
                         display_comparison(session1_data, session2_data, session1_label, session2_label)
