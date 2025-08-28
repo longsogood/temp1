@@ -29,10 +29,11 @@ streamlit run streamlit_demo.py
 
 ### Phân tích đơn session:
 1. Mở trình duyệt và truy cập `http://localhost:8501`
-2. Chọn "Phân tích đơn" trong sidebar
-3. Nhập Session ID vào ô input (mặc định đã có sẵn)
-4. Nhấn nút "🔍 Phân tích" (sẽ gọi `TokenCounter.get_tracing_result()`)
-5. Xem kết quả trong các expander:
+2. Nhập **Langfuse Public Key** và **Langfuse Secret Key** trong sidebar
+3. Chọn "Phân tích đơn" trong sidebar
+4. Nhập Session ID vào ô input (mặc định đã có sẵn)
+5. Nhấn nút "🔍 Phân tích" (sẽ gọi `TokenCounter.get_tracing_result()`)
+6. Xem kết quả trong các expander:
    - **🎯 System Prompt**: System prompt của observation (có thể expand)
    - **💬 Messages**: Lịch sử hội thoại (có thể expand)
    - **📈 Analytics**: Thống kê và biểu đồ
@@ -40,12 +41,13 @@ streamlit run streamlit_demo.py
    - **🎯 Tokens**: Phân tích tokens cho từng observation
 
 ### So sánh 2 session:
-1. Chọn "So sánh 2 session" trong sidebar
-2. Nhập Session ID 1 (ví dụ: không có memory)
-3. Nhập Session ID 2 (ví dụ: có memory)
-4. Đặt nhãn cho từng session
-5. Nhấn "🔄 So sánh"
-6. Xem biểu đồ so sánh tokens và chi tiết từng session
+1. Nhập **Langfuse Public Key** và **Langfuse Secret Key** trong sidebar
+2. Chọn "So sánh 2 session" trong sidebar
+3. Nhập Session ID 1 (ví dụ: không có memory)
+4. Nhập Session ID 2 (ví dụ: có memory)
+5. Đặt nhãn cho từng session
+6. Nhấn "🔄 So sánh"
+7. Xem biểu đồ so sánh tokens và chi tiết từng session
 
 ## 📊 Cấu trúc dữ liệu
 
@@ -100,12 +102,18 @@ Bạn có thể tùy chỉnh:
 
 ## ⚙️ Cấu hình
 
+### AWS Credentials (tùy chọn)
 Tạo file `.env` với các thông tin sau:
 ```
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_REGION=your_aws_region
-LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
-LANGFUSE_SECRET_KEY=your_langfuse_secret_key
 LANGFUSE_HOST=your_langfuse_host
 ```
+
+### Langfuse Credentials (bắt buộc)
+- **Langfuse Public Key**: Nhập trực tiếp trong ứng dụng
+- **Langfuse Secret Key**: Nhập trực tiếp trong ứng dụng
+- **Langfuse Host**: Có thể cấu hình trong file `.env` hoặc để mặc định
+
+**Lưu ý**: Langfuse credentials sẽ được nhập trực tiếp trong sidebar của ứng dụng và không được lưu trữ.

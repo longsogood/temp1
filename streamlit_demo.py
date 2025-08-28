@@ -77,12 +77,11 @@ st.markdown("""
 # Load environment variables
 load_dotenv(".env")
 
-AWS_ACCESS_KEY_ID = st.secrets["AWS_ACCESS_KEY_ID"]
-AWS_SECRET_ACCESS_KEY = st.secrets["AWS_SECRET_ACCESS_KEY"]
-AWS_REGION = st.secrets["AWS_REGION"]
-LANGFUSE_PUBLIC_KEY = st.secrets["LANGFUSE_PUBLIC_KEY"]
-LANGFUSE_SECRET_KEY = st.secrets["LANGFUSE_SECRET_KEY"]
-LANGFUSE_HOST = st.secrets["LANGFUSE_HOST"]
+# AWS credentials từ environment hoặc secrets
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID") or st.secrets.get("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY") or st.secrets.get("AWS_SECRET_ACCESS_KEY", "")
+AWS_REGION = os.getenv("AWS_REGION") or st.secrets.get("AWS_REGION", "")
+LANGFUSE_HOST = os.getenv("LANGFUSE_HOST") or st.secrets.get("LANGFUSE_HOST", "")
 
 class TokenCounter:
     def __init__(self, model_id, aws_access_key_id, aws_secret_access_key, region_name,
@@ -225,7 +224,7 @@ class TokenCounter:
             print(f"Error counting tokens: {e}")
             return 0
 
-def load_trace_data(session_id):
+def load_trace_data(session_id, langfuse_public_key, langfuse_secret_key):
     """Load trace data using TokenCounter.get_tracing_result()"""
     try:
         # Initialize TokenCounter
@@ -234,8 +233,8 @@ def load_trace_data(session_id):
             aws_access_key_id=AWS_ACCESS_KEY_ID,
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             region_name=AWS_REGION,
-            langfuse_public_key=LANGFUSE_PUBLIC_KEY,
-            langfuse_secret_key=LANGFUSE_SECRET_KEY,
+            langfuse_public_key=langfuse_public_key,
+            langfuse_secret_key=langfuse_secret_key,
             langfuse_host=LANGFUSE_HOST
         )
         
@@ -584,6 +583,19 @@ def display_comparison(session1_data, session2_data, session1_label, session2_la
 def main():
     st.sidebar.title("🎯 Trace Analysis")
     
+    # Langfuse credentials input
+    st.sidebar.markdown("### 🔑 Langfuse Credentials")
+    langfuse_public_key = st.sidebar.text_input(
+        "Langfuse Public Key:",
+        type="text",
+        help="Nhập Langfuse Public Key"
+    )
+    langfuse_secret_key = st.sidebar.text_input(
+        "Langfuse Secret Key:",
+        type="password",
+        help="Nhập Langfuse Secret Key"
+    )
+    
     # Chọn mode
     mode = st.sidebar.selectbox(
         "Chọn chế độ:",
@@ -600,16 +612,18 @@ def main():
         )
         
         if st.sidebar.button("🔍 Phân tích", type="primary"):
-            if session_id:
+            if session_id and langfuse_public_key and langfuse_secret_key:
                 with st.spinner("Đang tải dữ liệu..."):
-                    trace_data = load_trace_data(session_id)
+                    trace_data = load_trace_data(session_id, langfuse_public_key, langfuse_secret_key)
                     
                     if trace_data:
                         display_trace_analysis(trace_data)
                     else:
                         st.error("Không thể tải dữ liệu trace")
-            else:
+            elif not session_id:
                 st.warning("Vui lòng nhập Session ID")
+            elif not langfuse_public_key or not langfuse_secret_key:
+                st.warning("Vui lòng nhập Langfuse credentials")
     
     else:  # So sánh 2 session
         col1, col2 = st.columns(2)
@@ -639,10 +653,10 @@ def main():
             )
         
         if st.button("🔄 So sánh", type="primary"):
-            if session1_id and session2_id:
+            if session1_id and session2_id and langfuse_public_key and langfuse_secret_key:
                 with st.spinner("Đang tải dữ liệu..."):
-                    session1_data = load_trace_data(session1_id)
-                    session2_data = load_trace_data(session2_id)
+                    session1_data = load_trace_data(session1_id, langfuse_public_key, langfuse_secret_key)
+                    session2_data = load_trace_data(session2_id, langfuse_public_key, langfuse_secret_key)
                     
                     if session1_data and session2_data:
                         display_comparison(session1_data, session2_data, session1_label, session2_label)
@@ -658,8 +672,10 @@ def main():
                             display_trace_analysis(session2_data, session2_label)
                     else:
                         st.error("Không thể tải dữ liệu từ một hoặc cả hai session")
-            else:
+            elif not session1_id or not session2_id:
                 st.warning("Vui lòng nhập cả hai Session ID")
+            elif not langfuse_public_key or not langfuse_secret_key:
+                st.warning("Vui lòng nhập Langfuse credentials")
     
     # Thông tin thêm
     st.sidebar.markdown("---")
