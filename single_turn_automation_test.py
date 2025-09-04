@@ -108,10 +108,28 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
             time.sleep(delay * (attempt + 1))
     return None
 
-def process_single_question(question, true_answer, index, total_questions, add_chat_history=False, custom_history=None):
+def process_single_question(question, true_answer, level, department, index, total_questions, add_chat_history=False, custom_history=None):
     try:
         chat_id = str(uuid4())
-        site_payload = {"question": question, "overrideConfig": {"sessionId": chat_id}}
+        site_payload = {
+            "question": question,
+            "chatId": chat_id,
+            "overrideConfig":
+                {
+                    "stateMemory": [
+                        {
+                            "Key": "level",
+                            "Operation": "Replace",
+                            "Default Value": level
+                        },
+                        {
+                            "Key": "department",
+                            "Operation": "Replace",
+                            "Default Value": department
+                        }
+                    ]
+                }
+            }
         if add_chat_history and custom_history:
             site_payload["history"] = custom_history
         print(f"site_payload: {site_payload}")
@@ -124,6 +142,8 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         
         evaluate_human_prompt = evaluate_human_prompt_template.format(
             question=question,
+            level=level,
+            department=department,
             true_answer=true_answer,
             agent_answer=site_response
         )
@@ -150,9 +170,10 @@ def process_single_question(question, true_answer, index, total_questions, add_c
             evaluate_result = extract_section(evaluate_response)
             print(f"Kết quả đánh giá câu hỏi {index + 1}: {evaluate_response}")
         except Exception as e:
-            st.error(f"Lỗi khi trích xuất kết quả đánh giá: {str(e)}")
-            print(f"Lỗi khi trích xuất kết quả đánh giá: {str(e)}")
-            return f"Lỗi khi trích xuất kết quả đánh giá: {str(e)}"
+            error_message = f"Lỗi khi trích xuất kết quả đánh giá: {str(e)}"
+            st.error(error_message)
+            print(error_message)
+            return error_message
         
         progress_queue.put(f"SUCCESS Đã xử lý thành công câu hỏi {index + 1}/{total_questions}")
         print(f"Đã xử lý thành công câu hỏi {index + 1}/{total_questions}: {evaluate_result}")
@@ -160,6 +181,8 @@ def process_single_question(question, true_answer, index, total_questions, add_c
             "chat_id": chat_id,
             "question": question,
             "true_answer": true_answer,
+            "level": level,
+            "department": department,
             "site_response": site_response,
             "evaluate_result": evaluate_result,
             # "ref": ref
@@ -175,7 +198,7 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         print(f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}")
         return f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}"
 
-def process_questions_batch(questions, true_answers, add_chat_history=False, custom_history=None):
+def process_questions_batch(questions, true_answers, levels, departments, add_chat_history=False, custom_history=None):
     results = []
     failed_questions = []
     
@@ -184,8 +207,8 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = []
-        for i, (question, true_answer) in enumerate(zip(questions, true_answers)):
-            future = executor.submit(process_single_question, question, true_answer, i, len(questions), add_chat_history, custom_history)
+        for i, (question, true_answer, level, department) in enumerate(zip(questions, true_answers, levels, departments)):
+            future = executor.submit(process_single_question, question, true_answer, level, department, i, len(questions), add_chat_history, custom_history)
             futures.append(future)
         
         # Hiển thị tiến trình tổng thể
@@ -211,14 +234,16 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                         "chat_id": str(uuid4()),
                         "question": questions[i],
                         "true_answer": true_answers[i],
+                        "level": levels[i],
+                        "department": departments[i],
                         "site_response": "[Lỗi khi xử lý]",
                         "evaluate_result": {
                             "scores": {
                                 "relevance": 0,
                                 "accuracy": 0,
                                 "completeness": 0,
+                                "access_control": 0,
                                 "clarity": 0,
-                                "tone": 0,
                                 "average": 0
                             },
                             "comments": f"Lỗi khi xử lý câu hỏi này: {result}"
@@ -235,16 +260,18 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                     "chat_id": str(uuid4()),
                     "question": questions[i],
                     "true_answer": true_answers[i],
+                    "level": levels[i],
+                    "department": departments[i],
                     "site_response": "[Lỗi khi xử lý]",
                     "evaluate_result": {
-                        "scores": {
-                            "relevance": 0,
-                            "accuracy": 0,
-                            "completeness": 0,
-                            "clarity": 0,
-                            "tone": 0,
-                            "average": 0
-                        },
+                            "scores": {
+                                "relevance": 0,
+                                "accuracy": 0,
+                                "completeness": 0,
+                                "access_control": 0,
+                                "clarity": 0,
+                                "average": 0
+                            },
                         "comments": error_message
                     }
                 }
@@ -368,12 +395,16 @@ with tab2:
             clean_df = df.dropna(subset=[df.columns[0], df.columns[1]])
             questions = clean_df.iloc[:, 0].tolist()
             true_answers = clean_df.iloc[:, 1].tolist()
+            levels = clean_df.iloc[:, 2].tolist()
+            departments = clean_df.iloc[:, 3].tolist()
             # refs = clean_df.iloc[:,2].tolist()
             
             # Tạo DataFrame để hiển thị
             display_df = pd.DataFrame({
                 'Câu hỏi': questions,
                 'Câu trả lời chuẩn': true_answers,
+                'Level': levels,
+                'Department': departments,
                 # 'Refs': refs
             })
             
@@ -390,13 +421,15 @@ with tab2:
             selected_rows = edited_df['selection']['rows']
             selected_questions = display_df.loc[selected_rows, 'Câu hỏi'].tolist()
             selected_true_answers = display_df.loc[selected_rows, 'Câu trả lời chuẩn'].tolist()
+            selected_levels = display_df.loc[selected_rows, 'Level'].tolist()
+            selected_departments = display_df.loc[selected_rows, 'Department'].tolist()
             # selected_refs = display_df.loc[selected_rows, 'Refs'].tolist()
             
             if st.button("Test hàng loạt"):
                 if len(selected_questions) > 0:
                     # Xử lý đa luồng
                     history = st.session_state.chat_history if (add_chat_history_batch and st.session_state.chat_history) else None
-                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, add_chat_history=add_chat_history_batch, custom_history=history)
+                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, selected_levels, selected_departments, add_chat_history=add_chat_history_batch, custom_history=history)
                     print("Đã xử lý đa luồng")
                     # Lưu kết quả vào session state (kể cả khi có lỗi)
                     st.session_state.results = results
@@ -407,14 +440,16 @@ with tab2:
                     data = {
                         'Question': [r["question"] for r in results],
                         'True Answer': [r["true_answer"] for r in results],
+                        'Level': [r["level"] for r in results],
+                        'Department': [r["department"] for r in results],
                         'Agent Answer': [r["site_response"] for r in results],
                         # 'Ref': [r["ref"] for r in results],
                         'Session ID': [r["chat_id"] for r in results],
                         'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
                         'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
                         'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
+                        'Access Control Score': [r["evaluate_result"]["scores"].get("access_control", 0) for r in results],
                         'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
-                        'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
                         'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
                         'Comment': [r["evaluate_result"].get("comments", "") for r in results]
                     }
