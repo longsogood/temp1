@@ -110,10 +110,10 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
 
 def process_single_question(question, true_answer, level, department, index, total_questions, add_chat_history=False, custom_history=None):
     try:
-        chat_id = str(uuid4())
+        # chat_id = str(uuid4())
         site_payload = {
             "question": question,
-            "chatId": chat_id,
+            # "chatId": chat_id,
             "overrideConfig":
                 {
                     "stateMemory": [
@@ -178,7 +178,7 @@ def process_single_question(question, true_answer, level, department, index, tot
         progress_queue.put(f"SUCCESS Đã xử lý thành công câu hỏi {index + 1}/{total_questions}")
         print(f"Đã xử lý thành công câu hỏi {index + 1}/{total_questions}: {evaluate_result}")
         return {
-            "chat_id": chat_id,
+            # "chat_id": chat_id,
             "question": question,
             "true_answer": true_answer,
             "level": level,
@@ -231,7 +231,7 @@ def process_questions_batch(questions, true_answers, levels, departments, add_ch
                 else:
                     # Thêm kết quả lỗi vào danh sách kết quả với thông tin chi tiết về lỗi                        
                     error_result = {
-                        "chat_id": str(uuid4()),
+                        # "chat_id": str(uuid4()),
                         "question": questions[i],
                         "true_answer": true_answers[i],
                         "level": levels[i],
@@ -257,7 +257,7 @@ def process_questions_batch(questions, true_answers, levels, departments, add_ch
                 st.error(error_message)
                 # Thêm kết quả lỗi vào danh sách kết quả với thông tin chi tiết về lỗi
                 error_result = {
-                    "chat_id": str(uuid4()),
+                    # "chat_id": str(uuid4()),
                     "question": questions[i],
                     "true_answer": true_answers[i],
                     "level": levels[i],
@@ -444,7 +444,7 @@ with tab2:
                         'Department': [r["department"] for r in results],
                         'Agent Answer': [r["site_response"] for r in results],
                         # 'Ref': [r["ref"] for r in results],
-                        'Session ID': [r["chat_id"] for r in results],
+                        # 'Session ID': [r["chat_id"] for r in results],
                         'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
                         'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
                         'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
