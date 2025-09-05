@@ -1,9 +1,5 @@
 Question: {question}
 
-User Level: {level}
-
-User Department: {department}
-
 True Answer: {true_answer}
 
 Agent Answer: {agent_answer}

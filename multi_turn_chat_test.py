@@ -47,7 +47,7 @@ st.set_page_config(
     layout="wide"
 )
 GENERAL_PURPOSE_API_URL = st.text_input("GENERAL_PURPOSE_API_URL")
-VPCP_API_URL = st.text_input("VPCP_API_URL")
+SITE_API_URL = st.text_input("SITE_API_URL")
 
 # Tự động xác định số workers tối ưu
 CPU_COUNT = multiprocessing.cpu_count()
@@ -65,8 +65,8 @@ session.mount('https://', requests.adapters.HTTPAdapter(
 # Load prompts
 try:
     # evaluate_prompt = json.load(open("prompts/evaluation/prompt.json", "r"))
-    evaluate_system_prompt = open("prompts/evaluation/system_prompt.txt", encoding="utf-8").read()
-    evaluate_human_prompt_template = open("prompts/evaluation/human_prompt.txt", encoding="utf-8").read()
+    evaluate_system_prompt = open("prompts/evaluation/multiturn_chat/system_prompt.txt", encoding="utf-8").read()
+    evaluate_human_prompt_template = open("prompts/evaluation/multiturn_chat/human_prompt.txt", encoding="utf-8").read()
 except Exception as e:
     st.error(f"Lỗi khi đọc file prompt: {str(e)}")
     st.stop()
@@ -115,22 +115,22 @@ def process_chat_session(chat_questions, chat_answers, chat_id, index, total_cha
             progress_queue.put(f"INFO Đang xử lý câu hỏi {i + 1}/{len(chat_questions)} trong phiên chat {index + 1}")
             
             # Gửi câu hỏi đến API
-            vpcp_response = query_with_retry(VPCP_API_URL,
+            site_response = query_with_retry(SITE_API_URL,
                                           {"question": question,
                                            "overrideConfig": {
                                                "sessionId": session_id
                                            }})
-            if not vpcp_response:
+            if not site_response:
                 progress_queue.put(f"ERROR Lỗi khi lấy câu trả lời từ agent cho câu hỏi {i + 1} trong phiên chat {index + 1}")
                 continue
                 
-            vpcp_response = vpcp_response.json()["text"]
+            site_response = site_response.json()["text"]
             
             # Đánh giá câu trả lời
             evaluate_human_prompt = evaluate_human_prompt_template.format(
                 question=question,
                 true_answer=true_answer,
-                agent_answer=vpcp_response
+                agent_answer=site_response
             )
             
             payload = {
@@ -162,7 +162,7 @@ def process_chat_session(chat_questions, chat_answers, chat_id, index, total_cha
                 "question_index": i + 1,
                 "question": question,
                 "true_answer": true_answer,
-                "vpcp_response": vpcp_response,
+                "site_response": site_response,
                 "evaluate_result": evaluate_result,
             })
             
@@ -215,7 +215,7 @@ def process_chat_sessions_batch(chat_sessions):
     return all_results, failed_chats
 
 # Giao diện Streamlit
-st.title("🤖 VPCP Agent Multi-Turn Testing")
+st.title("🤖 SITE Agent Multi-Turn Testing")
 
 st.subheader("Test phiên chat từ file Excel")
 
@@ -294,7 +294,7 @@ if uploaded_file is not None:
                         'Question Index': [r["question_index"] for r in results],
                         'Question': [r["question"] for r in results],
                         'True Answer': [r["true_answer"] for r in results],
-                        'Agent Answer': [r["vpcp_response"] for r in results],
+                        'Agent Answer': [r["site_response"] for r in results],
                         'Session ID': [r["session_id"] for r in results],
                         'Information Coverage Score': [r["evaluate_result"]["scores"].get("information_coverage", 0) for r in results],
                         'Hallucination Score': [r["evaluate_result"]["scores"].get("hallucination_control", 0) for r in results],
@@ -371,6 +371,8 @@ if uploaded_file is not None:
                         st.warning(f"Có {len(failed_chats)} phiên chat xử lý thất bại")
                 else:
                     st.error("Không có kết quả từ quá trình xử lý")
+                    st.write(f"Result:\n{results}")
+                    st.write(f"Failed chat:\n{failed_chats}")
             else:
                 st.warning("Vui lòng chọn ít nhất một phiên chat để test")
     except Exception as e:
