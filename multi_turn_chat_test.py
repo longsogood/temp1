@@ -103,7 +103,7 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
             time.sleep(delay * (attempt + 1))
     return None
 
-def process_chat_session(chat_questions, chat_answers, chat_refs, chat_id, index, total_chats):
+def process_chat_session(chat_questions, chat_answers, chat_id, index, total_chats):
     try:
         session_id = str(uuid4())
         chat_results = []
@@ -111,7 +111,7 @@ def process_chat_session(chat_questions, chat_answers, chat_refs, chat_id, index
         progress_queue.put(f"INFO Bắt đầu xử lý phiên chat {index + 1}/{total_chats} (ID: {chat_id})")
         
         # Xử lý từng câu hỏi trong phiên chat
-        for i, (question, true_answer, ref) in enumerate(zip(chat_questions, chat_answers, chat_refs)):
+        for i, (question, true_answer) in enumerate(zip(chat_questions, chat_answers)):
             progress_queue.put(f"INFO Đang xử lý câu hỏi {i + 1}/{len(chat_questions)} trong phiên chat {index + 1}")
             
             # Gửi câu hỏi đến API
@@ -164,7 +164,6 @@ def process_chat_session(chat_questions, chat_answers, chat_refs, chat_id, index
                 "true_answer": true_answer,
                 "vpcp_response": vpcp_response,
                 "evaluate_result": evaluate_result,
-                "ref": ref
             })
             
             progress_queue.put(f"SUCCESS Đã xử lý thành công câu hỏi {i + 1}/{len(chat_questions)} trong phiên chat {index + 1}")
@@ -189,9 +188,8 @@ def process_chat_sessions_batch(chat_sessions):
         for i, (chat_id, chat_data) in enumerate(chat_sessions.items()):
             chat_questions = [item["question"] for item in chat_data]
             chat_answers = [item["answer"] for item in chat_data]
-            chat_refs = [item["ref"] for item in chat_data]
             
-            future = executor.submit(process_chat_session, chat_questions, chat_answers, chat_refs, chat_id, i, len(chat_sessions))
+            future = executor.submit(process_chat_session, chat_questions, chat_answers, chat_id, i, len(chat_sessions))
             futures.append(future)
         
         # Hiển thị tiến trình tổng thể
@@ -229,7 +227,7 @@ if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
         
         # Kiểm tra cấu trúc file Excel
-        required_columns = ["chat_script_id", "qa_id", "question", "answer", "ref"]
+        required_columns = ["chat_script_id", "qa_id", "question", "answer"]
         missing_columns = [col for col in required_columns if col not in df.columns]
         
         if missing_columns:
@@ -246,7 +244,6 @@ if uploaded_file is not None:
                 chat_sessions[chat_id].append({
                     "question": row["question"],
                     "answer": row["answer"],
-                    "ref": row["ref"]
                 })
         
         # Hiển thị danh sách các phiên chat
@@ -298,7 +295,6 @@ if uploaded_file is not None:
                         'Question': [r["question"] for r in results],
                         'True Answer': [r["true_answer"] for r in results],
                         'Agent Answer': [r["vpcp_response"] for r in results],
-                        'Ref': [r["ref"] for r in results],
                         'Session ID': [r["session_id"] for r in results],
                         'Information Coverage Score': [r["evaluate_result"]["scores"].get("information_coverage", 0) for r in results],
                         'Hallucination Score': [r["evaluate_result"]["scores"].get("hallucination_control", 0) for r in results],
@@ -398,5 +394,4 @@ File Excel cần có các cột sau:
 - qa_id: ID của câu hỏi trong phiên chat
 - question: Nội dung câu hỏi
 - answer: Câu trả lời chuẩn
-- ref: Tham chiếu (nếu có)
 """)
