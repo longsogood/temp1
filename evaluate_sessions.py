@@ -475,7 +475,9 @@ EVAL_MARKDOWN_SYSTEM_PROMPT = (
     "- <Bài học rút ra với ví dụ cụ thể từ turn này>\n\n"
     "#### Turn: `<turn_key>` - <Lý do bất thường>\n"
     "<Lặp lại cấu trúc tương tự cho turn bất thường khác>\n\n"
-    "**Lưu ý:** Đảm bảo liệt kê đầy đủ turn chat\n\n"
+    "**Lưu ý:**\n"
+    "   - Đảm bảo liệt kê đầy đủ turn chat"
+    "   - Các turn bất thường là các turn có cách gọi tool khác hẳn so với session kia, hoặc so với yêu cầu của người dùng, cũng như số lượng tool calls bất thường"
     "## Phân tích sâu về patterns sử dụng công cụ\n"
     "### Pattern Analysis - Session A\n"
     "**Tool Selection Patterns:**\n"
@@ -567,6 +569,8 @@ EVAL_MARKDOWN_SYSTEM_PROMPT = (
     "- <Khuyến nghị về tối ưu hóa token>\n"
     "- <Khuyến nghị về cải thiện tool usage>\n"
     "- <Khuyến nghị về context management>\n"
+    "## IMPORTANT NOTE"
+    "   - Đảm bảo dựa vào system prompt để xem xét action cũng như phản hồi của agent để đánh giá chi tiết"
 )
 
 
