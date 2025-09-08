@@ -96,7 +96,7 @@ def query_with_retry(url, payload, max_retries=3, delay=1):
     for attempt in range(max_retries):
         try:
             print("Đang gọi API...")
-            response = session.post(url, json=payload, timeout=120, verify=False)
+            response = session.post(url, json=payload, timeout=1000, verify=False)
             response.raise_for_status()
             # print("Gọi HPDQ API thành công: ", response.json())
             return response
