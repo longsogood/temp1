@@ -31,16 +31,15 @@ def extract_section(text):
         relevance = json_data["relevance"]
         accuracy = json_data["accuracy"]
         completeness = json_data["completeness"]
-        access_control = json_data["access_control"]
         clarity = json_data["clarity"]
+        tone = json_data["tone"]
         results["scores"]["relevance"] = relevance
         results["scores"]["accuracy"] = accuracy
         results["scores"]["completeness"] = completeness
-        results["scores"]["access_control"] = access_control
         results["scores"]["clarity"] = clarity
-        results["scores"]["average"] = (relevance + accuracy + completeness + access_control + clarity) / 5
+        results["scores"]["tone"] = tone
+        results["scores"]["average"] = (relevance + accuracy + completeness + clarity + tone) / 5
         results["comments"] = json_data["comments"]
-        print(f"Extracted: {results}")
         return results
     else:
         return None
