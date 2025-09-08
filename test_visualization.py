@@ -13,50 +13,6 @@ import numpy as np
 plt.style.use('default')
 sns.set_palette("husl")
 
-def create_sample_data():
-    """
-    Tạo dữ liệu mẫu để test visualization
-    """
-    return {
-        "session_id": "test-session-2024",
-        "traces": [
-            {
-                "trace_id": "trace-001",
-                "observations": [
-                    {
-                        "observation_id": "obs-001",
-                        "system": [{"text": "You are a helpful AI assistant."}],
-                        "messages": [
-                            {"role": "user", "content": "Hello, how are you?"},
-                            {"role": "assistant", "content": "I'm doing well, thank you!"}
-                        ]
-                    },
-                    {
-                        "observation_id": "obs-002", 
-                        "system": [{"text": "You are a helpful AI assistant."}],
-                        "messages": [
-                            {"role": "user", "content": "Can you help me with Python?"},
-                            {"role": "assistant", "content": "Of course! What would you like to know about Python?"}
-                        ]
-                    }
-                ]
-            },
-            {
-                "trace_id": "trace-002",
-                "observations": [
-                    {
-                        "observation_id": "obs-003",
-                        "system": [{"text": "You are a helpful AI assistant."}],
-                        "messages": [
-                            {"role": "user", "content": "What is machine learning?"},
-                            {"role": "assistant", "content": "Machine learning is a subset of artificial intelligence that enables computers to learn and make decisions without being explicitly programmed."}
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
-
 def test_visualization_methods():
     """
     Test các phương thức visualization
@@ -64,7 +20,7 @@ def test_visualization_methods():
     print("Testing visualization methods...")
     
     # Tạo dữ liệu mẫu
-    sample_data = create_sample_data()
+    sample_data = 
     
     # Giả lập token counting (thay vì gọi AWS API)
     def mock_count_tokens(messages, system):
