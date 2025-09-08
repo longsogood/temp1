@@ -1,9 +1,5 @@
-Question: {question}
+Câu hỏi (Question): {question}
 
-User Level: {level}
+Câu trả lời chuẩn (True Answer): {true_answer}
 
-User Department: {department}
-
-True Answer: {true_answer}
-
-Agent Answer: {agent_answer}
+Câu trả lời của agent (Agent Answer): {agent_answer}
