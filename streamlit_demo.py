@@ -352,7 +352,7 @@ class TokenCounter:
             print(f"[TOKENS] Counting tokens for observation {obs_id}")
             response = self._call_with_retries(
                 self.client.count_tokens,
-                modelId=self.model_id,
+                modelId=self.model_id.replace("us.", ""),
                 input={
                     "converse": {
                         "messages": messages,

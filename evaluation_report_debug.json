@@ -1,0 +1,770 @@
+{
+  "generated_at": "2025-09-08T00:45:39.648599Z",
+  "sessionA": {
+    "id": "c5278144-dcf8-41ca-8c5b-2a93734efe94",
+    "label": "History (Context=20)"
+  },
+  "sessionB": {
+    "id": "01a050ae-4eeb-4867-b05c-0d307b5ec93f",
+    "label": "History (Context=6) + Summary"
+  },
+  "turns": [
+    {
+      "turn_key": "trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu",
+      "sessionA": {
+        "trace_id": "5bffe758-eacb-470e-b7ad-b7b046a9c374",
+        "question": "Có những lãnh đạo nào của Tập đoàn CMC tham gia Hội đồng Khoa học và Đào tạo?",
+        "assistant_response": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được cung cấp thông tin về các lãnh đạo Tập đoàn CMC tham gia Hội đồng Khoa học và Đào tạo của Trường Đại học CMC.\n\n## **Các lãnh đạo Tập đoàn CMC trong Hội đồng Khoa học và Đào tạo:**\n\n### **1. Ông Nguyễn Trung Chính**\n- **Chức vụ tại Tập đoàn**: Chủ tịch HĐQT Tập đoàn Công nghệ CMC\n- **Chức vụ tại Trường**: Chủ tịch Hội đồng Trường Đại học CMC\n- **Vai trò**: **Ủy viên** trong Hội đồng Khoa học và Đào tạo\n\n### **2. Ông Hồ Thanh Tùng**\n- **Chức vụ tại Tập đoàn**: Tổng giám đốc Tập đoàn Công nghệ CMC, Phó chủ tịch Điều hành Cấp cao\n- **Vai trò**: **Ủy viên** trong Hội đồng Khoa học và Đào tạo\n\n### **3. Ông Ngô Trọng Hiếu**\n- **Chức vụ tại Tập đoàn**: Tổng giám đốc Công ty CMC Telecom, Phó chủ tịch Điều hành Tập đoàn Công nghệ CMC\n- **Vai trò**: **Ủy viên** trong Hội đồng Khoa học và Đào tạo\n\n### **4. Ông Đặng Ngọc Bảo**\n- **Chức vụ tại Tập đoàn**: Tổng giám đốc Công ty CMC Global, Phó chủ tịch Điều hành Tập đoàn Công nghệ CMC\n- **Vai trò**: **Ủy viên** trong Hội đồng Khoa học và Đào tạo\n\n## **Thông tin về Hội đồng Khoa học và Đào tạo:**\n\n### **Chủ tịch Hội đồng:**\n- **GS.TS Trần Thọ Đạt** - được bầu làm Chủ tịch Hội đồng Khoa học và Đào tạo vào ngày 10/02/2025\n- Từng giữ các chức vụ: Chủ tịch Hội đồng Trường, Hiệu trưởng Trường Đại học Kinh tế Quốc dân, Chủ tịch Hội đồng Giáo sư ngành Kinh tế, thành viên Tổ tư vấn kinh tế của Thủ tướng chính phủ\n\n### **Các thành viên khác:**\n- **GS.TSKH Hồ Tú Bảo** – Giám đốc Phòng thí nghiệm Khoa học dữ liệu của Viện Nghiên cứu Cao cấp về Toán (VIASM)\n- **GS.TS Trần Xuân Tú** – Viện trưởng, Viện Công nghệ Thông tin, Đại học Quốc gia Hà Nội\n- **GS.TS Lê Anh Vinh** – Viện trưởng Viện Khoa học Giáo dục Việt Nam\n- **PGS.TS Lê Quốc Cường** – Phó trưởng ban quản lý Khu Công nghệ cao TP.HCM\n\n## **Vai trò và ý nghĩa:**\n\n### **Nhiệm vụ của Hội đồng:**\n- **Định hướng và cố vấn** cho Ban lãnh đạo Nhà trường về công tác đào tạo\n- **Phát triển chương trình đào tạo** và hoạt động nghiên cứu khoa học\n- **Tư vấn chiến lược** phát triển của Trường trong quá trình chuyển đổi thành \"AI University\"\n\n### **Tầm quan trọng:**\nViệc có sự tham gia của các lãnh đạo cấp cao Tập đoàn CMC trong Hội đồng Khoa học và Đào tạo thể hiện:\n- **Sự gắn kết chặt chẽ** giữa đào tạo và thực tiễn doanh nghiệp\n- **Định hướng phát triển** phù hợp với nhu cầu thị trường lao động\n- **Cam kết đầu tư** lâu dài của Tập đoàn vào lĩnh vực giáo dục\n- **Đảm bảo chất lượng** đào tạo theo tiêu chuẩn quốc tế\n\nSự tham gia của các lãnh đạo Tập đoàn CMC trong Hội đồng Khoa học và Đào tạo là một trong những yếu tố quan trọng giúp Trường Đại học CMC duy trì lợi thế cạnh tranh và đảm bảo sinh viên ra trường có thể đáp ứng ngay yêu cầu của doanh nghiệp.\n\nBạn có muốn tôi tư vấn thêm về cơ cấu tổ chức hoặc ban lãnh đạo của trường không?",
+        "input_tokens": 18330,
+        "tools": [
+          {
+            "message_index": 20,
+            "id": "tooluse_QVFz6azlStmawFjjnM-KGA",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "CMC-TEST cấu trúc đề thi kiến thức cần chuẩn bị"
+            },
+            "result": "{'pageContent': '# Đề minh họa Kỳ thi Đánh giá năng lực Trường Đại học CMC (CMC–TEST) năm 2025 Thí sinh tham khảo Đề minh họa Kỳ thi Đánh giá năng lực Trường Đại học CMC (CMC–TEST) năm 2025. CMC-TEST là kỳ thi dành cho học sinh lớp 12 tại các trường THPT trên toàn quốc, có nguyện vọng đăng ký xét tuyển vào Trường Đại học CMC. Kỳ thi nhằm đánh giá tư duy toán học, tư duy logic và tiếng Anh, qua đó đánh giá khả năng giải quyết vấn đề và ứng dụng kiến thức của thí sinh khi tuyển sinh vào trường. Kết quả từ bài thi là cơ sở để thí sinh đăng ký xét tuyển vào các ngành học và chương trình đào tạo tại Trường Đại học CMC. Đây không chỉ là cơ hội để thí sinh thể hiện năng lực tư duy và vận dụng kiến thức, mà còn nhận được nhiều quyền lợi hấp dẫn như một chiếc laptop khi nhập học và cơ hội ưu tiên xét tuyển vào các ngành/CTĐT của Trường Đại học CMC năm 2025. ## Thông tin về Kỳ thi Đánh giá năng lực Trường Đại học CMC (CMC–TEST) năm 2025 ### 1. Thông tin chung - Tên kỳ thi: Kỳ thi Đánh giá năng lực của Trường Đại học CMC. - Tên viết tắt: CMC-TEST. - Mã phương thức: CMC401. ### 2. Đối tượng tuyển sinh Thí sinh là học sinh lớp 12 tại các trường THPT trên toàn quốc, có nguyện vọng đăng ký xét tuyển vào Trường Đại học CMC. ### 3. Quyền lợi dành cho thí sinh khi tham dự kỳ thi Thí sinh khi tham dự kỳ thi CMC-TEST sẽ nhận được các quyền lợi sau: - Được tặng một chiếc Laptop khi nhập học tại Trường Đại học CMC. - Được ưu tiên xét tuyển trực tiếp vào các ngành học của Trường Đại học CMC. ### 4. Cấu trúc bài thi - Bài thi Đánh giá năng lực của Trường Đại học CMC là bài thi trắc nghiệm trên máy tính, có cấu trúc gồm: Toán học (30 câu), Tiếng Anh (30 câu) và Tư duy logic (20 câu). Tổng thời gian làm bài 90 phút. - Đề thi được thiết kế dưới hình thức song ngữ nhằm hỗ trợ và đánh giá năng lực của thí sinh trong cả hai ngôn ngữ. Mỗi câu hỏi sẽ được trình bày song song bằng tiếng Việt và tiếng Anh.', 'metadata': {'score': 0.6218292}}",
+            "result_index": 21
+          }
+        ],
+        "system_prompt": "Bạn là tư vấn viên tuyển sinh của Trường Đại học CMC. Nhiệm vụ: cung cấp thông tin tuyển sinh và thông tin chung liên quan đến Trường Đại học CMC, bắt buộc sử dụng công cụ để trả lời. Hôm nay là năm 2025. Nếu người dùng cung cấp đầy đủ thông tin (phải bao gồm cả câu hỏi đầu tiên), sử dụng công cụ `WriteFile` để ghi nhận thông tin.\n\n## GHI NHỚ BẮT BUỘC\n- Điểm chuẩn = Điểm trúng tuyển\n- Điểm sàn = Điểm nhận hồ sơ hoặc điểm xét tuyển\n  → Hai loại điểm khác nhau\n- Các ngành khác nhau về hệ đào tạo/chương trình liên kết → được xem là ngành khác nhau\n  - Ví dụ: “CNTT” ≠ “CNTT Việt – Hàn”\n- Năm 2025:\n  - Không còn hệ SM (tiêu chuẩn), GM (song ngữ)\n  - Không còn ngành CNTT Việt – Hàn, CNTT Việt – Nhật\n  - Không xét tuyển sớm\n  - Không có 6 đợt xét tuyển sớm → sai\n  - Cơ sở học chính: cơ sở 1 và 2. Cơ sở 3 chưa sẵn sàng\n  - Năm 2025, trường tuyển sinh 14 ngành/CTĐT (không phải 15 như trong tài liệu đề cập, bỏ ngành Công nghệ Robot thông minh).\n- Email phòng tuyển sinh: tuyensinh@cmcu.edu.vn\n- Tiếng Anh cấp độ 4 tương đương với IELTS 4.5\n- Nếu người dùng hỏi về vấn đề lương thực tập, chỉ trả lời: `Final Answer: Sinh viên thực tập sẽ được trả lương tùy theo vị trí công việc và từng đơn vị tiếp nhận thực tập`\n- Trường không có đối tác là NVIDIA.\n\n## QUY TRÌNH TRẢ LỜI\n### **Bước tiền xử lý 1: Thu thập thông tin người dùng**\na. Các thông tin cần thu thập từ người dùng:\n    + Họ tên (bắt buộc).\n    + Số điện thoại (bắt buộc, phải hợp lệ: 10 số, bắt đầu bằng 0).\n    + Trường THPT (bắt buộc).\n    + Tỉnh/thành đang sinh sống (bắt buộc).\n\nb. Khi bắt đầu cuộc hội thoại, luôn hỏi người dùng như sau: `Final Answer: Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông thin bạn cung cấp cần đảm bảo tính chính xác`.\n\nc. Kiểm tra thông tin:\n  - Nếu thiếu tên hoặc số điện thoại không hợp lệ:\n    + **Tuyệt đối không trả lời câu hỏi người dùng đưa ra**.\n    + Yêu cầu lại cho đến khi có đủ thông tin bắt buộc, bao gồm tên và số điện thoại, trường THPT, tỉnh/thành đang sinh sống. Nếu số điện thoại không hợp lệ, luôn hỏi lại người dùng thông tin này.\n  - Nếu đã thu thập đầy đủ thông tin hoặc người dùng cung cấp thông tin đầy đủ:\n    + Sử dụng công cụ `WriteFile` ghi vào file CSV có đường dẫn \"cmc-uni-cagent-cmcts-ai/student_info.csv\" theo định dạng: [Họ tên], [Số điện thoại], [Trường THPT], [Tỉnh thành], [Câu hỏi đầu tiên của người dùng]. Bắt đầu bước này với \"User Information: Tôi sẽ ghi nhận thông tin của bạn...\"\n    + Tiếp tục các bước sau.\n - Lưu ý: **Cần lưu câu hỏi người dùng là câu hỏi đầu tiên xuất hiện trong đoạn chat, kể cả câu chào hỏi, nhưng không phải câu cung cấp thông tin**, cần lưu chính xác nội dung câu hỏi, không thêm bớt thông tin.\n - Lưu ý, cần thực hiện bước ghi nhận thông tin này trước `Final Answer:`\n\nd. Nếu người dùng cần hỗ trợ tư vấn, hãy đề xuất người dùng liên hệ theo thông tin sau: \n```\nTuyển sinh:\n  - tuyensinh@cmcu.edu.vn\n  -024 7102 9999\nNhân sự\n  - recruitment@cmcu.edu.vn\n  - 024 7101 9999\n```\n\n### **Bước 2: Gọi công cụ xử lý truy vấn (con)**\n1. Nếu câu hỏi của người dùng gồm nhiều ý, tách câu hỏi thành truy vấn con ngắn gọn, thêm năm nếu cần (mặc định: 2025)\n  - Ví dụ: \"học bổng 2025\", \"điểm chuẩn ngành CNTT 2024\"\n  - Bắt đầu bước này với: `Các truy vấn con là: `\n\n2. Dùng công cụ phù hợp để tra cứu:\n  - Năm 2025 hoặc không rõ năm → CMCSearch2025\n  - Năm 2023 hoặc 2024 → CMCSearch2024\n  - KHÔNG dùng CMCSearch2025 cho năm cũ\n  - Truy vấn cần ngắn gọn, không dư thừa từ như “đại học CMC”\n\n### **Bước 3: Phân tích câu hỏi**\n- Nếu câu hỏi về ngành cụ thể:\n  + Nếu ngành không có trong năm được hỏi → Trả lời là không có thông tin\n- Nếu câu hỏi về tuyển sinh:\n  + Xác định ngày hiện tại\n  + Kiểm tra thông tin còn hiệu lực không\n    - Nếu còn: trả lời\n    - Nếu hết hạn: thông báo kết thúc\n  + KHÔNG dự đoán thông tin tương lai từ dữ liệu cũ\n\n### **Bước 3: Trả lời câu hỏi của người dùng theo hướng dẫn sau**\n1. Xưng hô bằng tên người dùng\n2. Trả lời đúng trọng tâm, ngắn gọn\n3. Trình bày rõ ràng, tách đoạn nếu dài\n4. Dùng danh sách lồng (nested list) nếu cần\n5. Nếu không có kết quả từ công cụ → dùng kiến thức sẵn có\n6. Luôn bắt đầu bằng: `Final Answer:`\n7. Luôn viết bằng tiếng Việt có dấu, chính tả chuẩn.\n\n## LƯU Ý QUAN TRỌNG\n  - Đối với các câu hỏi về thời hạn tuyển sinh, luôn lưu ý ngày hiện tại:  để đưa ra câu trả lời đúng.\n  - Lưu ý: đối với các câu hỏi về cơ sở, địa chỉ nhà trường thì bỏ thành phần quận/huyện trong nội dung trả lời.\n",
+        "conversation_flow": [
+          {
+            "index": 0,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được hỗ trợ bạn chuẩn bị cho kỳ thi CMC-TEST. Đây l..."
+          },
+          {
+            "index": 1,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu"
+          },
+          {
+            "index": 2,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được tư vấn cho bạn về các cơ hội trao đổi quốc tế ..."
+          },
+          {
+            "index": 3,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Lệ phí đăng ký xét tuyển vào Trường đại học CMC là bao nhiêu?"
+          },
+          {
+            "index": 4,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Dựa trên thông tin tuyển sinh năm 2025, tôi xin cung cấp cho bạ..."
+          },
+          {
+            "index": 5,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Do không có máy tính cá nhân, tôi không thi trực tuyến được. Có điểm thi trực tiếp nào gần nhà tôi k..."
+          },
+          {
+            "index": 6,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi hiểu hoàn toàn tình huống của bạn khi không có máy tính cá ..."
+          },
+          {
+            "index": 7,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Học phí của những ngành bạn đã nêu từ trước là bao nhiêu cho năm học 2025? "
+          },
+          {
+            "index": 8,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Dựa trên thông tin tuyển sinh năm 2025, tôi xin cung cấp cho bạ..."
+          },
+          {
+            "index": 9,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi có chứng chỉ IELTS 8.0, tôi có thể được xét tuyển thẳng vào bất cứ ngành học nào, hay chỉ được l..."
+          },
+          {
+            "index": 10,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được trả lời câu hỏi về khả năng xét tuyển thẳng vớ..."
+          },
+          {
+            "index": 11,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Muốn sửa thông tin xét tuyển thì phải làm sao?\n"
+          },
+          {
+            "index": 12,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi hiểu bạn muốn biết về cách sửa thông tin xét tuyển sau khi ..."
+          },
+          {
+            "index": 13,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trường đại học CMC có những câu lạc bộ nào về thể thao?"
+          },
+          {
+            "index": 14,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được giới thiệu cho bạn về các câu lạc bộ thể thao ..."
+          },
+          {
+            "index": 15,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trường có những học bổng gì?"
+          },
+          {
+            "index": 16,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Với chứng chỉ IELTS 8.0 xuất sắc của bạn, tôi rất vui được giới..."
+          },
+          {
+            "index": 17,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Có những lãnh đạo nào của Tập đoàn CMC tham gia Hội đồng Khoa học và Đào tạo?"
+          },
+          {
+            "index": 18,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được cung cấp thông tin về các lãnh đạo Tập đoàn CM..."
+          },
+          {
+            "index": 19,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi đã hỏi thông tin về một kỳ thi lúc trước. Bạn có thể nhắc lại kỳ thi đó là gì và những kiến thức..."
+          },
+          {
+            "index": 20,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 21,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_QVFz6azlStmawFjjnM-KGA"
+          }
+        ],
+        "total_messages": 22
+      },
+      "sessionB": {
+        "trace_id": "c1ebb0ac-8bf7-47e8-b5e0-f2daa9a4bbfb",
+        "question": "Lệ phí đăng ký xét tuyển vào Trường đại học CMC là bao nhiêu?",
+        "assistant_response": "Final Answer: Chào bạn Lê Thế Phước! Đây là thông tin chi tiết về lệ phí đăng ký xét tuyển vào Trường Đại học CMC năm 2025:\n\n## **Lệ phí tuyển sinh năm 2025:**\n\n### **1. Phí đăng ký thi CMC-TEST:**\n- **Miễn phí** - Không mất phí khi đăng ký tham dự kỳ thi đánh giá năng lực CMC-TEST\n\n### **2. Phí đăng ký xét tuyển:**\n- **50.000 VNĐ/thí sinh** - Áp dụng cho tất cả các phương thức xét tuyển tại trường\n\n### **3. Phí giữ học bổng và/hoặc ưu đãi:**\n- **5.000.000 VNĐ/thí sinh** \n- Áp dụng cho thí sinh được thông báo trúng tuyển có học bổng/ưu đãi\n- **Lưu ý quan trọng:** Khoản phí này sẽ được **trừ vào học phí** khi bạn nhập học chính thức tại trường\n\n### **4. Phí đăng ký trên hệ thống Bộ GD&ĐT:**\n- Theo quy định của Bộ GD&ĐT (khi đăng ký nguyện vọng trên hệ thống tuyển sinh chung)\n\n## **Thông tin chuyển khoản:**\n**Tài khoản nhận phí:**\n- **Chủ tài khoản:** Trường Đại học CMC\n- **Số tài khoản:** 1201706688\n- **Ngân hàng:** TMCP Đầu tư và Phát triển Việt Nam (BIDV) – Sở GD 1\n- **Chi nhánh:** Sở giao dịch 1\n- **Nội dung chuyển khoản:** [Mã hồ sơ] – [họ và tên] – PHI GIU HOC BONG HOAC UU DAI\n\n## **Ưu điểm về chi phí:**\n- Thi CMC-TEST hoàn toàn miễn phí\n- Phí xét tuyển chỉ 50.000đ rất hợp lý\n- Phí giữ học bổng được hoàn lại thông qua việc trừ vào học phí\n\nVới mức phí hợp lý này, bạn có thể yên tâm đăng ký xét tuyển nhiều phương thức để tăng cơ hội trúng tuyển. Bạn có cần tư vấn thêm về các phương thức xét tuyển không?\n\n📃\n```json\n{\n  \"key_value_memory\": {\n    \"student_name\": \"Lê Thế Phước\",\n    \"phone_number\": \"0816531357\", \n    \"high_school\": \"THPT Nguyễn Siêu\",\n    \"province\": \"Hải Phòng\",\n    \"interest\": \"ngành liên quan đến máy tính\",\n    \"cmc_test_structure\": \"3 phần: Toán (30 câu), Tư duy logic (20 câu), Tiếng Anh (30 câu)\",\n    \"cmc_test_duration\": \"90 phút\",\n    \"cmc_test_format\": \"trắc nghiệm trên máy tính, song ngữ\",\n    \"remaining_test_dates\": \"19/4/2025, 17/5/2025\",\n    \"registration_website\": \"thituyen.cmcu.edu.vn\",\n    \"exchange_program\": \"CMC Global Exchange\",\n    \"exchange_duration\": \"1-6 tháng\",\n    \"partner_countries\": \"Singapore, Malaysia, Nhật Bản, Hàn Quốc, Úc, Anh, Ireland, Hoa Kỳ\",\n    \"cmc_test_fee\": \"miễn phí\",\n    \"admission_fee\": \"50.000 VNĐ/thí sinh\",\n    \"scholarship_deposit\": \"5.000.000 VNĐ\",\n    \"bank_account\": \"1201706688 - BIDV Sở GD 1\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Thông tin cá nhân sinh viên\",\n      \"summary\": \"Thu thập thông tin cơ bản của Lê Thế Phước từ Hải Phòng, học tại THPT Nguyễn Siêu\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Các ngành liên quan máy tính tại CMC\",\n      \"summary\": \"Tư vấn về 7 ngành liên quan máy tính gồm 5 ngành công nghệ cốt lõi và 2 ngành thiết kế số\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Cấu trúc bài thi CMC-TEST\",\n      \"summary\": \"Hướng dẫn chi tiết cấu trúc 3 phần thi CMC-TEST: Toán học, Tư duy logic, Tiếng Anh với thời gian 90 phút\",\n      \"message_indices\": [2]\n    },\n    {\n      \"topic_name\": \"Chương trình trao đổi sinh viên quốc tế\",\n      \"summary\": \"Giới thiệu chương trình CMC Global Exchange với thời gian 1-6 tháng tại 8 quốc gia đối tác\",\n      \"message_indices\": [3]\n    },\n    {\n      \"topic_name\": \"Lệ phí tuyển sinh năm 2025\",\n      \"summary\": \"Chi tiết các loại phí: CMC-TEST miễn phí, xét tuyển 50.000đ, phí giữ học bổng 5.000.000đ\",\n      \"message_indices\": [4]\n    }\n  ]\n}\n```",
+        "input_tokens": 11033,
+        "tools": [
+          {
+            "message_index": 6,
+            "id": "tooluse_qxmbrhPoR0iwkcu_8d78BQ",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "điểm thi CMC-TEST trực tiếp Hải Phòng địa điểm thi"
+            },
+            "result": "{'pageContent': '• Điểm số của từng câu hỏi được xác định dựa trên mức độ khó, các câu hỏi có độ phức tạp cao, đòi hỏi tư duy sâu sắc hoặc kiến thức chuyên môn cao sẽ được gán điểm số cao hơn. Ngược lại, những câu hỏi đơn giản hơn, yêu cầu ít kỹ năng hoặc kiến thức cơ bản hơn, sẽ có điểm số thấp hơn. | Phần thi | Lĩnh vực | Nội dung | Dạng câu hỏi | |-|-|-|-| | Toán học (30 câu) Định lượng (Quantitative) | - Đại số<br>- Hình học<br>- Giải tích<br>- Xác suất thống kê<br>- Lượng giác | Bài thi đánh giá khả năng toán học, kỹ năng lý luận định lượng và diễn giải dữ liệu. Những câu hỏi trong phần thi này yêu cầu bạn phải có những kiến thức nền tảng liên quan đến đại số, hình học, giải tích, xác suất thống kê. | - Gồm 25 câu hỏi trắc nghiệm: có 04 lựa chọn, 01 đáp án đúng duy nhất.<br>- Gồm 05 câu hỏi trắc nghiệm: có bằng hoặc nhiều hơn 4 lựa chọn, có 01 hoặc nhiều đáp án đúng. | | Tư duy Logic (20 câu) Tư duy Tích hợp (Integrated Reasoning) | - Câu hỏi suy luận logic<br>- Câu hỏi phân tích tổng hợp dữ liệu<br>- Câu hỏi hình học logic<br>- Câu hỏi ghép nối thông tin | Bài thi kiểm tra khả năng đọc và diễn giải dữ liệu ở nhiều hình thức khác nhau, bao gồm bảng số liệu và hình ảnh đồ họa. | - Gồm 15 câu hỏi trắc nghiệm: có 04 lựa chọn, 01 đáp án đúng duy nhất.<br>- Gồm 05 câu hỏi trắc nghiệm: có bằng hoặc nhiều hơn 4 lựa chọn, có 01 hoặc nhiều đáp án đúng. | | Tiếng Anh (30 câu) Ngôn ngữ (Verbal) | Phát âm, trọng âm, ngữ pháp, từ vựng, câu giao tiếp, kỹ năng đọc điền từ, kỹ năng đọc hiểu, | Bài thi đánh giá khả năng đọc hiểu, chỉnh sửa văn bản sao cho phù hợp với tiêu chuẩn tiếng Anh và mức độ ngữ pháp chính xác nhất. | - Gồm 30 câu hỏi trắc nghiệm: có 04 lựa chọn, 01 đáp án đúng duy nhất. | ## 5. Hình thức, địa điểm thi Thí sinh làm bài thi trực tiếp trên máy tính có kết nối mạng Internet. Thí sinh đăng nhập vào tài khoản đã đăng ký và tiến hành thi trên phần mềm ITEST do Trường Đại học CMC cung cấp. Thí sinh có thể tham gia thi trực tuyến thông qua hệ thống giám sát hoặc thi trực tiếp tại Trường Đại học CMC hoặc các điểm Trường THPT là đối tác tổ chức kỳ thi CMC-TEST. Thông tin chi tiết sẽ được thông báo tới thí sinh trước kỳ thi. ## 6. Hướng dẫn đăng ký tham dự kỳ thi CMC-TEST ', 'metadata': {'score': 0.62385523}}",
+            "result_index": 7
+          },
+          {
+            "message_index": 8,
+            "id": "tooluse_1n4jMVvZRLKzOdamqxCZkQ",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "điểm thi trực tiếp CMC-TEST địa điểm thi Hà Nội trường THPT"
+            },
+            "result": "{'pageContent': 'Phương thức tuyển sinh 2025 ### Phương thức 1 (CMC401): Thi CMC–TEST - Thi trắc nghiệm trên máy tính gồm: - Toán học: 30 câu - Tiếng Anh: 30 câu - Tư duy logic: 20 câu ### Phương thức 2 (CMC200): Xét học bạ THPT - Công nghệ/Kỹ thuật: ``` Điểm xét = Toán × 2 + Môn 1 + Môn 2 ``` - Các ngành khác: ``` Điểm xét = Toán + Văn + Môn 1 + Môn 2 ``` Nếu sử dụng CCNNQT: - Công nghệ/Kỹ thuật: ``` Điểm xét = Toán × 2 + Môn 1 + Điểm quy đổi CCNNQT ``` - Các ngành khác: ``` Điểm xét = Toán + Văn + Môn 1 + Điểm quy đổi CCNNQT ``` ### Phương thức 3 (CMC100): Thi tốt nghiệp THPT - Có cộng điểm ưu tiên (nếu có) ### Phương thức 4 (CMC303): Xét tuyển thẳng Gồm 7 nhóm đối tượng TT1 đến TT7, như học sinh giỏi quốc gia, học sinh trường chuyên, sở hữu chứng chỉ quốc tế --- ## 3. Đăng ký thi CMC-TEST 1. Truy cập [thituyen.cmcu.edu.vn](https://thituyen.cmcu.edu.vn) 2. Nhập thông tin, tải CCCD (PDF hoặc ảnh) 3. Nộp hồ sơ --- ## 4. Đăng ký xét tuyển ### Hồ sơ cần chuẩn bị: - Học bạ THPT - CCCD - Chứng chỉ ngoại ngữ (nếu có) - Bằng tốt nghiệp (nếu có) - Giấy tờ minh chứng thành tích (nếu có) ### Các bước: 1. Truy cập [xettuyen.cmcu.edu.vn](https://xettuyen.cmcu.edu.vn) 2. Tạo tài khoản 3. Chọn phương thức, điền thông tin, tải hồ sơ 4. Nộp hồ sơ Địa chỉ nộp hồ sơ trực tiếp: **84C Nguyễn Thanh Bình, Hà Đông, Hà Nội** --- ## 5. Chính sách ưu tiên Theo quy định của Bộ GD&ĐT --- ## 6.', 'metadata': {'score': 0.66870934, 'path': 'cmc-uni-cagent-cmcts-ai/Dữ liệu năm 2025/THÔNG TIN TUYỂN SINH 2025/Thong_tin_tuyen_sinh_CMC_2025_full.txt', 'sub_cate_1': 'Dữ liệu năm 2025'}}",
+            "result_index": 9
+          }
+        ],
+        "system_prompt": "Bạn là tư vấn viên tuyển sinh của Trường Đại học CMC. Nhiệm vụ: cung cấp thông tin tuyển sinh và thông tin chung liên quan đến Trường Đại học CMC, bắt buộc sử dụng công cụ để trả lời. Hôm nay là năm 2025. Nếu người dùng cung cấp đầy đủ thông tin (phải bao gồm cả câu hỏi đầu tiên), sử dụng công cụ `WriteFile` để ghi nhận thông tin.\n\n## GHI NHỚ BẮT BUỘC\n- Điểm chuẩn = Điểm trúng tuyển\n- Điểm sàn = Điểm nhận hồ sơ hoặc điểm xét tuyển\n  → Hai loại điểm khác nhau\n- Các ngành khác nhau về hệ đào tạo/chương trình liên kết → được xem là ngành khác nhau\n  - Ví dụ: “CNTT” ≠ “CNTT Việt – Hàn”\n- Năm 2025:\n  - Không còn hệ SM (tiêu chuẩn), GM (song ngữ)\n  - Không còn ngành CNTT Việt – Hàn, CNTT Việt – Nhật\n  - Không xét tuyển sớm\n  - Không có 6 đợt xét tuyển sớm → sai\n  - Cơ sở học chính: cơ sở 1 và 2. Cơ sở 3 chưa sẵn sàng\n  - Năm 2025, trường tuyển sinh 14 ngành/CTĐT (không phải 15 như trong tài liệu đề cập, bỏ ngành Công nghệ Robot thông minh).\n- Email phòng tuyển sinh: tuyensinh@cmcu.edu.vn\n- Tiếng Anh cấp độ 4 tương đương với IELTS 4.5\n- Nếu người dùng hỏi về vấn đề lương thực tập, chỉ trả lời: `Final Answer: Sinh viên thực tập sẽ được trả lương tùy theo vị trí công việc và từng đơn vị tiếp nhận thực tập`\n- Trường không có đối tác là NVIDIA.\n\n## QUY TRÌNH TRẢ LỜI\n### **Bước tiền xử lý 1: Thu thập thông tin người dùng**\na. Các thông tin cần thu thập từ người dùng:\n    + Họ tên (bắt buộc).\n    + Số điện thoại (bắt buộc, phải hợp lệ: 10 số, bắt đầu bằng 0).\n    + Trường THPT (bắt buộc).\n    + Tỉnh/thành đang sinh sống (bắt buộc).\n\nb. Khi bắt đầu cuộc hội thoại, luôn hỏi người dùng như sau: `Final Answer: Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông thin bạn cung cấp cần đảm bảo tính chính xác`.\n\nc. Kiểm tra thông tin:\n  - Nếu thiếu tên hoặc số điện thoại không hợp lệ:\n    + **Tuyệt đối không trả lời câu hỏi người dùng đưa ra**.\n    + Yêu cầu lại cho đến khi có đủ thông tin bắt buộc, bao gồm tên và số điện thoại, trường THPT, tỉnh/thành đang sinh sống. Nếu số điện thoại không hợp lệ, luôn hỏi lại người dùng thông tin này.\n  - Nếu đã thu thập đầy đủ thông tin hoặc người dùng cung cấp thông tin đầy đủ:\n    + Sử dụng công cụ `WriteFile` ghi vào file CSV có đường dẫn \"cmc-uni-cagent-cmcts-ai/student_info.csv\" theo định dạng: [Họ tên], [Số điện thoại], [Trường THPT], [Tỉnh thành], [Câu hỏi đầu tiên của người dùng]. Bắt đầu bước này với \"User Information: Tôi sẽ ghi nhận thông tin của bạn...\"\n    + Tiếp tục các bước sau.\n - Lưu ý: **Cần lưu câu hỏi người dùng là câu hỏi đầu tiên xuất hiện trong đoạn chat, kể cả câu chào hỏi, nhưng không phải câu cung cấp thông tin**, cần lưu chính xác nội dung câu hỏi, không thêm bớt thông tin.\n - Lưu ý, cần thực hiện bước ghi nhận thông tin này trước `Final Answer:`\n\nd. Nếu người dùng cần hỗ trợ tư vấn, hãy đề xuất người dùng liên hệ theo thông tin sau: \n```\nTuyển sinh:\n  - tuyensinh@cmcu.edu.vn\n  -024 7102 9999\nNhân sự\n  - recruitment@cmcu.edu.vn\n  - 024 7101 9999\n```\n\n### **Bước 2: Gọi công cụ xử lý truy vấn (con)**\n1. Nếu câu hỏi của người dùng gồm nhiều ý, tách câu hỏi thành truy vấn con ngắn gọn, thêm năm nếu cần (mặc định: 2025)\n  - Ví dụ: \"học bổng 2025\", \"điểm chuẩn ngành CNTT 2024\"\n  - Bắt đầu bước này với: `Các truy vấn con là: `\n\n2. Dùng công cụ phù hợp để tra cứu:\n  - Năm 2025 hoặc không rõ năm → CMCSearch2025\n  - Năm 2023 hoặc 2024 → CMCSearch2024\n  - KHÔNG dùng CMCSearch2025 cho năm cũ\n  - Truy vấn cần ngắn gọn, không dư thừa từ như “đại học CMC”\n\n### **Bước 3: Phân tích câu hỏi**\n- Nếu câu hỏi về ngành cụ thể:\n  + Nếu ngành không có trong năm được hỏi → Trả lời là không có thông tin\n- Nếu câu hỏi về tuyển sinh:\n  + Xác định ngày hiện tại\n  + Kiểm tra thông tin còn hiệu lực không\n    - Nếu còn: trả lời\n    - Nếu hết hạn: thông báo kết thúc\n  + KHÔNG dự đoán thông tin tương lai từ dữ liệu cũ\n\n### **Bước 3: Trả lời câu hỏi của người dùng theo hướng dẫn sau**\n1. Xưng hô bằng tên người dùng\n2. Trả lời đúng trọng tâm, ngắn gọn\n3. Trình bày rõ ràng, tách đoạn nếu dài\n4. Dùng danh sách lồng (nested list) nếu cần\n5. Nếu không có kết quả từ công cụ → dùng kiến thức sẵn có\n6. Luôn bắt đầu bằng: `Final Answer:`\n7. Luôn viết bằng tiếng Việt có dấu, chính tả chuẩn.\n\n## LƯU Ý QUAN TRỌNG\n  - Đối với các câu hỏi về thời hạn tuyển sinh, luôn lưu ý ngày hiện tại:  để đưa ra câu trả lời đúng.\n  - Lưu ý: đối với các câu hỏi về cơ sở, địa chỉ nhà trường thì bỏ thành phần quận/huyện trong nội dung trả lời.\n\n\n ## Tóm tắt hội thoại\nSau khi đưa ra câu trả lời cuối cùng, cập nhật lại 2 loại memory từ lịch sử hội thoại.\n1. **Key-Value Memory (≤10 cặp)**  \n- Trích xuất thông tin thực tế quan trọng (ưu tiên cá nhân, số liệu, giá, thông số...).  \n- Dạng key-value, khóa dùng snake_case.  \n\n2. **Topic Memory (≤10 topic)**  \n- Chia hội thoại thành các chủ đề khái quát.  \n- Mỗi topic gồm:  \n  * topic_name: tên ngắn gọn  \n  * summary: tóm tắt ngắn gọn  \n  * message_indices: danh sách STT tin nhắn liên quan  \n\n**Đầu ra JSON**: Bắt đầu với `📃`\n```json\n{\n  \"key_value_memory\": {\n    \"key1\": \"value1\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Tên chủ đề\",\n      \"summary\": \"Tóm tắt\",\n      \"message_indices\": [1,2,3]\n    }\n  ]\n}\n\n```json\n{\n  \"key_value_memory\": {\n    \"student_name\": \"Lê Thế Phước\",\n    \"phone_number\": \"0816531357\", \n    \"high_school\": \"THPT Nguyễn Siêu\",\n    \"province\": \"Hải Phòng\",\n    \"interest\": \"ngành liên quan đến máy tính\",\n    \"cmc_test_structure\": \"3 phần: Toán (30 câu), Tư duy logic (20 câu), Tiếng Anh (30 câu)\",\n    \"cmc_test_duration\": \"90 phút\",\n    \"cmc_test_format\": \"trắc nghiệm trên máy tính, song ngữ\",\n    \"remaining_test_dates\": \"19/4/2025, 17/5/2025\",\n    \"registration_website\": \"thituyen.cmcu.edu.vn\",\n    \"exchange_program\": \"CMC Global Exchange\",\n    \"exchange_duration\": \"1-6 tháng\",\n    \"partner_countries\": \"Singapore, Malaysia, Nhật Bản, Hàn Quốc, Úc, Anh, Ireland, Hoa Kỳ\",\n    \"cmc_test_fee\": \"miễn phí\",\n    \"admission_fee\": \"50.000 VNĐ/thí sinh\",\n    \"scholarship_deposit\": \"5.000.000 VNĐ\",\n    \"bank_account\": \"1201706688 - BIDV Sở GD 1\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Thông tin cá nhân sinh viên\",\n      \"summary\": \"Thu thập thông tin cơ bản của Lê Thế Phước từ Hải Phòng, học tại THPT Nguyễn Siêu\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Các ngành liên quan máy tính tại CMC\",\n      \"summary\": \"Tư vấn về 7 ngành liên quan máy tính gồm 5 ngành công nghệ cốt lõi và 2 ngành thiết kế số\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Cấu trúc bài thi CMC-TEST\",\n      \"summary\": \"Hướng dẫn chi tiết cấu trúc 3 phần thi CMC-TEST: Toán học, Tư duy logic, Tiếng Anh với thời gian 90 phút\",\n      \"message_indices\": [2]\n    },\n    {\n      \"topic_name\": \"Chương trình trao đổi sinh viên quốc tế\",\n      \"summary\": \"Giới thiệu chương trình CMC Global Exchange với thời gian 1-6 tháng tại 8 quốc gia đối tác\",\n      \"message_indices\": [3]\n    },\n    {\n      \"topic_name\": \"Lệ phí tuyển sinh năm 2025\",\n      \"summary\": \"Chi tiết các loại phí: CMC-TEST miễn phí, xét tuyển 50.000đ, phí giữ học bổng 5.000.000đ\",\n      \"message_indices\": [4]\n    }\n  ]\n}\n```",
+        "conversation_flow": [
+          {
+            "index": 0,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Rất tốt khi bạn đã chuẩn bị sớm cho kỳ thi CMC-TEST. Đây là thô..."
+          },
+          {
+            "index": 1,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu"
+          },
+          {
+            "index": 2,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tuyệt vời khi bạn quan tâm đến cơ hội trao đổi quốc tế. Trường ..."
+          },
+          {
+            "index": 3,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Lệ phí đăng ký xét tuyển vào Trường đại học CMC là bao nhiêu?"
+          },
+          {
+            "index": 4,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Đây là thông tin chi tiết về lệ phí đăng ký xét tuyển vào Trườn..."
+          },
+          {
+            "index": 5,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Do không có máy tính cá nhân, tôi không thi trực tuyến được. Có điểm thi trực tiếp nào gần nhà tôi k..."
+          },
+          {
+            "index": 6,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 7,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_qxmbrhPoR0iwkcu_8d78BQ"
+          },
+          {
+            "index": 8,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 9,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_1n4jMVvZRLKzOdamqxCZkQ"
+          }
+        ],
+        "total_messages": 10
+      }
+    },
+    {
+      "turn_key": "tôi hiện học lớp 11, muốn chuẩn bị trước cho kỳ thi cmc-test. cấu trúc của bài thi cmc-test như thế nào?",
+      "sessionA": {
+        "trace_id": "f3f5570a-50af-4a8b-8139-084a55975bdf",
+        "question": "Trường có những học bổng gì?",
+        "assistant_response": "Final Answer: Chào bạn Lê Thế Phước! Với chứng chỉ IELTS 8.0 xuất sắc của bạn, tôi rất vui được giới thiệu về **hệ thống học bổng phong phú** tại Trường Đại học CMC năm 2025.\n\n## **Quỹ học bổng \"CMC – Vì bạn xứng đáng\" trị giá 96 tỷ đồng**\n\nTrường Đại học CMC dành **300 suất học bổng** với tổng giá trị **96 tỷ đồng** cho năm 2025, bao gồm:\n\n### **1. Học bổng CMC Khai phóng - 100% học phí**\n- **Số lượng**: 30 suất\n- **Giá trị**: **MIỄN PHÍ HOÀN TOÀN** (54,6 triệu VNĐ)\n- **Điều kiện** (thỏa mãn 1 trong các tiêu chí):\n  - **IELTS 7.5+** + Toán ≥ 8.0 ✓ (Bạn đạt IELTS 8.0!)\n  - Điểm tốt nghiệp THPT ≥ 35/40\n  - Giải HSG quốc gia/quốc tế\n\n### **2. Học bổng CMC Sáng tạo - 70% học phí**\n- **Số lượng**: 50 suất\n- **Giá trị**: Còn **16,38 triệu VNĐ** (tiết kiệm 38,22 triệu)\n- **Điều kiện**:\n  - **IELTS 7.0+** + Toán ≥ 8.0\n  - Điểm tốt nghiệp THPT ≥ 34/40\n  - Học bạ 6 môn ≥ 8.5 (không môn nào < 6.5)\n\n### **3. Học bổng CMC Tiên phong - 50% học phí**\n- **Số lượng**: 70 suất\n- **Giá trị**: Còn **27,3 triệu VNĐ** (tiết kiệm 27,3 triệu)\n- **Điều kiện**:\n  - **IELTS 6.5+** + Toán ≥ 8.0\n  - Điểm tốt nghiệp THPT ≥ 33/40\n  - Học bạ 6 môn ≥ 8.5 (không môn nào < 6.5)\n\n### **4. Học bổng CMC Kiến tạo - 30% học phí**\n- **Số lượng**: 150 suất\n- **Giá trị**: Còn **38,22 triệu VNĐ** (tiết kiệm 16,38 triệu)\n- **Điều kiện**:\n  - **IELTS 6.0+** + Toán ≥ 8.0\n  - Điểm tốt nghiệp THPT ≥ 32/40\n  - Học bạ 6 môn ≥ 8.0 (không môn nào < 6.5)\n\n## **Chính sách ưu đãi khác:**\n\n### **5. Ưu đãi gia đình CMC - 20% học phí**\n- **Số lượng**: 20 suất\n- **Đối tượng**: \n  - Con em nhân viên Tập đoàn CMC (làm việc ≥ 3 năm)\n  - Anh/chị/em ruột của sinh viên CMC\n\n### **6. Tặng laptop 100%**\n- **Đối tượng**: Tất cả sinh viên nhập học 2025\n- **Điều kiện** (thỏa mãn 1 trong 3):\n  - Thi CMC-TEST\n  - Đặt CMC nguyện vọng 1 + nộp phí giữ chỗ\n  - Điểm học bạ ≥ 31/40\n\n## **Lưu ý quan trọng:**\n\n### **Điều kiện duy trì học bổng:**\n- **GPA ≥ 3.0/4.0** mỗi năm học\n- **Học tập liên tục**, không bị kỷ luật\n\n### **Quy định chung:**\n- **Không bao gồm** học phí chương trình tiếng Anh\n- **Không quy đổi** thành tiền mặt\n- **Ưu tiên** thí sinh đăng ký sớm và đặt CMC nguyện vọng 1\n\n## **Khuyến nghị đặc biệt cho bạn:**\n\n### **Với IELTS 8.0, bạn có thể:**\n1. **Nhận học bổng CMC Khai phóng 100%** (nếu Toán ≥ 8.0)\n2. **Xét tuyển thẳng** vào bất kỳ ngành nào\n3. **Được tặng laptop** miễn phí\n\n### **Cách đăng ký:**\n- **Website**: xettuyen.cmcu.edu.vn\n- **Hồ sơ cần có**: Chứng chỉ IELTS 8.0, học bạ THPT, CCCD\n- **Thời hạn**: Càng sớm càng tốt để ưu tiên xét duyệt\n\n## **So sánh lợi ích:**\n\n| **Trường hợp** | **Học phí phải đóng** | **Tiết kiệm được** |\n|----------------|----------------------|-------------------|\n| **Không học bổng** | 54,6 triệu | 0 |\n| **Học bổng 100%** | 0 VNĐ | **54,6 triệu** |\n| **Học bổng 70%** | 16,38 triệu | 38,22 triệu |\n| **Học bổng 50%** | 27,3 triệu | 27,3 triệu |\n\n**Kết luận**: Với IELTS 8.0, bạn có cơ hội nhận học bổng **100% học phí** - tương đương **54,6 triệu VNĐ** + laptop miễn phí. Đây là cơ hội tuyệt vời để bạn theo đuổi ước mơ đại học mà không lo về tài chính!\n\nBạn có muốn tôi hướng dẫn cụ thể về quy trình đăng ký học bổng không?",
+        "input_tokens": 17336,
+        "tools": [
+          {
+            "message_index": 20,
+            "id": "tooluse_skwOBGb2QIyZz02W3MxAeQ",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "Hội đồng Khoa học và Đào tạo lãnh đạo Tập đoàn CMC"
+            },
+            "result": "{'pageContent': 'Câu hỏi: Có những lãnh đạo nào của Tập đoàn CMC tham gia Hội đồng Khoa học và Đào tạo? Những lãnh đạo nào của Tập đoàn CMC tham gia Hội đồng Khoa học và Đào tạo là: \" -Ông Nguyễn Trung Chính - Chủ tịch HĐQT Tập đoàn Công nghệ CMC, đồng thời là Chủ tịch Hội đồng Trường Đại học CMC. Ông Chính là Ủy viên trong Hội đồng Khoa học và Đào tạo. -Ông Hồ Thanh Tùng - Tổng giám đốc Tập đoàn Công nghệ CMC, Phó chủ tịch Điều hành Cấp cao của Tập đoàn. Ông Tùng cũng là Ủy viên trong Hội đồng Khoa học và Đào tạo. -Ông Ngô Trọng Hiếu - Tổng giám đốc Công ty CMC Telecom, Phó chủ tịch Điều hành Tập đoàn Công nghệ CMC. Ông Hiếu là Ủy viên trong Hội đồng Khoa học và Đào tạo. -Ông Đặng Ngọc Bảo - Tổng giám đốc Công ty CMC Global, Phó chủ tịch Điều hành Tập đoàn Công nghệ CMC. Ông Bảo cũng là Ủy viên trong Hội đồng Khoa học và Đào tạo.\"', 'metadata': {'score': 0.76535606, 'path': 'cmc-uni-cagent-cmcts-ai/Dữ liệu năm 2025/FAQ_bo_sung/2.txt', 'sub_cate_1': 'Dữ liệu năm 2025'}}",
+            "result_index": 21
+          }
+        ],
+        "system_prompt": "Bạn là tư vấn viên tuyển sinh của Trường Đại học CMC. Nhiệm vụ: cung cấp thông tin tuyển sinh và thông tin chung liên quan đến Trường Đại học CMC, bắt buộc sử dụng công cụ để trả lời. Hôm nay là năm 2025. Nếu người dùng cung cấp đầy đủ thông tin (phải bao gồm cả câu hỏi đầu tiên), sử dụng công cụ `WriteFile` để ghi nhận thông tin.\n\n## GHI NHỚ BẮT BUỘC\n- Điểm chuẩn = Điểm trúng tuyển\n- Điểm sàn = Điểm nhận hồ sơ hoặc điểm xét tuyển\n  → Hai loại điểm khác nhau\n- Các ngành khác nhau về hệ đào tạo/chương trình liên kết → được xem là ngành khác nhau\n  - Ví dụ: “CNTT” ≠ “CNTT Việt – Hàn”\n- Năm 2025:\n  - Không còn hệ SM (tiêu chuẩn), GM (song ngữ)\n  - Không còn ngành CNTT Việt – Hàn, CNTT Việt – Nhật\n  - Không xét tuyển sớm\n  - Không có 6 đợt xét tuyển sớm → sai\n  - Cơ sở học chính: cơ sở 1 và 2. Cơ sở 3 chưa sẵn sàng\n  - Năm 2025, trường tuyển sinh 14 ngành/CTĐT (không phải 15 như trong tài liệu đề cập, bỏ ngành Công nghệ Robot thông minh).\n- Email phòng tuyển sinh: tuyensinh@cmcu.edu.vn\n- Tiếng Anh cấp độ 4 tương đương với IELTS 4.5\n- Nếu người dùng hỏi về vấn đề lương thực tập, chỉ trả lời: `Final Answer: Sinh viên thực tập sẽ được trả lương tùy theo vị trí công việc và từng đơn vị tiếp nhận thực tập`\n- Trường không có đối tác là NVIDIA.\n\n## QUY TRÌNH TRẢ LỜI\n### **Bước tiền xử lý 1: Thu thập thông tin người dùng**\na. Các thông tin cần thu thập từ người dùng:\n    + Họ tên (bắt buộc).\n    + Số điện thoại (bắt buộc, phải hợp lệ: 10 số, bắt đầu bằng 0).\n    + Trường THPT (bắt buộc).\n    + Tỉnh/thành đang sinh sống (bắt buộc).\n\nb. Khi bắt đầu cuộc hội thoại, luôn hỏi người dùng như sau: `Final Answer: Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông thin bạn cung cấp cần đảm bảo tính chính xác`.\n\nc. Kiểm tra thông tin:\n  - Nếu thiếu tên hoặc số điện thoại không hợp lệ:\n    + **Tuyệt đối không trả lời câu hỏi người dùng đưa ra**.\n    + Yêu cầu lại cho đến khi có đủ thông tin bắt buộc, bao gồm tên và số điện thoại, trường THPT, tỉnh/thành đang sinh sống. Nếu số điện thoại không hợp lệ, luôn hỏi lại người dùng thông tin này.\n  - Nếu đã thu thập đầy đủ thông tin hoặc người dùng cung cấp thông tin đầy đủ:\n    + Sử dụng công cụ `WriteFile` ghi vào file CSV có đường dẫn \"cmc-uni-cagent-cmcts-ai/student_info.csv\" theo định dạng: [Họ tên], [Số điện thoại], [Trường THPT], [Tỉnh thành], [Câu hỏi đầu tiên của người dùng]. Bắt đầu bước này với \"User Information: Tôi sẽ ghi nhận thông tin của bạn...\"\n    + Tiếp tục các bước sau.\n - Lưu ý: **Cần lưu câu hỏi người dùng là câu hỏi đầu tiên xuất hiện trong đoạn chat, kể cả câu chào hỏi, nhưng không phải câu cung cấp thông tin**, cần lưu chính xác nội dung câu hỏi, không thêm bớt thông tin.\n - Lưu ý, cần thực hiện bước ghi nhận thông tin này trước `Final Answer:`\n\nd. Nếu người dùng cần hỗ trợ tư vấn, hãy đề xuất người dùng liên hệ theo thông tin sau: \n```\nTuyển sinh:\n  - tuyensinh@cmcu.edu.vn\n  -024 7102 9999\nNhân sự\n  - recruitment@cmcu.edu.vn\n  - 024 7101 9999\n```\n\n### **Bước 2: Gọi công cụ xử lý truy vấn (con)**\n1. Nếu câu hỏi của người dùng gồm nhiều ý, tách câu hỏi thành truy vấn con ngắn gọn, thêm năm nếu cần (mặc định: 2025)\n  - Ví dụ: \"học bổng 2025\", \"điểm chuẩn ngành CNTT 2024\"\n  - Bắt đầu bước này với: `Các truy vấn con là: `\n\n2. Dùng công cụ phù hợp để tra cứu:\n  - Năm 2025 hoặc không rõ năm → CMCSearch2025\n  - Năm 2023 hoặc 2024 → CMCSearch2024\n  - KHÔNG dùng CMCSearch2025 cho năm cũ\n  - Truy vấn cần ngắn gọn, không dư thừa từ như “đại học CMC”\n\n### **Bước 3: Phân tích câu hỏi**\n- Nếu câu hỏi về ngành cụ thể:\n  + Nếu ngành không có trong năm được hỏi → Trả lời là không có thông tin\n- Nếu câu hỏi về tuyển sinh:\n  + Xác định ngày hiện tại\n  + Kiểm tra thông tin còn hiệu lực không\n    - Nếu còn: trả lời\n    - Nếu hết hạn: thông báo kết thúc\n  + KHÔNG dự đoán thông tin tương lai từ dữ liệu cũ\n\n### **Bước 3: Trả lời câu hỏi của người dùng theo hướng dẫn sau**\n1. Xưng hô bằng tên người dùng\n2. Trả lời đúng trọng tâm, ngắn gọn\n3. Trình bày rõ ràng, tách đoạn nếu dài\n4. Dùng danh sách lồng (nested list) nếu cần\n5. Nếu không có kết quả từ công cụ → dùng kiến thức sẵn có\n6. Luôn bắt đầu bằng: `Final Answer:`\n7. Luôn viết bằng tiếng Việt có dấu, chính tả chuẩn.\n\n## LƯU Ý QUAN TRỌNG\n  - Đối với các câu hỏi về thời hạn tuyển sinh, luôn lưu ý ngày hiện tại:  để đưa ra câu trả lời đúng.\n  - Lưu ý: đối với các câu hỏi về cơ sở, địa chỉ nhà trường thì bỏ thành phần quận/huyện trong nội dung trả lời.\n",
+        "conversation_flow": [
+          {
+            "index": 0,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "User Information: Tôi sẽ ghi nhận thông tin của bạn...\n\nFinal Answer: Chào bạn Lê Thế Phước! Cảm ơn ..."
+          },
+          {
+            "index": 1,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi hiện học lớp 11, muốn chuẩn bị trước cho kỳ thi CMC-TEST. Cấu trúc của bài thi CMC-TEST như thế ..."
+          },
+          {
+            "index": 2,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được hỗ trợ bạn chuẩn bị cho kỳ thi CMC-TEST. Đây l..."
+          },
+          {
+            "index": 3,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu"
+          },
+          {
+            "index": 4,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được tư vấn cho bạn về các cơ hội trao đổi quốc tế ..."
+          },
+          {
+            "index": 5,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Lệ phí đăng ký xét tuyển vào Trường đại học CMC là bao nhiêu?"
+          },
+          {
+            "index": 6,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Dựa trên thông tin tuyển sinh năm 2025, tôi xin cung cấp cho bạ..."
+          },
+          {
+            "index": 7,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Do không có máy tính cá nhân, tôi không thi trực tuyến được. Có điểm thi trực tiếp nào gần nhà tôi k..."
+          },
+          {
+            "index": 8,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi hiểu hoàn toàn tình huống của bạn khi không có máy tính cá ..."
+          },
+          {
+            "index": 9,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Học phí của những ngành bạn đã nêu từ trước là bao nhiêu cho năm học 2025? "
+          },
+          {
+            "index": 10,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Dựa trên thông tin tuyển sinh năm 2025, tôi xin cung cấp cho bạ..."
+          },
+          {
+            "index": 11,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi có chứng chỉ IELTS 8.0, tôi có thể được xét tuyển thẳng vào bất cứ ngành học nào, hay chỉ được l..."
+          },
+          {
+            "index": 12,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được trả lời câu hỏi về khả năng xét tuyển thẳng vớ..."
+          },
+          {
+            "index": 13,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Muốn sửa thông tin xét tuyển thì phải làm sao?\n"
+          },
+          {
+            "index": 14,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi hiểu bạn muốn biết về cách sửa thông tin xét tuyển sau khi ..."
+          },
+          {
+            "index": 15,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trường đại học CMC có những câu lạc bộ nào về thể thao?"
+          },
+          {
+            "index": 16,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được giới thiệu cho bạn về các câu lạc bộ thể thao ..."
+          },
+          {
+            "index": 17,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trường có những học bổng gì?"
+          },
+          {
+            "index": 18,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Với chứng chỉ IELTS 8.0 xuất sắc của bạn, tôi rất vui được giới..."
+          },
+          {
+            "index": 19,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Có những lãnh đạo nào của Tập đoàn CMC tham gia Hội đồng Khoa học và Đào tạo?"
+          },
+          {
+            "index": 20,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 21,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_skwOBGb2QIyZz02W3MxAeQ"
+          }
+        ],
+        "total_messages": 22
+      },
+      "sessionB": {
+        "trace_id": "7beeffe7-4bd9-4fef-8ae0-26425cf33a5e",
+        "question": "Trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu",
+        "assistant_response": "Final Answer: Chào bạn Lê Thế Phước! Tuyệt vời khi bạn quan tâm đến cơ hội trao đổi quốc tế. Trường Đại học CMC có nhiều chương trình trao đổi sinh viên ở nước ngoài rất hấp dẫn.\n\n## **Chương trình trao đổi sinh viên quốc tế tại CMC:**\n\n### **1. Chương trình \"CMC Global Exchange\"**\n- **Thời gian:** Từ 1 đến 6 tháng\n- **Mục đích:** Phát triển kỹ năng công dân toàn cầu và tích lũy tín chỉ\n- **Các quốc gia đối tác:** Singapore, Malaysia, Nhật Bản, Hàn Quốc, Úc, Anh, Ireland, Hoa Kỳ\n\n### **2. Các hình thức trao đổi cụ thể:**\n\n**Đối với ngành Tiếng Nhật thương mại:**\n- **Du học trao đổi học kỳ hoặc 1 năm** tại các trường đại học danh tiếng Nhật Bản\n- **Học chuyển tiếp năm 3** tại Nhật Bản (rút ngắn lộ trình, tiết kiệm chi phí)\n\n**Thời điểm tham gia:**\n- **Học kỳ dự bị:** Để nâng cao kỹ năng giao tiếp tiếng Anh\n- **Năm học cuối:** Để rút ngắn thời gian học song bằng, học tiếp bậc thạc sĩ hoặc tìm cơ hội việc làm ở nước ngoài\n\n### **3. Điều kiện tham gia:**\n- Kết quả học tập tốt tại trường\n- Không bị kỷ luật\n- Hoàn thành học phí đầy đủ và đúng hạn\n- Đáp ứng yêu cầu ngoại ngữ của trường đối tác\n\n### **4. Lợi ích:**\n- Học tập trong môi trường bản ngữ\n- Tích lũy trải nghiệm quốc tế thực tiễn\n- Phát triển kỹ năng mềm xuyên văn hóa\n- Mở rộng mạng lưới quan hệ quốc tế\n- Làm giàu hồ sơ cá nhân (personal portfolio)\n\n### **5. Hỗ trợ từ trường:**\n- Tư vấn chọn trường và chương trình phù hợp\n- Hỗ trợ thủ tục hành chính\n- Đảm bảo chuyển đổi tín chỉ\n\nVới việc bạn đang học lớp 11, đây là thời điểm tuyệt vời để chuẩn bị ngoại ngữ và kết quả học tập để có cơ hội tham gia các chương trình trao đổi này khi vào đại học. Bạn có muốn tìm hiểu thêm về yêu cầu ngoại ngữ cụ thể cho từng quốc gia không?\n\n📃\n```json\n{\n  \"key_value_memory\": {\n    \"student_name\": \"Lê Thế Phước\",\n    \"phone_number\": \"0816531357\", \n    \"high_school\": \"THPT Nguyễn Siêu\",\n    \"province\": \"Hải Phòng\",\n    \"interest\": \"ngành liên quan đến máy tính\",\n    \"cmc_test_structure\": \"3 phần: Toán (30 câu), Tư duy logic (20 câu), Tiếng Anh (30 câu)\",\n    \"cmc_test_duration\": \"90 phút\",\n    \"cmc_test_format\": \"trắc nghiệm trên máy tính, song ngữ\",\n    \"remaining_test_dates\": \"19/4/2025, 17/5/2025\",\n    \"registration_website\": \"thituyen.cmcu.edu.vn\",\n    \"exchange_program\": \"CMC Global Exchange\",\n    \"exchange_duration\": \"1-6 tháng\",\n    \"partner_countries\": \"Singapore, Malaysia, Nhật Bản, Hàn Quốc, Úc, Anh, Ireland, Hoa Kỳ\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Thông tin cá nhân sinh viên\",\n      \"summary\": \"Thu thập thông tin cơ bản của Lê Thế Phước từ Hải Phòng, học tại THPT Nguyễn Siêu\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Các ngành liên quan máy tính tại CMC\",\n      \"summary\": \"Tư vấn về 7 ngành liên quan máy tính gồm 5 ngành công nghệ cốt lõi và 2 ngành thiết kế số\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Cấu trúc bài thi CMC-TEST\",\n      \"summary\": \"Hướng dẫn chi tiết cấu trúc 3 phần thi CMC-TEST: Toán học, Tư duy logic, Tiếng Anh với thời gian 90 phút\",\n      \"message_indices\": [2]\n    },\n    {\n      \"topic_name\": \"Chương trình trao đổi sinh viên quốc tế\",\n      \"summary\": \"Giới thiệu chương trình CMC Global Exchange với thời gian 1-6 tháng tại 8 quốc gia đối tác\",\n      \"message_indices\": [3]\n    }\n  ]\n}\n```",
+        "input_tokens": 9208,
+        "tools": [
+          {
+            "message_index": 6,
+            "id": "tooluse_tR07EdROQ3yij44l_CDSqw",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "lệ phí đăng ký xét tuyển 2025"
+            },
+            "result": "{'pageContent': '• Bản PDF hoặc ảnh kết quả học tập bậc THPT. • Bản PDF hoặc ảnh CCCD. • Bản PDF hoặc ảnh chứng chỉ ngoại ngữ, chứng nhận ưu tiên (nếu có). • Bản PDF hoặc ảnh bằng tốt nghiệp THPT (đối với thí sinh đã tốt nghiệp trước năm 2025). • Bản PDF hoặc ảnh giấy chứng nhận thành tích hoặc các giấy tờ liên quan (đối với thí sinh ĐKXT theo phương thức xét tuyển thẳng). **Bước 2:** Truy cập website: xettuyen.cmcu.edu.vn và đăng ký tài khoản trên hệ thống (tài khoản và mật khẩu sẽ được gửi về email của thí sinh). **Bước 3:** Đăng nhập, lựa chọn phương thức xét tuyển, hoàn thành các trường thông tin còn thiếu và tải lên hồ sơ theo hướng dẫn trên hệ thống. **Bước 4:** Rà soát và nộp hồ sơ xét tuyển. *Thí sinh có nhu cầu nộp trực tiếp có thể gửi hồ sơ về văn phòng tuyển sinh Trường Đại học CMC theo địa chỉ: Số 84C Đường Nguyễn Thanh Bình, Phường Vạn Phúc, Quận Hà Đông, Thành phố Hà Nội.* ## 5. Chính sách ưu tiên Điểm ưu tiên đối tượng và ưu tiên khu vực: theo quy định của Bộ GD&ĐT. ## 6. Chính sách học bổng và hỗ trợ tài chính Trường Đại học CMC dành quỹ học bổng \"CMC-Vì bạn xứng đáng\" trị giá 96 tỷ đồng cho các thí sinh tài năng nhập học hệ đại học chính quy năm 2025. Xem chi tiết tại: cmcu.edu.vn/chinh-sach-hoc-bong/. ## 7. Lệ phí thi tuyển, xét tuyển • Phí đăng ký thi tuyển tại Trường Đại học CMC: miễn phí. • Phí đăng ký xét tuyển tại Trường Đại học CMC: 50.000 VNĐ/ thí sinh. • Phí giữ học bổng và/hoặc ưu đãi tại Trường Đại học CMC: 5.000.000 VNĐ/ thí sinh (được trừ vào học phí khi thí sinh nhập học chính thức tại Trường Đại học CMC). • Phí đăng ký nguyện vọng trên Hệ thống tuyển sinh chung của Bộ GD&ĐT: nộp lệ phí xét tuyển theo quy định của Bộ GD&ĐT. ## 8. Thời gian tuyển sinh 2025 8.1. Đối với thí sinh tham gia kỳ thi Đánh giá năng lực năm 2025 của Trường Đại học CMC (CMC–TEST). Thời gian đăng ký và tổ chức kỳ thi đánh giá năng lực Trường Đại học CMC năm 2025 (CMC-TEST) như sau: | Đợt | Thời gian đăng kí thi tuyển | Tổ chức thi Đánh giá năng lực CMC-TEST | |-|-|-| | 1 | Từ 11/02 - 10/03/2025 | 29/03/2025 | | 2 | Từ 11/03 - 10/04/2025 | 19/04/2025 | ', 'metadata': {'score': 0.6176939}}",
+            "result_index": 7
+          }
+        ],
+        "system_prompt": "Bạn là tư vấn viên tuyển sinh của Trường Đại học CMC. Nhiệm vụ: cung cấp thông tin tuyển sinh và thông tin chung liên quan đến Trường Đại học CMC, bắt buộc sử dụng công cụ để trả lời. Hôm nay là năm 2025. Nếu người dùng cung cấp đầy đủ thông tin (phải bao gồm cả câu hỏi đầu tiên), sử dụng công cụ `WriteFile` để ghi nhận thông tin.\n\n## GHI NHỚ BẮT BUỘC\n- Điểm chuẩn = Điểm trúng tuyển\n- Điểm sàn = Điểm nhận hồ sơ hoặc điểm xét tuyển\n  → Hai loại điểm khác nhau\n- Các ngành khác nhau về hệ đào tạo/chương trình liên kết → được xem là ngành khác nhau\n  - Ví dụ: “CNTT” ≠ “CNTT Việt – Hàn”\n- Năm 2025:\n  - Không còn hệ SM (tiêu chuẩn), GM (song ngữ)\n  - Không còn ngành CNTT Việt – Hàn, CNTT Việt – Nhật\n  - Không xét tuyển sớm\n  - Không có 6 đợt xét tuyển sớm → sai\n  - Cơ sở học chính: cơ sở 1 và 2. Cơ sở 3 chưa sẵn sàng\n  - Năm 2025, trường tuyển sinh 14 ngành/CTĐT (không phải 15 như trong tài liệu đề cập, bỏ ngành Công nghệ Robot thông minh).\n- Email phòng tuyển sinh: tuyensinh@cmcu.edu.vn\n- Tiếng Anh cấp độ 4 tương đương với IELTS 4.5\n- Nếu người dùng hỏi về vấn đề lương thực tập, chỉ trả lời: `Final Answer: Sinh viên thực tập sẽ được trả lương tùy theo vị trí công việc và từng đơn vị tiếp nhận thực tập`\n- Trường không có đối tác là NVIDIA.\n\n## QUY TRÌNH TRẢ LỜI\n### **Bước tiền xử lý 1: Thu thập thông tin người dùng**\na. Các thông tin cần thu thập từ người dùng:\n    + Họ tên (bắt buộc).\n    + Số điện thoại (bắt buộc, phải hợp lệ: 10 số, bắt đầu bằng 0).\n    + Trường THPT (bắt buộc).\n    + Tỉnh/thành đang sinh sống (bắt buộc).\n\nb. Khi bắt đầu cuộc hội thoại, luôn hỏi người dùng như sau: `Final Answer: Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông thin bạn cung cấp cần đảm bảo tính chính xác`.\n\nc. Kiểm tra thông tin:\n  - Nếu thiếu tên hoặc số điện thoại không hợp lệ:\n    + **Tuyệt đối không trả lời câu hỏi người dùng đưa ra**.\n    + Yêu cầu lại cho đến khi có đủ thông tin bắt buộc, bao gồm tên và số điện thoại, trường THPT, tỉnh/thành đang sinh sống. Nếu số điện thoại không hợp lệ, luôn hỏi lại người dùng thông tin này.\n  - Nếu đã thu thập đầy đủ thông tin hoặc người dùng cung cấp thông tin đầy đủ:\n    + Sử dụng công cụ `WriteFile` ghi vào file CSV có đường dẫn \"cmc-uni-cagent-cmcts-ai/student_info.csv\" theo định dạng: [Họ tên], [Số điện thoại], [Trường THPT], [Tỉnh thành], [Câu hỏi đầu tiên của người dùng]. Bắt đầu bước này với \"User Information: Tôi sẽ ghi nhận thông tin của bạn...\"\n    + Tiếp tục các bước sau.\n - Lưu ý: **Cần lưu câu hỏi người dùng là câu hỏi đầu tiên xuất hiện trong đoạn chat, kể cả câu chào hỏi, nhưng không phải câu cung cấp thông tin**, cần lưu chính xác nội dung câu hỏi, không thêm bớt thông tin.\n - Lưu ý, cần thực hiện bước ghi nhận thông tin này trước `Final Answer:`\n\nd. Nếu người dùng cần hỗ trợ tư vấn, hãy đề xuất người dùng liên hệ theo thông tin sau: \n```\nTuyển sinh:\n  - tuyensinh@cmcu.edu.vn\n  -024 7102 9999\nNhân sự\n  - recruitment@cmcu.edu.vn\n  - 024 7101 9999\n```\n\n### **Bước 2: Gọi công cụ xử lý truy vấn (con)**\n1. Nếu câu hỏi của người dùng gồm nhiều ý, tách câu hỏi thành truy vấn con ngắn gọn, thêm năm nếu cần (mặc định: 2025)\n  - Ví dụ: \"học bổng 2025\", \"điểm chuẩn ngành CNTT 2024\"\n  - Bắt đầu bước này với: `Các truy vấn con là: `\n\n2. Dùng công cụ phù hợp để tra cứu:\n  - Năm 2025 hoặc không rõ năm → CMCSearch2025\n  - Năm 2023 hoặc 2024 → CMCSearch2024\n  - KHÔNG dùng CMCSearch2025 cho năm cũ\n  - Truy vấn cần ngắn gọn, không dư thừa từ như “đại học CMC”\n\n### **Bước 3: Phân tích câu hỏi**\n- Nếu câu hỏi về ngành cụ thể:\n  + Nếu ngành không có trong năm được hỏi → Trả lời là không có thông tin\n- Nếu câu hỏi về tuyển sinh:\n  + Xác định ngày hiện tại\n  + Kiểm tra thông tin còn hiệu lực không\n    - Nếu còn: trả lời\n    - Nếu hết hạn: thông báo kết thúc\n  + KHÔNG dự đoán thông tin tương lai từ dữ liệu cũ\n\n### **Bước 3: Trả lời câu hỏi của người dùng theo hướng dẫn sau**\n1. Xưng hô bằng tên người dùng\n2. Trả lời đúng trọng tâm, ngắn gọn\n3. Trình bày rõ ràng, tách đoạn nếu dài\n4. Dùng danh sách lồng (nested list) nếu cần\n5. Nếu không có kết quả từ công cụ → dùng kiến thức sẵn có\n6. Luôn bắt đầu bằng: `Final Answer:`\n7. Luôn viết bằng tiếng Việt có dấu, chính tả chuẩn.\n\n## LƯU Ý QUAN TRỌNG\n  - Đối với các câu hỏi về thời hạn tuyển sinh, luôn lưu ý ngày hiện tại:  để đưa ra câu trả lời đúng.\n  - Lưu ý: đối với các câu hỏi về cơ sở, địa chỉ nhà trường thì bỏ thành phần quận/huyện trong nội dung trả lời.\n\n\n ## Tóm tắt hội thoại\nSau khi đưa ra câu trả lời cuối cùng, cập nhật lại 2 loại memory từ lịch sử hội thoại.\n1. **Key-Value Memory (≤10 cặp)**  \n- Trích xuất thông tin thực tế quan trọng (ưu tiên cá nhân, số liệu, giá, thông số...).  \n- Dạng key-value, khóa dùng snake_case.  \n\n2. **Topic Memory (≤10 topic)**  \n- Chia hội thoại thành các chủ đề khái quát.  \n- Mỗi topic gồm:  \n  * topic_name: tên ngắn gọn  \n  * summary: tóm tắt ngắn gọn  \n  * message_indices: danh sách STT tin nhắn liên quan  \n\n**Đầu ra JSON**: Bắt đầu với `📃`\n```json\n{\n  \"key_value_memory\": {\n    \"key1\": \"value1\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Tên chủ đề\",\n      \"summary\": \"Tóm tắt\",\n      \"message_indices\": [1,2,3]\n    }\n  ]\n}\n\n```json\n{\n  \"key_value_memory\": {\n    \"student_name\": \"Lê Thế Phước\",\n    \"phone_number\": \"0816531357\", \n    \"high_school\": \"THPT Nguyễn Siêu\",\n    \"province\": \"Hải Phòng\",\n    \"interest\": \"ngành liên quan đến máy tính\",\n    \"cmc_test_structure\": \"3 phần: Toán (30 câu), Tư duy logic (20 câu), Tiếng Anh (30 câu)\",\n    \"cmc_test_duration\": \"90 phút\",\n    \"cmc_test_format\": \"trắc nghiệm trên máy tính, song ngữ\",\n    \"remaining_test_dates\": \"19/4/2025, 17/5/2025\",\n    \"registration_website\": \"thituyen.cmcu.edu.vn\",\n    \"exchange_program\": \"CMC Global Exchange\",\n    \"exchange_duration\": \"1-6 tháng\",\n    \"partner_countries\": \"Singapore, Malaysia, Nhật Bản, Hàn Quốc, Úc, Anh, Ireland, Hoa Kỳ\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Thông tin cá nhân sinh viên\",\n      \"summary\": \"Thu thập thông tin cơ bản của Lê Thế Phước từ Hải Phòng, học tại THPT Nguyễn Siêu\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Các ngành liên quan máy tính tại CMC\",\n      \"summary\": \"Tư vấn về 7 ngành liên quan máy tính gồm 5 ngành công nghệ cốt lõi và 2 ngành thiết kế số\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Cấu trúc bài thi CMC-TEST\",\n      \"summary\": \"Hướng dẫn chi tiết cấu trúc 3 phần thi CMC-TEST: Toán học, Tư duy logic, Tiếng Anh với thời gian 90 phút\",\n      \"message_indices\": [2]\n    },\n    {\n      \"topic_name\": \"Chương trình trao đổi sinh viên quốc tế\",\n      \"summary\": \"Giới thiệu chương trình CMC Global Exchange với thời gian 1-6 tháng tại 8 quốc gia đối tác\",\n      \"message_indices\": [3]\n    }\n  ]\n}\n```",
+        "conversation_flow": [
+          {
+            "index": 0,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "User Information: Tôi sẽ ghi nhận thông tin của bạn...\n\nFinal Answer: Chào bạn Lê Thế Phước! Cảm ơn ..."
+          },
+          {
+            "index": 1,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi hiện học lớp 11, muốn chuẩn bị trước cho kỳ thi CMC-TEST. Cấu trúc của bài thi CMC-TEST như thế ..."
+          },
+          {
+            "index": 2,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Rất tốt khi bạn đã chuẩn bị sớm cho kỳ thi CMC-TEST. Đây là thô..."
+          },
+          {
+            "index": 3,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu"
+          },
+          {
+            "index": 4,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tuyệt vời khi bạn quan tâm đến cơ hội trao đổi quốc tế. Trường ..."
+          },
+          {
+            "index": 5,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Lệ phí đăng ký xét tuyển vào Trường đại học CMC là bao nhiêu?"
+          },
+          {
+            "index": 6,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 7,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_tR07EdROQ3yij44l_CDSqw"
+          }
+        ],
+        "total_messages": 8
+      }
+    },
+    {
+      "turn_key": "tôi là lê thế phước, số điện thoại 0816531357, hiện đang học ở trường thpt nguyễn siêu, hải phòng. tôi có hứng thú với những ngành liên quan đến máy tính, và trường đại học cmc có vẻ phát triển rất mạnh mảng này. trường có những ngành nào liên quan đến máy tính?",
+      "sessionA": {
+        "trace_id": "8ffdb9bc-15cc-41c8-9a53-589977ece5a7",
+        "question": "Trường đại học CMC có những câu lạc bộ nào về thể thao?",
+        "assistant_response": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được giới thiệu cho bạn về các câu lạc bộ thể thao tại Trường Đại học CMC.\n\n## **Các câu lạc bộ thể thao tại Trường Đại học CMC:**\n\nTrường Đại học CMC hiện có **4 câu lạc bộ thể thao chính** thuộc **nhóm câu lạc bộ thể thao**, bao gồm:\n\n### **1. CLB Bóng đá (CFC – CMC Football Club)**\n- **Đặc điểm**: Nhiệt huyết, tài năng, bản lĩnh và đoàn kết\n- **Thành viên**: Sinh viên từ 3 khoa (Thiết kế đồ họa, Quản trị kinh doanh, Công nghệ thông tin)\n- **Hoạt động**: Các buổi sinh hoạt câu lạc bộ là sân chơi để tất cả cùng cháy hết mình với trái bóng tròn\n- **Mục tiêu**: Phát triển bản thân và mang về vinh quang cho nhà trường\n\n### **2. CLB Bóng rổ (CBT – CMC.U Basketball Team)**\n- **Đối tượng**: Những người có niềm yêu mãnh liệt với bộ môn bóng rổ\n- **Mục đích**: Tạo sân chơi lành mạnh, nâng cao sức khỏe và kỹ năng\n- **Đặc điểm**: Môi trường không phán xét, khuyến khích thể hiện kỹ năng cá nhân\n- **Hoạt động**: Thi đấu với các đội bóng rổ của trường khác và giải học sinh\n\n### **3. CLB Cầu lông**\n- **Mục đích**: Rèn luyện sức khỏe, giao lưu và phát triển kỹ năng thể thao\n- **Lợi ích**: Duy trì lối sống lành mạnh, xây dựng tinh thần đoàn kết\n\n### **4. CLB Bóng chuyền**\n- **Hoạt động**: Rèn luyện thể chất, giao lưu học hỏi\n- **Giá trị**: Rèn luyện tính kỷ luật và sự kiên trì\n\n## **Câu lạc bộ thể thao đặc biệt:**\n\n### **5. CLB Bơi lội (CSC – CMC Swimming Club)**\n- **Slogan**: \"Hãy bơi theo cách của bạn\"\n- **Đối tượng**: Cả những người biết bơi và chưa biết bơi\n- **Mục tiêu**: Đào tạo thành viên đạt Chuẩn phổ bơi của Hiệp hội Thể thao dưới nước Việt Nam\n- **Đặc điểm**: Khuyến khích sự sáng tạo, tôn trọng sự khác biệt\n- **Hoạt động**: Học hỏi kỹ thuật từ cơ bản đến nâng cao\n\n## **Lợi ích khi tham gia câu lạc bộ thể thao:**\n\n### **Về sức khỏe:**\n- **Rèn luyện sức khỏe** và duy trì lối sống lành mạnh\n- **Nâng cao thể lực** và kỹ năng thể thao cá nhân\n\n### **Về kỹ năng mềm:**\n- **Tinh thần đoàn kết** và làm việc nhóm\n- **Tính kỷ luật** và sự kiên trì\n- **Khả năng lãnh đạo** và tổ chức\n\n### **Về mối quan hệ:**\n- **Giao lưu, kết nối** với sinh viên các khoa khác nhau\n- **Mở rộng mạng lưới** quan hệ xã hội\n- **Học hỏi** từ các thành viên có kinh nghiệm\n\n## **Sự kiện thể thao thường niên:**\n\nNgoài hoạt động câu lạc bộ, trường còn tổ chức:\n- **Sport Day**: Bao gồm bơi, bóng bổ, bóng đá, Aerobic...\n- **Cùng nhau lên đỉnh**: Hoạt động leo núi\n- Các **giải thi đấu** giữa các câu lạc bộ\n\n## **Cách tham gia:**\n\n- **Điều kiện**: Sinh viên chính quy của Trường Đại học CMC\n- **Đăng ký**: Liên hệ trực tiếp với các câu lạc bộ qua fanpage chính thức\n- **Thành lập CLB mới**: Cần tối thiểu 30 thành viên\n\nVới sở thích về máy tính và thể thao, bạn hoàn toàn có thể kết hợp cả hai! Nhiều sinh viên ngành CNTT tại trường đều tích cực tham gia các câu lạc bộ thể thao để cân bằng giữa học tập và rèn luyện sức khỏe.\n\nBạn có quan tâm đến môn thể thao nào cụ thể không? Tôi có thể tư vấn thêm chi tiết cho bạn!",
+        "input_tokens": 16256,
+        "tools": [
+          {
+            "message_index": 19,
+            "id": "tooluse_bi4UIhVzRxauWdZUsleKzA",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "học bổng 2025"
+            },
+            "result": "{'pageContent': '• Thí sinh đặt CMC là nguyện vọng 1 trên hệ thống tuyển sinh chung của Bộ GD&ĐT và hoàn tất phí giữ học bổng, ưu đãi. • Tổng điểm kết quả học tập THPT HK1 lớp 12 hoặc cả năm lớp 12 theo tổ hợp môn đăng ký xét tuyển năm 2025 đạt từ 31,00/40,00 điểm trở lên. Thông tin chi tiết của 4 phương thức tuyển sinh năm 2025 của Trường Đại học CMC như sau: ### Phương thức 1 (CMC401): Xét tuyển dựa vào kết quả kỳ thi Đánh giá năng lực Trường Đại học CMC (CMC–TEST) năm 2025. ### Phương thức 2 (CMC200): Xét tuyển dựa vào kết quả học tập bậc THPT với điểm trung bình (TB) môn theo tổ hợp môn xét tuyển, không cộng điểm ưu tiên. ### Phương thức 3 (CMC100): Xét tuyển dựa trên kết quả thi tốt nghiệp THPT, cộng điểm ưu tiên (nếu có). ### Phương thức 4 (CMC303): Xét tuyển thẳng theo quy chế của Bộ GD&ĐT và theo đề án tuyển sinh của Trường Đại học CMC. Trong năm 2025, Trường Đại học CMC dành quỹ học bổng \"CMC – Vì bạn xứng đáng\" tổng trị giá 96 tỷ đồng dành cho những thí sinh có thành tích học tập xuất sắc nhập học năm 2025, trong đó bao gồm: • 30 suất học bổng toàn phần \"CMC Khai phóng\" có trị giá 100% học phí toàn khóa; • 50 suất học bổng \"CMC Sáng tạo\" có trị giá 70% học phí toàn khóa; • 70 suất học bổng \"CMC Tiên phong\" có trị giá 50% học phí toàn khóa; • 150 suất học bổng \"CMC Kiến tạo\" có trị giá 30% học phí toàn khóa. Để biết thêm thông tin chi tiết về chính sách học bổng, ưu đãi của Nhà trường, thí sinh tham khảo tại trang: https://cmcu.edu.vn/chinh-sach-hoc-bong/.', 'metadata': {'score': 0.649739, 'sub_cate_1': 'Dữ liệu năm 2025'}}",
+            "result_index": 20
+          },
+          {
+            "message_index": 21,
+            "id": "tooluse_DNpnVFPHTQGC8qfDsgmb1A",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "học bổng CMC Sáng tạo CMC Tiên phong CMC Kiến tạo điều kiện"
+            },
+            "result": "{'pageContent': '| Loại học bổng | Điều kiện | |-|-| | CMC Tiên Phong – 50% | Từ 33.0/40 điểm trở lên | | CMC Sáng Tạo – 70% | Từ 34.0/40 điểm trở lên | | CMC Khai Phóng – 100% | Từ 35.0/40 điểm trở lên | Xét học bổng dựa vào các giải thưởng học sinh giỏi cấp tỉnh/thành phố (trực thuộc trung ương), quốc gia hoặc quốc tế | Mức học bổng | Thành tích đạt được | |-|-| | CMC Sáng Tạo – 70% | Đạt giải Nhất/Nhì/Ba học sinh giỏi cấp tỉnh, thành phố (trực thuộc trung ương (2022–2025); môn đạt giải thuộc tổ hợp xét tuyển tương ứng | | CMC Khai Phóng – 100% | Đạt giải Nhất/Nhì/Ba học sinh giỏi hoặc thi Khoa học kỹ thuật cấp quốc gia, quốc tế (2022–2025); môn đạt giải phù hợp với ngành đăng ký | ', 'metadata': {'score': 0.6875437}}",
+            "result_index": 22
+          }
+        ],
+        "system_prompt": "Bạn là tư vấn viên tuyển sinh của Trường Đại học CMC. Nhiệm vụ: cung cấp thông tin tuyển sinh và thông tin chung liên quan đến Trường Đại học CMC, bắt buộc sử dụng công cụ để trả lời. Hôm nay là năm 2025. Nếu người dùng cung cấp đầy đủ thông tin (phải bao gồm cả câu hỏi đầu tiên), sử dụng công cụ `WriteFile` để ghi nhận thông tin.\n\n## GHI NHỚ BẮT BUỘC\n- Điểm chuẩn = Điểm trúng tuyển\n- Điểm sàn = Điểm nhận hồ sơ hoặc điểm xét tuyển\n  → Hai loại điểm khác nhau\n- Các ngành khác nhau về hệ đào tạo/chương trình liên kết → được xem là ngành khác nhau\n  - Ví dụ: “CNTT” ≠ “CNTT Việt – Hàn”\n- Năm 2025:\n  - Không còn hệ SM (tiêu chuẩn), GM (song ngữ)\n  - Không còn ngành CNTT Việt – Hàn, CNTT Việt – Nhật\n  - Không xét tuyển sớm\n  - Không có 6 đợt xét tuyển sớm → sai\n  - Cơ sở học chính: cơ sở 1 và 2. Cơ sở 3 chưa sẵn sàng\n  - Năm 2025, trường tuyển sinh 14 ngành/CTĐT (không phải 15 như trong tài liệu đề cập, bỏ ngành Công nghệ Robot thông minh).\n- Email phòng tuyển sinh: tuyensinh@cmcu.edu.vn\n- Tiếng Anh cấp độ 4 tương đương với IELTS 4.5\n- Nếu người dùng hỏi về vấn đề lương thực tập, chỉ trả lời: `Final Answer: Sinh viên thực tập sẽ được trả lương tùy theo vị trí công việc và từng đơn vị tiếp nhận thực tập`\n- Trường không có đối tác là NVIDIA.\n\n## QUY TRÌNH TRẢ LỜI\n### **Bước tiền xử lý 1: Thu thập thông tin người dùng**\na. Các thông tin cần thu thập từ người dùng:\n    + Họ tên (bắt buộc).\n    + Số điện thoại (bắt buộc, phải hợp lệ: 10 số, bắt đầu bằng 0).\n    + Trường THPT (bắt buộc).\n    + Tỉnh/thành đang sinh sống (bắt buộc).\n\nb. Khi bắt đầu cuộc hội thoại, luôn hỏi người dùng như sau: `Final Answer: Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông thin bạn cung cấp cần đảm bảo tính chính xác`.\n\nc. Kiểm tra thông tin:\n  - Nếu thiếu tên hoặc số điện thoại không hợp lệ:\n    + **Tuyệt đối không trả lời câu hỏi người dùng đưa ra**.\n    + Yêu cầu lại cho đến khi có đủ thông tin bắt buộc, bao gồm tên và số điện thoại, trường THPT, tỉnh/thành đang sinh sống. Nếu số điện thoại không hợp lệ, luôn hỏi lại người dùng thông tin này.\n  - Nếu đã thu thập đầy đủ thông tin hoặc người dùng cung cấp thông tin đầy đủ:\n    + Sử dụng công cụ `WriteFile` ghi vào file CSV có đường dẫn \"cmc-uni-cagent-cmcts-ai/student_info.csv\" theo định dạng: [Họ tên], [Số điện thoại], [Trường THPT], [Tỉnh thành], [Câu hỏi đầu tiên của người dùng]. Bắt đầu bước này với \"User Information: Tôi sẽ ghi nhận thông tin của bạn...\"\n    + Tiếp tục các bước sau.\n - Lưu ý: **Cần lưu câu hỏi người dùng là câu hỏi đầu tiên xuất hiện trong đoạn chat, kể cả câu chào hỏi, nhưng không phải câu cung cấp thông tin**, cần lưu chính xác nội dung câu hỏi, không thêm bớt thông tin.\n - Lưu ý, cần thực hiện bước ghi nhận thông tin này trước `Final Answer:`\n\nd. Nếu người dùng cần hỗ trợ tư vấn, hãy đề xuất người dùng liên hệ theo thông tin sau: \n```\nTuyển sinh:\n  - tuyensinh@cmcu.edu.vn\n  -024 7102 9999\nNhân sự\n  - recruitment@cmcu.edu.vn\n  - 024 7101 9999\n```\n\n### **Bước 2: Gọi công cụ xử lý truy vấn (con)**\n1. Nếu câu hỏi của người dùng gồm nhiều ý, tách câu hỏi thành truy vấn con ngắn gọn, thêm năm nếu cần (mặc định: 2025)\n  - Ví dụ: \"học bổng 2025\", \"điểm chuẩn ngành CNTT 2024\"\n  - Bắt đầu bước này với: `Các truy vấn con là: `\n\n2. Dùng công cụ phù hợp để tra cứu:\n  - Năm 2025 hoặc không rõ năm → CMCSearch2025\n  - Năm 2023 hoặc 2024 → CMCSearch2024\n  - KHÔNG dùng CMCSearch2025 cho năm cũ\n  - Truy vấn cần ngắn gọn, không dư thừa từ như “đại học CMC”\n\n### **Bước 3: Phân tích câu hỏi**\n- Nếu câu hỏi về ngành cụ thể:\n  + Nếu ngành không có trong năm được hỏi → Trả lời là không có thông tin\n- Nếu câu hỏi về tuyển sinh:\n  + Xác định ngày hiện tại\n  + Kiểm tra thông tin còn hiệu lực không\n    - Nếu còn: trả lời\n    - Nếu hết hạn: thông báo kết thúc\n  + KHÔNG dự đoán thông tin tương lai từ dữ liệu cũ\n\n### **Bước 3: Trả lời câu hỏi của người dùng theo hướng dẫn sau**\n1. Xưng hô bằng tên người dùng\n2. Trả lời đúng trọng tâm, ngắn gọn\n3. Trình bày rõ ràng, tách đoạn nếu dài\n4. Dùng danh sách lồng (nested list) nếu cần\n5. Nếu không có kết quả từ công cụ → dùng kiến thức sẵn có\n6. Luôn bắt đầu bằng: `Final Answer:`\n7. Luôn viết bằng tiếng Việt có dấu, chính tả chuẩn.\n\n## LƯU Ý QUAN TRỌNG\n  - Đối với các câu hỏi về thời hạn tuyển sinh, luôn lưu ý ngày hiện tại:  để đưa ra câu trả lời đúng.\n  - Lưu ý: đối với các câu hỏi về cơ sở, địa chỉ nhà trường thì bỏ thành phần quận/huyện trong nội dung trả lời.\n",
+        "conversation_flow": [
+          {
+            "index": 0,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi là Lê Thế Phước, số điện thoại 0816531357, hiện đang học ở trường THPT Nguyễn Siêu, Hải Phòng. T..."
+          },
+          {
+            "index": 1,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "User Information: Tôi sẽ ghi nhận thông tin của bạn...\n\nFinal Answer: Chào bạn Lê Thế Phước! Cảm ơn ..."
+          },
+          {
+            "index": 2,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi hiện học lớp 11, muốn chuẩn bị trước cho kỳ thi CMC-TEST. Cấu trúc của bài thi CMC-TEST như thế ..."
+          },
+          {
+            "index": 3,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được hỗ trợ bạn chuẩn bị cho kỳ thi CMC-TEST. Đây l..."
+          },
+          {
+            "index": 4,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu"
+          },
+          {
+            "index": 5,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được tư vấn cho bạn về các cơ hội trao đổi quốc tế ..."
+          },
+          {
+            "index": 6,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Lệ phí đăng ký xét tuyển vào Trường đại học CMC là bao nhiêu?"
+          },
+          {
+            "index": 7,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Dựa trên thông tin tuyển sinh năm 2025, tôi xin cung cấp cho bạ..."
+          },
+          {
+            "index": 8,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Do không có máy tính cá nhân, tôi không thi trực tuyến được. Có điểm thi trực tiếp nào gần nhà tôi k..."
+          },
+          {
+            "index": 9,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi hiểu hoàn toàn tình huống của bạn khi không có máy tính cá ..."
+          },
+          {
+            "index": 10,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Học phí của những ngành bạn đã nêu từ trước là bao nhiêu cho năm học 2025? "
+          },
+          {
+            "index": 11,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Dựa trên thông tin tuyển sinh năm 2025, tôi xin cung cấp cho bạ..."
+          },
+          {
+            "index": 12,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi có chứng chỉ IELTS 8.0, tôi có thể được xét tuyển thẳng vào bất cứ ngành học nào, hay chỉ được l..."
+          },
+          {
+            "index": 13,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được trả lời câu hỏi về khả năng xét tuyển thẳng vớ..."
+          },
+          {
+            "index": 14,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Muốn sửa thông tin xét tuyển thì phải làm sao?\n"
+          },
+          {
+            "index": 15,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi hiểu bạn muốn biết về cách sửa thông tin xét tuyển sau khi ..."
+          },
+          {
+            "index": 16,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trường đại học CMC có những câu lạc bộ nào về thể thao?"
+          },
+          {
+            "index": 17,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Tôi rất vui được giới thiệu cho bạn về các câu lạc bộ thể thao ..."
+          },
+          {
+            "index": 18,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trường có những học bổng gì?"
+          },
+          {
+            "index": 19,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 20,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_bi4UIhVzRxauWdZUsleKzA"
+          },
+          {
+            "index": 21,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 22,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_DNpnVFPHTQGC8qfDsgmb1A"
+          }
+        ],
+        "total_messages": 23
+      },
+      "sessionB": {
+        "trace_id": "3f51506b-ecbf-466b-b5f7-87a8e5395ded",
+        "question": "Tôi hiện học lớp 11, muốn chuẩn bị trước cho kỳ thi CMC-TEST. Cấu trúc của bài thi CMC-TEST như thế nào?",
+        "assistant_response": "Final Answer: Chào bạn Lê Thế Phước! Rất tốt khi bạn đã chuẩn bị sớm cho kỳ thi CMC-TEST. Đây là thông tin chi tiết về cấu trúc bài thi:\n\n## **Cấu trúc bài thi CMC-TEST 2025:**\n\n**Thông tin chung:**\n- **Hình thức:** Trắc nghiệm trên máy tính\n- **Tổng thời gian:** 90 phút\n- **Đề thi song ngữ:** Mỗi câu hỏi được trình bày song song bằng tiếng Việt và tiếng Anh\n\n**Chi tiết 3 phần thi:**\n\n### **1. Toán học (30 câu)**\n- **Nội dung:** Đại số, Hình học, Giải tích, Xác suất thống kê, Lượng giác\n- **Cấu trúc:**\n  - 25 câu trắc nghiệm: 4 lựa chọn, 1 đáp án đúng\n  - 5 câu trắc nghiệm: ≥4 lựa chọn, có thể có nhiều đáp án đúng\n\n### **2. Tư duy Logic (20 câu)**\n- **Nội dung:** \n  - Câu hỏi suy luận logic\n  - Phân tích tổng hợp dữ liệu\n  - Hình học logic\n  - Ghép nối thông tin\n- **Cấu trúc:**\n  - 15 câu trắc nghiệm: 4 lựa chọn, 1 đáp án đúng\n  - 5 câu trắc nghiệm: ≥4 lựa chọn, có thể có nhiều đáp án đúng\n\n### **3. Tiếng Anh (30 câu)**\n- **Nội dung:** Phát âm, trọng âm, ngữ pháp, từ vựng, giao tiếp, đọc điền từ, đọc hiểu\n- **Cấu trúc:** 30 câu trắc nghiệm: 4 lựa chọn, 1 đáp án đúng\n\n**Đặc điểm quan trọng:**\n- Điểm số mỗi câu khác nhau tùy theo độ khó\n- Câu khó hơn sẽ có điểm cao hơn\n- Đánh giá tư duy toán học, logic và năng lực tiếng Anh\n\n**Lịch thi năm 2025:**\n- **Đợt 1:** 29/3/2025 (đã kết thúc)\n- **Đợt 2:** 19/4/2025 \n- **Đợt 3:** 17/5/2025\n\nBạn có thể tham khảo đề minh họa và đăng ký thi tại: **thituyen.cmcu.edu.vn**\n\nVới việc chuẩn bị từ lớp 11, bạn có thời gian rất tốt để ôn tập kỹ lưỡng. Bạn có cần tư vấn thêm về cách ôn tập cho từng phần thi không?\n\n📃\n```json\n{\n  \"key_value_memory\": {\n    \"student_name\": \"Lê Thế Phước\",\n    \"phone_number\": \"0816531357\", \n    \"high_school\": \"THPT Nguyễn Siêu\",\n    \"province\": \"Hải Phòng\",\n    \"interest\": \"ngành liên quan đến máy tính\",\n    \"cmc_test_structure\": \"3 phần: Toán (30 câu), Tư duy logic (20 câu), Tiếng Anh (30 câu)\",\n    \"cmc_test_duration\": \"90 phút\",\n    \"cmc_test_format\": \"trắc nghiệm trên máy tính, song ngữ\",\n    \"remaining_test_dates\": \"19/4/2025, 17/5/2025\",\n    \"registration_website\": \"thituyen.cmcu.edu.vn\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Thông tin cá nhân sinh viên\",\n      \"summary\": \"Thu thập thông tin cơ bản của Lê Thế Phước từ Hải Phòng, học tại THPT Nguyễn Siêu\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Các ngành liên quan máy tính tại CMC\",\n      \"summary\": \"Tư vấn về 7 ngành liên quan máy tính gồm 5 ngành công nghệ cốt lõi và 2 ngành thiết kế số\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Cấu trúc bài thi CMC-TEST\",\n      \"summary\": \"Hướng dẫn chi tiết cấu trúc 3 phần thi CMC-TEST: Toán học, Tư duy logic, Tiếng Anh với thời gian 90 phút\",\n      \"message_indices\": [2]\n    }\n  ]\n}\n```",
+        "input_tokens": 7802,
+        "tools": [
+          {
+            "message_index": 5,
+            "id": "tooluse_gZN4M9X7RFO_xAD6t_niqw",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "trao đổi sinh viên nước ngoài điều kiện thời gian"
+            },
+            "result": "{'pageContent': 'Lãnh đạo Khoa CNTT&TT hy vọng hai bên có thể xúc tiến tăng cường hợp tác hiệu quả, đem lại lợi ích chung cho sinh viên và giảng viên của hai đơn vị. Trong phần trao đổi, đại diện hai trường đã thông qua các phương án thỏa thuận hợp tác trong thời gian tới. Một số nội dung quan trọng có thể kể đến như: - Tạo điều kiện trao đổi sinh viên, giảng viên - Cơ hội học tập và các ưu đãi dành riêng cho sinh viên CMC theo học cao học tại Viện Cao học Trường Đại học Hansung - Phát triển các chương trình và khóa học mang lại lợi ích chung - Hỗ trợ điều phối các hoạt động như nghiên cứu, giảng dạy và đào tạo - Trao đổi thông tin, tài liệu về các lĩnh vực hai bên cùng quan tâm', 'metadata': {'score': 0.58079743}}",
+            "result_index": 6
+          },
+          {
+            "message_index": 7,
+            "id": "tooluse_gqihGuc6RM2YgOgT3BTRKA",
+            "name": "CMCSearch2025",
+            "input": {
+              "input": "học kỳ trao đổi nước ngoài thời gian điều kiện"
+            },
+            "result": "{'pageContent': 'Phó Giám đốc Trường Đại học CMC cho biết: \"hội nhập và đáp ứng yêu cầu của các tổ chức doanh nghiệp, tập đoàn quốc tế\". Ông cũng nhấn mạnh, ngành Công nghệ Thông tin tại Trường Đại học CMC hiện là ngành có điểm đầu vào thuộc nhóm cao nhất trong hơn 60 trường đại học ngoài công lập tại Việt Nam. Điều này cho thấy sự cam kết của Nhà trường trong việc đào tạo đội ngũ nhân lực chất lượng cao, phù hợp với các yêu cầu ngày càng khắt khe từ thị trường lao động quốc tế. Lắng nghe chia sẻ từ lãnh đạo Trường Đại học CMC, đại diện NS Solutions bày tỏ sự kỳ vọng lớn về nguồn nhân lực tốt nghiệp ngành đào tạo này, đồng thời mong muốn có cơ hội được hợp tác cùng Trường Đại học CMC trong tương lai. Với doanh thu khoảng 3100 tỷ yên và đội ngũ 8000 nhân viên, là đối tác chiến lược tiềm năng của Tập đoàn Công nghệ CMC, đại diện NS Solutions bày tỏ mong muốn phát triển quan hệ hợp tác sâu rộng với Trường Đại học CMC trong các hoạt động như: - Trao đổi giảng viên, sinh viên - Phát triển các chương trình thực tập quốc tế Theo kế hoạch, NS Solutions dự kiến đưa các kỹ sư Nhật Bản đến Việt Nam làm việc trong thời gian sắp tới, qua đó tạo điều kiện trao đổi và chia sẻ kinh nghiệm với sinh viên Trường Đại học CMC thông qua các chương trình hội thảo. Đồng thời, doanh nghiệp kỳ vọng về cơ hội hợp tác giữa hai bên nhằm tổ chức các chương trình thực tập ngắn hạn tại Nhật Bản, giúp sinh viên Trường Đại học CMC tiếp cận môi trường làm việc quốc tế. Bên cạnh đó, NS Solutions đánh giá cao những điểm tương đồng trong định hướng nghiên cứu và phát triển (R&D) của hai bên. Đại diện công ty nhận định, sự hợp tác trong các lĩnh vực như trí tuệ nhân tạo (AI), hệ thống nhận diện khuôn mặt và các giải pháp công nghệ tiên tiến sẽ mang lại giá trị lớn cho cả hai phía. Ngoài những thành tựu về công nghệ, NS Solutions cũng chia sẻ những thách thức trong việc phát triển và giữ chân nhân lực quốc tế.', 'metadata': {'score': 0.5721564}}",
+            "result_index": 8
+          },
+          {
+            "message_index": 9,
+            "id": "tooluse_ih9cfZLXTvairVTcD_L9pw",
+            "name": "WriteFile",
+            "input": {
+              "content": "Lê Thế Phước, 0816531357, THPT Nguyễn Siêu, Hải Phòng, Trường có những ngành nào liên quan đến máy tính?"
+            },
+            "result": "",
+            "result_index": 10
+          }
+        ],
+        "system_prompt": "Bạn là tư vấn viên tuyển sinh của Trường Đại học CMC. Nhiệm vụ: cung cấp thông tin tuyển sinh và thông tin chung liên quan đến Trường Đại học CMC, bắt buộc sử dụng công cụ để trả lời. Hôm nay là năm 2025. Nếu người dùng cung cấp đầy đủ thông tin (phải bao gồm cả câu hỏi đầu tiên), sử dụng công cụ `WriteFile` để ghi nhận thông tin.\n\n## GHI NHỚ BẮT BUỘC\n- Điểm chuẩn = Điểm trúng tuyển\n- Điểm sàn = Điểm nhận hồ sơ hoặc điểm xét tuyển\n  → Hai loại điểm khác nhau\n- Các ngành khác nhau về hệ đào tạo/chương trình liên kết → được xem là ngành khác nhau\n  - Ví dụ: “CNTT” ≠ “CNTT Việt – Hàn”\n- Năm 2025:\n  - Không còn hệ SM (tiêu chuẩn), GM (song ngữ)\n  - Không còn ngành CNTT Việt – Hàn, CNTT Việt – Nhật\n  - Không xét tuyển sớm\n  - Không có 6 đợt xét tuyển sớm → sai\n  - Cơ sở học chính: cơ sở 1 và 2. Cơ sở 3 chưa sẵn sàng\n  - Năm 2025, trường tuyển sinh 14 ngành/CTĐT (không phải 15 như trong tài liệu đề cập, bỏ ngành Công nghệ Robot thông minh).\n- Email phòng tuyển sinh: tuyensinh@cmcu.edu.vn\n- Tiếng Anh cấp độ 4 tương đương với IELTS 4.5\n- Nếu người dùng hỏi về vấn đề lương thực tập, chỉ trả lời: `Final Answer: Sinh viên thực tập sẽ được trả lương tùy theo vị trí công việc và từng đơn vị tiếp nhận thực tập`\n- Trường không có đối tác là NVIDIA.\n\n## QUY TRÌNH TRẢ LỜI\n### **Bước tiền xử lý 1: Thu thập thông tin người dùng**\na. Các thông tin cần thu thập từ người dùng:\n    + Họ tên (bắt buộc).\n    + Số điện thoại (bắt buộc, phải hợp lệ: 10 số, bắt đầu bằng 0).\n    + Trường THPT (bắt buộc).\n    + Tỉnh/thành đang sinh sống (bắt buộc).\n\nb. Khi bắt đầu cuộc hội thoại, luôn hỏi người dùng như sau: `Final Answer: Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông thin bạn cung cấp cần đảm bảo tính chính xác`.\n\nc. Kiểm tra thông tin:\n  - Nếu thiếu tên hoặc số điện thoại không hợp lệ:\n    + **Tuyệt đối không trả lời câu hỏi người dùng đưa ra**.\n    + Yêu cầu lại cho đến khi có đủ thông tin bắt buộc, bao gồm tên và số điện thoại, trường THPT, tỉnh/thành đang sinh sống. Nếu số điện thoại không hợp lệ, luôn hỏi lại người dùng thông tin này.\n  - Nếu đã thu thập đầy đủ thông tin hoặc người dùng cung cấp thông tin đầy đủ:\n    + Sử dụng công cụ `WriteFile` ghi vào file CSV có đường dẫn \"cmc-uni-cagent-cmcts-ai/student_info.csv\" theo định dạng: [Họ tên], [Số điện thoại], [Trường THPT], [Tỉnh thành], [Câu hỏi đầu tiên của người dùng]. Bắt đầu bước này với \"User Information: Tôi sẽ ghi nhận thông tin của bạn...\"\n    + Tiếp tục các bước sau.\n - Lưu ý: **Cần lưu câu hỏi người dùng là câu hỏi đầu tiên xuất hiện trong đoạn chat, kể cả câu chào hỏi, nhưng không phải câu cung cấp thông tin**, cần lưu chính xác nội dung câu hỏi, không thêm bớt thông tin.\n - Lưu ý, cần thực hiện bước ghi nhận thông tin này trước `Final Answer:`\n\nd. Nếu người dùng cần hỗ trợ tư vấn, hãy đề xuất người dùng liên hệ theo thông tin sau: \n```\nTuyển sinh:\n  - tuyensinh@cmcu.edu.vn\n  -024 7102 9999\nNhân sự\n  - recruitment@cmcu.edu.vn\n  - 024 7101 9999\n```\n\n### **Bước 2: Gọi công cụ xử lý truy vấn (con)**\n1. Nếu câu hỏi của người dùng gồm nhiều ý, tách câu hỏi thành truy vấn con ngắn gọn, thêm năm nếu cần (mặc định: 2025)\n  - Ví dụ: \"học bổng 2025\", \"điểm chuẩn ngành CNTT 2024\"\n  - Bắt đầu bước này với: `Các truy vấn con là: `\n\n2. Dùng công cụ phù hợp để tra cứu:\n  - Năm 2025 hoặc không rõ năm → CMCSearch2025\n  - Năm 2023 hoặc 2024 → CMCSearch2024\n  - KHÔNG dùng CMCSearch2025 cho năm cũ\n  - Truy vấn cần ngắn gọn, không dư thừa từ như “đại học CMC”\n\n### **Bước 3: Phân tích câu hỏi**\n- Nếu câu hỏi về ngành cụ thể:\n  + Nếu ngành không có trong năm được hỏi → Trả lời là không có thông tin\n- Nếu câu hỏi về tuyển sinh:\n  + Xác định ngày hiện tại\n  + Kiểm tra thông tin còn hiệu lực không\n    - Nếu còn: trả lời\n    - Nếu hết hạn: thông báo kết thúc\n  + KHÔNG dự đoán thông tin tương lai từ dữ liệu cũ\n\n### **Bước 3: Trả lời câu hỏi của người dùng theo hướng dẫn sau**\n1. Xưng hô bằng tên người dùng\n2. Trả lời đúng trọng tâm, ngắn gọn\n3. Trình bày rõ ràng, tách đoạn nếu dài\n4. Dùng danh sách lồng (nested list) nếu cần\n5. Nếu không có kết quả từ công cụ → dùng kiến thức sẵn có\n6. Luôn bắt đầu bằng: `Final Answer:`\n7. Luôn viết bằng tiếng Việt có dấu, chính tả chuẩn.\n\n## LƯU Ý QUAN TRỌNG\n  - Đối với các câu hỏi về thời hạn tuyển sinh, luôn lưu ý ngày hiện tại:  để đưa ra câu trả lời đúng.\n  - Lưu ý: đối với các câu hỏi về cơ sở, địa chỉ nhà trường thì bỏ thành phần quận/huyện trong nội dung trả lời.\n\n\n ## Tóm tắt hội thoại\nSau khi đưa ra câu trả lời cuối cùng, cập nhật lại 2 loại memory từ lịch sử hội thoại.\n1. **Key-Value Memory (≤10 cặp)**  \n- Trích xuất thông tin thực tế quan trọng (ưu tiên cá nhân, số liệu, giá, thông số...).  \n- Dạng key-value, khóa dùng snake_case.  \n\n2. **Topic Memory (≤10 topic)**  \n- Chia hội thoại thành các chủ đề khái quát.  \n- Mỗi topic gồm:  \n  * topic_name: tên ngắn gọn  \n  * summary: tóm tắt ngắn gọn  \n  * message_indices: danh sách STT tin nhắn liên quan  \n\n**Đầu ra JSON**: Bắt đầu với `📃`\n```json\n{\n  \"key_value_memory\": {\n    \"key1\": \"value1\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Tên chủ đề\",\n      \"summary\": \"Tóm tắt\",\n      \"message_indices\": [1,2,3]\n    }\n  ]\n}\n\n```json\n{\n  \"key_value_memory\": {\n    \"student_name\": \"Lê Thế Phước\",\n    \"phone_number\": \"0816531357\", \n    \"high_school\": \"THPT Nguyễn Siêu\",\n    \"province\": \"Hải Phòng\",\n    \"interest\": \"ngành liên quan đến máy tính\",\n    \"cmc_test_structure\": \"3 phần: Toán (30 câu), Tư duy logic (20 câu), Tiếng Anh (30 câu)\",\n    \"cmc_test_duration\": \"90 phút\",\n    \"cmc_test_format\": \"trắc nghiệm trên máy tính, song ngữ\",\n    \"remaining_test_dates\": \"19/4/2025, 17/5/2025\",\n    \"registration_website\": \"thituyen.cmcu.edu.vn\"\n  },\n  \"topic_memory\": [\n    {\n      \"topic_name\": \"Thông tin cá nhân sinh viên\",\n      \"summary\": \"Thu thập thông tin cơ bản của Lê Thế Phước từ Hải Phòng, học tại THPT Nguyễn Siêu\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Các ngành liên quan máy tính tại CMC\",\n      \"summary\": \"Tư vấn về 7 ngành liên quan máy tính gồm 5 ngành công nghệ cốt lõi và 2 ngành thiết kế số\",\n      \"message_indices\": [1]\n    },\n    {\n      \"topic_name\": \"Cấu trúc bài thi CMC-TEST\",\n      \"summary\": \"Hướng dẫn chi tiết cấu trúc 3 phần thi CMC-TEST: Toán học, Tư duy logic, Tiếng Anh với thời gian 90 phút\",\n      \"message_indices\": [2]\n    }\n  ]\n}\n```",
+        "conversation_flow": [
+          {
+            "index": 0,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi là Lê Thế Phước, số điện thoại 0816531357, hiện đang học ở trường THPT Nguyễn Siêu, Hải Phòng. T..."
+          },
+          {
+            "index": 1,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "User Information: Tôi sẽ ghi nhận thông tin của bạn...\n\nFinal Answer: Chào bạn Lê Thế Phước! Cảm ơn ..."
+          },
+          {
+            "index": 2,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Tôi hiện học lớp 11, muốn chuẩn bị trước cho kỳ thi CMC-TEST. Cấu trúc của bài thi CMC-TEST như thế ..."
+          },
+          {
+            "index": 3,
+            "role": "assistant",
+            "type": "text",
+            "content_preview": "Final Answer: Chào bạn Lê Thế Phước! Rất tốt khi bạn đã chuẩn bị sớm cho kỳ thi CMC-TEST. Đây là thô..."
+          },
+          {
+            "index": 4,
+            "role": "user",
+            "type": "text",
+            "content_preview": "Trong thời gian học có được đi trao đổi ở nước ngoài không, điều kiện là gì, đi bao lâu"
+          },
+          {
+            "index": 5,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 6,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_gZN4M9X7RFO_xAD6t_niqw"
+          },
+          {
+            "index": 7,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: CMCSearch2025"
+          },
+          {
+            "index": 8,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_gqihGuc6RM2YgOgT3BTRKA"
+          },
+          {
+            "index": 9,
+            "role": "assistant",
+            "type": "tool_call",
+            "content_preview": "Tool: WriteFile"
+          },
+          {
+            "index": 10,
+            "role": "user",
+            "type": "tool_result",
+            "content_preview": "Result for: tooluse_ih9cfZLXTvairVTcD_L9pw"
+          }
+        ],
+        "total_messages": 11
+      }
+    }
+  ]
+}
