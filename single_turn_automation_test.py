@@ -55,7 +55,7 @@ SITE_API_URL = st.text_input("TESTING_SITE_API_URL")
 CPU_COUNT = multiprocessing.cpu_count()
 MAX_WORKERS = min(int(CPU_COUNT * 0.75), 8)  # Sử dụng 75% số CPU cores, nhưng không quá 8 workers
 MAX_WORKERS = max(MAX_WORKERS, 2)  # Đảm bảo có ít nhất 2 workers
-
+MAX_WORKERS = 3
 # Tạo session để tái sử dụng kết nối
 session = requests.Session()
 session.mount('https://', requests.adapters.HTTPAdapter(
