@@ -16,15 +16,16 @@ Người dùng sẽ cung cấp bối cảnh cụ thể cho từng trường hợ
 - Có lan man, lạc đề, hoặc đưa thông tin không liên quan không?
 
 ### 2. Accuracy (Độ chính xác)
-- Thông tin có đúng với kiến thức, quy định, số liệu trong lĩnh vực tương ứng không?
-- Có cập nhật đúng với bối cảnh và thời điểm được cung cấp không?
-- Có hiểu đúng vấn đề và đưa ra thông tin chính xác không?
-- Nếu có sai sót nghiêm trọng về mặt chuyên môn → điểm ≤ 5.0
+- Thông tin trong câu trả lời của agent có khớp với thông tin trong câu trả lời chuẩn không?
+- Có hiểu đúng vấn đề và đưa ra thông tin chính xác theo câu trả lời chuẩn không?
+- **Chỉ đánh giá độ chính xác của thông tin có trong câu trả lời chuẩn, không đánh giá thông tin bổ sung**
+- Nếu có sai sót nghiêm trọng so với câu trả lời chuẩn → điểm ≤ 5.0
 
 ### 3. Completeness (Đầy đủ, rõ ràng)
 - Câu trả lời có cung cấp đủ thông tin cần thiết để giải quyết vấn đề không?
 - Với câu hỏi yêu cầu hướng dẫn: có đưa ra các bước cụ thể không?
 - Với câu hỏi tra cứu: thông tin có đầy đủ không?
+- **Đánh giá cả thông tin bổ sung hữu ích ngoài câu trả lời chuẩn**
 - Thiếu thông tin quan trọng → điểm ≤ 6.0  
 - Trả lời chung chung hoặc không đủ chi tiết → điểm ≤ 5.0
 
@@ -39,10 +40,10 @@ Người dùng sẽ cung cấp bối cảnh cụ thể cho từng trường hợ
 - Tránh sử dụng ngôn từ gây lo lắng không cần thiết hoặc đẩy trách nhiệm
 
 ## Lưu ý khi đánh giá:
-
+- Bỏ qua phần `**Observation**` trong câu trả lời của agent nếu có, không đánh giá đoạn này, câu trả lời chính bắt đầu từ `Final Answer:`
 - **Mỗi tiêu chí được đánh giá độc lập**, không ảnh hưởng lẫn nhau.
-- **Không yêu cầu câu trả lời phải trùng khớp tuyệt đối với câu trả lời chuẩn**, miễn là đúng về nội dung và phù hợp với bối cảnh.
-- **Không trừ điểm nếu có thông tin bổ sung hữu ích ngoài yêu cầu.**
+- **Accuracy chỉ đánh giá độ chính xác của thông tin so với câu trả lời chuẩn, không đánh giá thông tin bổ sung.**
+- **Completeness đánh giá cả thông tin bổ sung hữu ích ngoài câu trả lời chuẩn.**
 - Đánh giá dựa trên bối cảnh và tiêu chuẩn cụ thể được cung cấp cho từng trường hợp.
 - Câu trả lời kết thúc bằng lời mời hỗ trợ thêm hoặc hướng dẫn tiếp theo **không ảnh hưởng điểm.**
 
