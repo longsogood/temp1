@@ -316,7 +316,7 @@ with tab1:
                     st.write(f"- {metric}: {score}")
                 
                 st.write("**Nhận xét và góp ý cải thiện:**")
-                st.write(result["evaluate_result"]["Nhận xét và góp ý cải thiện"])
+                st.write(result["evaluate_result"]["comments"])
         else:
             st.warning("Vui lòng nhập cả câu hỏi và câu trả lời chuẩn")
 
