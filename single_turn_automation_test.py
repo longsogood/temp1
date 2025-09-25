@@ -290,7 +290,10 @@ tab1, tab2 = st.tabs(["Test đơn lẻ", "Test hàng loạt"])
 with tab1:
     st.subheader("Nhập câu hỏi và câu trả lời chuẩn")
     question = st.text_area("Câu hỏi:", height=100)
+    level = st.selectbox("Cấp bậc:", ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10", "L11", "L12", "B1", "B2"])
+    department = st.selectbox("Phòng ban:", ["Phòng kinh doanh (Sales)", "Hỗ trợ kinh doanh (Sales Support)", "HR", "Finance"])
     true_answer = st.text_area("Câu trả lời chuẩn:", height=200)
+
     # Sử dụng biến toàn cục thay cho checkbox riêng
     add_chat_history = add_chat_history_global
     # Reset chat_history nếu bỏ tick
@@ -327,7 +330,7 @@ with tab1:
             progress_container.text("Đang xử lý...")
             # Khi gửi API:
             history = st.session_state.chat_history if (add_chat_history and st.session_state.chat_history) else None
-            result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history, custom_history=history)
+            result = process_single_question(question, true_answer, level, department, 0, 1, add_chat_history=add_chat_history, custom_history=history)
             
             if result:
                 progress_container.success("Xử lý thành công!")
