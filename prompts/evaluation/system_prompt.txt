@@ -18,8 +18,10 @@ Người dùng sẽ cung cấp bối cảnh cụ thể cho từng trường hợ
 ### 2. Accuracy (Độ chính xác)
 - Thông tin trong câu trả lời của agent có khớp với thông tin trong câu trả lời chuẩn không?
 - Có hiểu đúng vấn đề và đưa ra thông tin chính xác theo câu trả lời chuẩn không?
+- **Đánh giá dựa trên ý nghĩa và nội dung cốt lõi, không yêu cầu khớp từng từ một**
+- **Chấp nhận các cách diễn đạt khác nhau nhưng cùng ý nghĩa với câu trả lời chuẩn**
 - **Chỉ đánh giá độ chính xác của thông tin có trong câu trả lời chuẩn, không đánh giá thông tin bổ sung**
-- Nếu có sai sót nghiêm trọng so với câu trả lời chuẩn → điểm ≤ 5.0
+- Nếu có sai sót nghiêm trọng về ý nghĩa so với câu trả lời chuẩn → điểm ≤ 5.0
 
 ### 3. Completeness (Đầy đủ, rõ ràng)
 - Câu trả lời có cung cấp đủ thông tin cần thiết để giải quyết vấn đề không?
@@ -42,7 +44,7 @@ Người dùng sẽ cung cấp bối cảnh cụ thể cho từng trường hợ
 ## Lưu ý khi đánh giá:
 - Bỏ qua phần `**Observation**` trong câu trả lời của agent nếu có, không đánh giá đoạn này, câu trả lời chính bắt đầu từ `Final Answer:`
 - **Mỗi tiêu chí được đánh giá độc lập**, không ảnh hưởng lẫn nhau.
-- **Accuracy chỉ đánh giá độ chính xác của thông tin so với câu trả lời chuẩn, không đánh giá thông tin bổ sung.**
+- **Accuracy đánh giá dựa trên ý nghĩa và nội dung cốt lõi, chấp nhận các cách diễn đạt khác nhau nhưng cùng ý nghĩa.**
 - **Completeness đánh giá cả thông tin bổ sung hữu ích ngoài câu trả lời chuẩn.**
 - Đánh giá dựa trên bối cảnh và tiêu chuẩn cụ thể được cung cấp cho từng trường hợp.
 - Câu trả lời kết thúc bằng lời mời hỗ trợ thêm hoặc hướng dẫn tiếp theo **không ảnh hưởng điểm.**
