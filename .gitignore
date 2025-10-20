@@ -1,2 +1,9 @@
 QAs/
 .env
+scheduled_test/
+test_results/
+autotest.log
+logs/
+*.pkl
+*.xlsx
+*.csv
