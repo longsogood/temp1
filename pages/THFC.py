@@ -10,6 +10,9 @@ import threading
 from uuid import uuid4
 import concurrent.futures
 import logging
+from utils import extract_section
+import warnings
+warnings.filterwarnings("ignore")
 
 # Cấu hình logging
 log_file = "logs/test_log.log"
@@ -23,7 +26,7 @@ if not logger.handlers:
     logger.addHandler(file_handler)
 
 # Global site variable - được set dựa trên trang hiện tại
-SITE = "Agent HR Nội bộ"
+SITE = "THFC"
 
 # Khởi tạo session state
 if 'results' not in st.session_state:
@@ -64,8 +67,17 @@ def filter_results(results, threshold, criterion, filter_type):
             filtered_data.append(result)
     return filtered_data
 
+def get_site_paths(site):
+    site_dir = os.path.join(RESULTS_DIR, site)
+    os.makedirs(site_dir, exist_ok=True)
+    return {
+        "failed_tests": os.path.join(site_dir, "failed_tests.pkl"),
+        "test_history": os.path.join(site_dir, "test_history.pkl"),
+        "test_changes": os.path.join(site_dir, "test_changes.pkl")
+    }
+
 def save_test_results(results, test_name, site):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{test_name}_{timestamp}.xlsx"
     filepath = os.path.join(RESULTS_DIR, site, filename)
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
@@ -111,13 +123,13 @@ def save_test_results(results, test_name, site):
     }
 
     # Initialize test_history if not exists
-    try:
-        if 'test_history' not in st.session_state:
-            st.session_state.test_history = {}
-        if site not in st.session_state.test_history:
-            st.session_state.test_history[site] = []
-        st.session_state.test_history[site].append(history_entry)
+    if 'test_history' not in st.session_state:
+        st.session_state.test_history = {}
+    if site not in st.session_state.test_history:
+        st.session_state.test_history[site] = []
+    st.session_state.test_history[site].append(history_entry)
 
+    try:
         site_paths = get_site_paths(site)
         with open(site_paths["test_history"], "wb") as f:
             pickle.dump(st.session_state.test_history[site], f)
@@ -172,11 +184,15 @@ def run_scheduled_test(file_path, test_name, site, api_url, evaluate_api_url):
         df = pd.read_excel(abs_path)
         questions = df.iloc[:, 0].tolist()
         true_answers = df.iloc[:, 1].tolist()
+        levels = df.iloc[:, 2].tolist() if len(df.columns) > 2 else ["L1"] * len(questions)
+        departments = df.iloc[:, 3].tolist() if len(df.columns) > 3 else ["Phòng kinh doanh (Sales)"] * len(questions)
         logger.info(f"Số câu hỏi đọc được: {len(questions)} | Số đáp án: {len(true_answers)}")
 
         results, failed_questions = process_questions_batch(
             questions, 
             true_answers, 
+            levels,
+            departments,
             test_name=test_name, 
             is_scheduled=True,
             site=site,
@@ -636,61 +652,41 @@ def update_progress(container, total):
                 processed_count += 1
             container.text(f"Tiến trình: {processed_count}/{total} câu hỏi đã xử lý.")
             st.info(message)
-        except Exception:
+        except Exception as e:
+            st.error(f"Lỗi khi cập nhật tiến trình: {str(e)}")
             break
 
-def extract_section(text):
-    try:
-        # Kiểm tra xem text có chứa các keyword cần thiết không
-        if "scores:" not in text or "comments:" not in text:
-            return {"scores": {}, "comments": "Format đánh giá không hợp lệ - thiếu scores hoặc comments"}
-        
-        # Tìm và trích xuất điểm
-        scores_parts = text.split("scores:")
-        if len(scores_parts) < 2:
-            return {"scores": {}, "comments": "Không tìm thấy phần scores"}
-        
-        scores_section = scores_parts[1]
-        comments_parts = scores_section.split("comments:")
-        if len(comments_parts) < 2:
-            return {"scores": {}, "comments": "Không tìm thấy phần comments"}
-        
-        scores_str = comments_parts[0].strip()
-        comments = comments_parts[1].strip()
-        
-        # Kiểm tra scores_str có rỗng không
-        if not scores_str:
-            return {"scores": {}, "comments": "Phần scores rỗng"}
-        
-        # Thử parse scores
-        try:
-            scores = eval(scores_str)
-            if not isinstance(scores, dict):
-                scores = {}
-        except Exception as parse_error:
-            logger.warning(f"Lỗi khi parse scores: {parse_error}")
-            scores = {}
-        
-        return {"scores": scores, "comments": comments}
-    except Exception as e:
-        logger.error(f"Lỗi khi trích xuất: {e}")
-        return {"scores": {}, "comments": f"Lỗi khi phân tích kết quả đánh giá: {str(e)}"}
 
-def process_single_question(question, true_answer, index, total_questions, add_chat_history=False, custom_history=None, site=None, api_url=None, evaluate_api_url=None):
+def process_single_question(question, true_answer, level, department, index, total_questions, add_chat_history=False, custom_history=None, site=None, api_url=None, evaluate_api_url=None):
     try:
         chat_id = str(uuid4())
-        payload = {
+        site_payload = {
             "chat_id": chat_id,
             "question": question,
-            "site": site or get_current_site()
-        }
+            "site": site or get_current_site(),
+            "overrideConfig":
+                {
+                    "stateMemory": [
+                        {
+                            "Key": "level",
+                            "Operation": "Replace",
+                            "Default Value": level
+                        },
+                        {
+                            "Key": "department",
+                            "Operation": "Replace",
+                            "Default Value": department
+                        }
+                    ]
+                }
+            }
         if add_chat_history and custom_history:
-            payload["chat_history"] = custom_history
+            site_payload["chat_history"] = custom_history
 
         request_api_url = api_url or API_URL
         request_evaluate_api_url = evaluate_api_url or EVALUATE_API_URL
 
-        response = requests.post(request_api_url, json=payload)
+        response = requests.post(request_api_url, json=site_payload)
         if not response.ok:
             return f"Lỗi API: {response.text}"
         
@@ -703,6 +699,8 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         # Format human prompt with actual values
         evaluate_human_prompt = human_prompt_template.format(
             question=question,
+            level=level,
+            department=department,
             true_answer=true_answer,
             agent_answer=site_response
         )
@@ -710,9 +708,9 @@ def process_single_question(question, true_answer, index, total_questions, add_c
         evaluate_payload = {
             "question": "Đánh giá câu trả lời từ agent so với câu trả lời chuẩn (true_answer)",
             "overrideConfig": {
-                "systemMessagePrompt": evaluate_system_prompt,
-                "humanMessagePrompt": evaluate_human_prompt
-            }
+                    "systemMessagePrompt": evaluate_system_prompt,
+                    "humanMessagePrompt": evaluate_human_prompt
+                }
         }
         evaluate_response = requests.post(request_evaluate_api_url, json=evaluate_payload)
         
@@ -756,6 +754,8 @@ def process_single_question(question, true_answer, index, total_questions, add_c
             "chat_id": chat_id,
             "question": question,
             "true_answer": true_answer,
+            "level": level,
+            "department": department,
             "site_response": site_response,
             "evaluate_result": evaluate_result,
         }
@@ -764,14 +764,14 @@ def process_single_question(question, true_answer, index, total_questions, add_c
     except Exception as e:
         return f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}"
 
-def process_questions_batch(questions, true_answers, add_chat_history=False, custom_history=None, test_name=None, is_scheduled=False, site=None, api_url=None, evaluate_api_url=None):
+def process_questions_batch(questions, true_answers, levels, departments, add_chat_history=False, custom_history=None, test_name=None, is_scheduled=False, site=None, api_url=None, evaluate_api_url=None):
     results = []
     failed_questions = []
     
     progress_container = st.empty() if not is_scheduled else None
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(process_single_question, q, ta, i, len(questions), add_chat_history, custom_history, site, api_url, evaluate_api_url): (q, ta) for i, (q, ta) in enumerate(zip(questions, true_answers))}
+        futures = {executor.submit(process_single_question, q, ta, l, d, i, len(questions), add_chat_history, custom_history, site, api_url, evaluate_api_url): (q, ta) for i, (q, ta, l, d) in enumerate(zip(questions, true_answers, levels, departments))}
         
         for i, future in enumerate(concurrent.futures.as_completed(futures)):
             question, true_answer = futures[future]
@@ -813,7 +813,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                         "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                         "site_response": "[Lỗi khi xử lý]",
                         "evaluate_result": {"scores": {}, "comments": f"Lỗi: {result}"},
-                        "failed_details": {"timestamp": datetime.datetime.now().isoformat("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
+                        "failed_details": {"timestamp": datetime.datetime.now().isoformat(), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
                     }
                     results.append(error_result)
                     failed_questions.append((question, "Lỗi xử lý API", result))
@@ -823,7 +823,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                     "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                     "site_response": "[Lỗi khi xử lý]",
                     "evaluate_result": {"scores": {}, "comments": error_message},
-                    "failed_details": {"timestamp": datetime.datetime.now().isoformat("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
+                    "failed_details": {"timestamp": datetime.datetime.now().isoformat(), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
                 }
                 results.append(error_result)
                 failed_questions.append((question, "Exception", str(e)))
@@ -836,18 +836,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
         if failed_results:
             save_failed_test_details(failed_results, site)
     
-    return results, failed_questions
-
-
 # Tải lịch sử test, test case thất bại và lịch sử thay đổi
-def get_site_paths(site):
-    site_dir = os.path.join(RESULTS_DIR, site)
-    os.makedirs(site_dir, exist_ok=True)
-    return {
-        "failed_tests": os.path.join(site_dir, "failed_tests.pkl"),
-        "test_history": os.path.join(site_dir, "test_history.pkl"),
-        "test_changes": os.path.join(site_dir, "test_changes.pkl")
-    }
 
 current_site = get_current_site()
 site_paths = get_site_paths(current_site)
@@ -935,17 +924,16 @@ for job_config in st.session_state.scheduled_jobs:
         st.session_state.scheduled_jobs = [j for j in st.session_state.scheduled_jobs if j['job_id'] != job_config['job_id']]
         save_scheduled_jobs()  # Save updated list to file
 
-# Giao diện Streamlit
-st.title("🤖 Agent Testing")
-
 # Tạo các tab
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Test đơn lẻ", "Test hàng loạt", "Lập lịch test", "Quản lý test", "Quản lý Prompts"])
 
 with tab1:
     st.subheader("Nhập câu hỏi và câu trả lời chuẩn")
     question = st.text_area("Câu hỏi:", height=100)
+    level = st.selectbox("Cấp bậc:", ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10", "L11", "L12", "B1", "B2"])
+    department = st.selectbox("Phòng ban:", ["Phòng kinh doanh (Sales)", "Hỗ trợ kinh doanh (Sales Support)", "HR", "Finance"])
     true_answer = st.text_area("Câu trả lời chuẩn:", height=200)
-    
+
     if add_chat_history_global:
         if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
             st.session_state.chat_history = [
@@ -973,7 +961,7 @@ with tab1:
             progress_container = st.empty()
             progress_container.text("Đang xử lý...")
             history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
-            result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history_global, custom_history=history, site=get_current_site())
+            result = process_single_question(question, true_answer, level, department, 0, 1, add_chat_history=add_chat_history_global, custom_history=history, site=get_current_site())
             
             if isinstance(result, dict):
                 progress_container.success("Xử lý thành công!")
@@ -1014,7 +1002,7 @@ with tab2:
         if st.button("Thêm message", key="add_message_batch"):
             st.session_state.chat_history.append({"role": "userMessage", "content": ""})
             st.rerun()
-
+    
     uploaded_file = st.file_uploader("Chọn file Excel", type=['xlsx', 'xls'])
     
     if uploaded_file is not None:
@@ -1023,8 +1011,15 @@ with tab2:
             df = df.dropna(subset=[df.columns[0], df.columns[1]])
             questions = df.iloc[:, 0].tolist()
             true_answers = df.iloc[:, 1].tolist()
+            levels = df.iloc[:, 2].tolist() if len(df.columns) > 2 else ["L1"] * len(questions)
+            departments = df.iloc[:, 3].tolist() if len(df.columns) > 3 else ["Phòng kinh doanh (Sales)"] * len(questions)
             
-            display_df = pd.DataFrame({'Câu hỏi': questions, 'Câu trả lời chuẩn': true_answers})
+            display_df = pd.DataFrame({
+                'Câu hỏi': questions,
+                'Câu trả lời chuẩn': true_answers,
+                'Level': levels,
+                'Department': departments
+            })
             edited_df = st.dataframe(display_df, use_container_width=True, selection_mode="multi-row", on_select="rerun", hide_index=True)
             
             selected_rows = edited_df['selection']['rows']
@@ -1033,22 +1028,26 @@ with tab2:
                 if selected_rows:
                     selected_questions = [questions[i] for i in selected_rows]
                     selected_true_answers = [true_answers[i] for i in selected_rows]
+                    selected_levels = [levels[i] for i in selected_rows]
+                    selected_departments = [departments[i] for i in selected_rows]
                     
                     history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
-                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, add_chat_history=add_chat_history_global, custom_history=history, test_name=uploaded_file.name, site=get_current_site())
+                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, selected_levels, selected_departments, add_chat_history=add_chat_history_global, custom_history=history, test_name=uploaded_file.name, site=get_current_site())
                     
                     st.session_state.results = results
                     
                     data = {
                         'Question': [r["question"] for r in results],
                         'True Answer': [r["true_answer"] for r in results],
+                        'Level': [r["level"] for r in results],
+                        'Department': [r["department"] for r in results],
                         'Agent Answer': [r["site_response"] for r in results],
                         'Session ID': [r["chat_id"] for r in results],
                         'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
                         'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
                         'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
+                        'Access Control Score': [r["evaluate_result"]["scores"].get("access_control", 0) for r in results],
                         'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
-                        'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
                         'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
                         'Comment': [r["evaluate_result"].get("comments", "") for r in results]
                     }
@@ -1148,8 +1147,8 @@ with tab3:
                     st.dataframe(df_current.head(5), use_container_width=True)
                 except Exception as e:
                     st.error(f"Lỗi khi đọc file hiện tại: {str(e)}")
-            else:
-                st.warning("File test hiện tại không tồn tại")
+                else:
+                    st.warning("File test hiện tại không tồn tại")
             
             st.write("**Upload file test mới (để trống nếu không thay đổi):**")
             new_test_file = st.file_uploader("File test mới", type=['xlsx', 'xls'], key="edit_test_file")
@@ -1341,6 +1340,8 @@ with tab3:
             except Exception as e:
                 st.error(f"Lỗi khi đọc file Excel: {str(e)}")
                 test_file = None
+        else:
+            st.info("Vui lòng tải lên file Excel để bắt đầu")
         
         test_name = st.text_input("Tên bộ test (để nhận diện trong lịch sử)", key="test_name_input")
 
@@ -1622,6 +1623,8 @@ with tab4:
     #         with col1:
     #             st.write("**Thông tin test:**")
     #             st.write(f"- **Câu hỏi:** {selected_failed_test.get('question', 'N/A')}")
+    #             st.write(f"- **Level:** {selected_failed_test.get('level', 'N/A')}")
+    #             st.write(f"- **Department:** {selected_failed_test.get('department', 'N/A')}")
     #             st.write(f"- **Chat ID:** {selected_failed_test.get('chat_id', 'N/A')}")
             
     #         with col2:
@@ -1881,48 +1884,13 @@ with tab5:
         else:
             st.info("Chưa có human prompt")
     
-    # # File Information
-    # st.write("### 📁 Thông tin Files")
-    
-    # prompt_paths = get_prompt_paths(site)
-    # extract_path = get_extract_sections_path(site)
-    
-    # col1, col2, col3 = st.columns(3)
-    
-    # with col1:
-    #     st.write("**System Prompt**")
-    #     st.code(f"📄 {prompt_paths['system_prompt']}")
-    #     if os.path.exists(prompt_paths["system_prompt"]):
-    #         file_size = os.path.getsize(prompt_paths["system_prompt"])
-    #         st.write(f"📊 Kích thước: {file_size} bytes")
-    #     else:
-    #         st.warning("⚠️ File không tồn tại")
-    
-    # with col2:
-    #     st.write("**Human Prompt**")
-    #     st.code(f"📄 {prompt_paths['human_prompt']}")
-    #     if os.path.exists(prompt_paths["human_prompt"]):
-    #         file_size = os.path.getsize(prompt_paths["human_prompt"])
-    #         st.write(f"📊 Kích thước: {file_size} bytes")
-    #     else:
-    #         st.warning("⚠️ File không tồn tại")
-    
-    # with col3:
-    #     st.write("**Extract Sections**")
-    #     st.code(f"🐍 {extract_path}")
-    #     if os.path.exists(extract_path):
-    #         file_size = os.path.getsize(extract_path)
-    #         st.write(f"📊 Kích thước: {file_size} bytes")
-    #     else:
-    #         st.warning("⚠️ File không tồn tại")
-    
     # # Instructions
     # st.write("### 📋 Hướng dẫn")
     # st.markdown("""
     # **Quản lý Prompts:**
     # - System Prompt: Định nghĩa vai trò và tiêu chí đánh giá cho LLM
     # - Human Prompt: Template cho input được gửi đến LLM
-    # - Sử dụng `{question}`, `{true_answer}`, `{agent_answer}` làm placeholders
+    # - Sử dụng `{question}`, `{true_answer}`, `{agent_answer}`, `{level}`, `{department}` làm placeholders
     
     # **Quản lý Extract Sections:**
     # - Code Python để trích xuất kết quả từ response của LLM

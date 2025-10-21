@@ -1,0 +1,5 @@
+Câu hỏi (Question): {question}
+
+Câu trả lời chuẩn (True Answer): {true_answer}
+
+Câu trả lời của agent (Agent Answer): {agent_answer}
