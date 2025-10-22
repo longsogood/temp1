@@ -11,6 +11,14 @@ from uuid import uuid4
 import concurrent.futures
 import logging
 
+## Cấu hình streamlit
+st.set_page_config(
+    layout="wide",
+    page_title="Agent HR Nội bộ",
+    page_icon="✨"
+)
+
+
 # Cấu hình logging
 log_file = "logs/test_log.log"
 os.makedirs(os.path.dirname(log_file), exist_ok=True)
@@ -74,6 +82,9 @@ def save_test_results(results, test_name, site):
     df.to_excel(filepath, index=False)
 
     # Phân loại kết quả chi tiết
+    fail_criterion = st.session_state.get("fail_criterion", "accuracy")
+    fail_threshold = st.session_state.get("fail_threshold", 8.0)
+    
     num_passed = 0
     num_failed_api = 0
     num_failed_extract = 0
@@ -89,9 +100,9 @@ def save_test_results(results, test_name, site):
             else:
                 num_failed_accuracy += 1
         else:
-            # Kiểm tra accuracy thay vì average
-            accuracy_score = r["evaluate_result"]["scores"].get("accuracy", 0)
-            if accuracy_score >= 8:
+            # Kiểm tra tiêu chí fail
+            criterion_score = r["evaluate_result"]["scores"].get(fail_criterion, 0)
+            if criterion_score >= fail_threshold:
                 num_passed += 1
             else:
                 num_failed_accuracy += 1
@@ -316,14 +327,50 @@ def setup_schedule(file_path, schedule_type, schedule_time, schedule_day,
 st.title("🤖 Agent Testing")
 
 # --- Cấu hình và các biến toàn cục ---
-with st.expander("Cấu hình API và các tham số", expanded=False):
-    API_URL = st.text_input("API URL", st.session_state.get("api_url", "https://site1.com"))
-    EVALUATE_API_URL = st.text_input("Evaluate API URL", st.session_state.get("evaluate_api_url", "https://site2.com"))
-    MAX_WORKERS = st.slider("Số luồng xử lý đồng thời", 1, 20, 5)
-    add_chat_history_global = st.checkbox("Thêm chat history (giả lập đã cung cấp thông tin)", value=False)
+with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Cấu hình API**")
+        API_URL = st.text_input("API URL", st.session_state.get("api_url", "https://site1.com"))
+        EVALUATE_API_URL = st.text_input("Evaluate API URL", st.session_state.get("evaluate_api_url", "https://site2.com"))
+    
+    with col2:
+        st.write("**Cấu hình Test**")
+        MAX_WORKERS = st.slider("Số luồng xử lý đồng thời", 1, 20, 5)
+        add_chat_history_global = st.checkbox("Thêm chat history (giả lập đã cung cấp thông tin)", value=False)
+    
+    st.divider()
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.write("**Tiêu chí đánh giá fail**")
+        fail_criterion = st.selectbox(
+            "Chọn tiêu chí",
+            ["accuracy", "relevance", "completeness", "clarity", "tone", "average"],
+            index=0,
+            help="Tiêu chí được sử dụng để xác định test case fail"
+        )
+    
+    with col2:
+        st.write("**Ngưỡng fail**")
+        fail_threshold = st.number_input(
+            "Ngưỡng điểm (< ngưỡng = fail)",
+            min_value=0.0,
+            max_value=10.0,
+            value=8.0,
+            step=0.5,
+            help="Test case có điểm thấp hơn ngưỡng này sẽ được đánh dấu fail"
+        )
+    
+    with col3:
+        st.write("**Tóm tắt cấu hình**")
+        st.info(f"Fail nếu **{fail_criterion}** < {fail_threshold}")
     
     st.session_state.api_url = API_URL
     st.session_state.evaluate_api_url = EVALUATE_API_URL
+    st.session_state.fail_criterion = fail_criterion
+    st.session_state.fail_threshold = fail_threshold
 
 # --- Prompt Management Functions ---
 def get_prompt_paths(site):
@@ -518,29 +565,50 @@ def auto_generate_extract_sections_from_prompt(system_prompt):
     """Tự động tạo extract sections code dựa trên system prompt"""
     import re
     
-    # Tìm các tiêu chí đánh giá trong system prompt - Logic đơn giản hơn
+    # Tìm các tiêu chí đánh giá trong system prompt - Có bắt cả mô tả trong ngoặc
     criteria = []
+    criteria_descriptions = []
     lines = system_prompt.split('\n')
     
     for line in lines:
         line = line.strip()
-        # Tìm pattern ### số. Tên tiêu chí
-        match = re.match(r'^###\s*\d+\.\s*([^(]+?)(?:\s*\([^)]+\))?\s*$', line, re.IGNORECASE)
+        # Tìm pattern ### số. Tên tiêu chí (Mô tả)
+        match = re.match(r'^###\s*\d+\.\s*([^(]+?)\s*\(([^)]+)\)\s*$', line, re.IGNORECASE)
         if match:
             criterion = match.group(1).strip()
+            description = match.group(2).strip()
             if criterion and len(criterion) < 50:  # Chỉ lấy tên ngắn
                 criteria.append(criterion)
-    
-    # Nếu không tìm thấy, thử tìm với format khác
-    if not criteria:
-        for line in lines:
-            line = line.strip()
-            # Tìm pattern - Tên tiêu chí
-            match = re.match(r'^-\s*([^(]+?)(?:\s*\([^)]+\))?\s*$', line, re.IGNORECASE)
+                criteria_descriptions.append(description)
+        else:
+            # Thử pattern không có mô tả
+            match = re.match(r'^###\s*\d+\.\s*([^(]+?)\s*$', line, re.IGNORECASE)
             if match:
                 criterion = match.group(1).strip()
                 if criterion and len(criterion) < 50:
                     criteria.append(criterion)
+                    criteria_descriptions.append("")
+    
+    # Nếu không tìm thấy, thử tìm với format khác (dấu -)
+    if not criteria:
+        for line in lines:
+            line = line.strip()
+            # Tìm pattern - Tên tiêu chí (Mô tả)
+            match = re.match(r'^-\s*([^(]+?)\s*\(([^)]+)\)\s*$', line, re.IGNORECASE)
+            if match:
+                criterion = match.group(1).strip()
+                description = match.group(2).strip()
+                if criterion and len(criterion) < 50:
+                    criteria.append(criterion)
+                    criteria_descriptions.append(description)
+            else:
+                # Thử pattern không có mô tả
+                match = re.match(r'^-\s*([^(]+?)\s*$', line, re.IGNORECASE)
+                if match:
+                    criterion = match.group(1).strip()
+                    if criterion and len(criterion) < 50:
+                        criteria.append(criterion)
+                        criteria_descriptions.append("")
     
     # Chuẩn hóa tên criteria thành lowercase và thay khoảng trắng bằng _
     normalized_criteria = []
@@ -551,13 +619,15 @@ def auto_generate_extract_sections_from_prompt(system_prompt):
         clean_name = clean_name.strip().lower().replace(' ', '_')
         normalized_criteria.append(clean_name)
     
-    # Loại bỏ duplicate và giữ thứ tự
+    # Loại bỏ duplicate và giữ thứ tự, đồng thời giữ cả description
     seen = set()
     unique_criteria = []
-    for criterion in normalized_criteria:
+    unique_descriptions = []
+    for i, criterion in enumerate(normalized_criteria):
         if criterion not in seen:
             seen.add(criterion)
             unique_criteria.append(criterion)
+            unique_descriptions.append(criteria_descriptions[i] if i < len(criteria_descriptions) else "")
     
     # Tạo code extract sections
     code_lines = [
@@ -609,7 +679,13 @@ def auto_generate_extract_sections_from_prompt(system_prompt):
         '        return None'
     ])
     
-    return '\\n'.join(code_lines)
+    # Return cả code và mapping info để hiển thị
+    return {
+        'code': '\\n'.join(code_lines),
+        'criteria': criteria,
+        'normalized_criteria': unique_criteria,
+        'descriptions': unique_descriptions
+    }
 
 
 # Tải prompts
@@ -784,19 +860,22 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                         result["evaluate_result"].get("scores") and
                         isinstance(result["evaluate_result"]["scores"], dict)):
                         
-                        # Kiểm tra accuracy thay vì average
-                        accuracy_score = result["evaluate_result"]["scores"].get("accuracy", 0)
-                        if accuracy_score < 8:
+                        # Kiểm tra tiêu chí fail
+                        fail_criterion = st.session_state.get("fail_criterion", "accuracy")
+                        fail_threshold = st.session_state.get("fail_threshold", 8.0)
+                        criterion_score = result["evaluate_result"]["scores"].get(fail_criterion, 0)
+                        
+                        if criterion_score < fail_threshold:
                             result["failed_details"] = {
                                 "timestamp": datetime.datetime.now().isoformat(),
                                 "test_name": test_name,
-                                "reason": "Accuracy thấp",
+                                "reason": f"{fail_criterion} thấp (< {fail_threshold})",
                                 "expected_output": result["true_answer"],
                                 "actual_output": result["site_response"],
                                 "scores": result["evaluate_result"]["scores"],
-                                "accuracy_score": accuracy_score
+                                f"{fail_criterion}_score": criterion_score
                             }
-                            failed_questions.append((question, "Accuracy thấp", result))
+                            failed_questions.append((question, f"{fail_criterion} thấp", result))
                         results.append(result)
                     else:
                         # evaluate_result không hợp lệ hoặc None
@@ -914,26 +993,34 @@ def remove_scheduled_job_for_site(site):
 if 'scheduled_jobs' not in st.session_state:
     st.session_state.scheduled_jobs = load_scheduled_jobs()
 
-# Re-create schedule from session state on each run
-schedule.clear()
-for job_config in st.session_state.scheduled_jobs:
-    if os.path.exists(job_config["file_path"]):
-        setup_schedule(
-            file_path=job_config["file_path"],
-            schedule_type=job_config["schedule_type"],
-            schedule_time=job_config["schedule_time"],
-            schedule_day=job_config["schedule_day"],
-            test_name=job_config["test_name"],
-            site=job_config["site"],
-            api_url=job_config.get("api_url", st.session_state.get("schedule_api_url", "https://site1.com")),
-            evaluate_api_url=job_config.get("evaluate_api_url", st.session_state.get("schedule_evaluate_api_url", "https://site2.com")),
-            custom_interval=job_config.get("custom_interval"),
-            custom_unit=job_config.get("custom_unit")
-        )
-    else:
-        # If file is missing, mark the job for removal
-        st.session_state.scheduled_jobs = [j for j in st.session_state.scheduled_jobs if j['job_id'] != job_config['job_id']]
-        save_scheduled_jobs()  # Save updated list to file
+# Initialize schedule_initialized flag
+if 'schedule_initialized' not in st.session_state:
+    st.session_state.schedule_initialized = False
+
+# Only setup schedule once when app starts, not on every rerun
+# This prevents schedule from being reset every time user interacts with the page
+if not st.session_state.schedule_initialized:
+    schedule.clear()
+    for job_config in st.session_state.scheduled_jobs:
+        if os.path.exists(job_config["file_path"]):
+            setup_schedule(
+                file_path=job_config["file_path"],
+                schedule_type=job_config["schedule_type"],
+                schedule_time=job_config["schedule_time"],
+                schedule_day=job_config["schedule_day"],
+                test_name=job_config["test_name"],
+                site=job_config["site"],
+                api_url=job_config.get("api_url", st.session_state.get("schedule_api_url", "https://site1.com")),
+                evaluate_api_url=job_config.get("evaluate_api_url", st.session_state.get("schedule_evaluate_api_url", "https://site2.com")),
+                custom_interval=job_config.get("custom_interval"),
+                custom_unit=job_config.get("custom_unit")
+            )
+        else:
+            # If file is missing, mark the job for removal
+            st.session_state.scheduled_jobs = [j for j in st.session_state.scheduled_jobs if j['job_id'] != job_config['job_id']]
+            save_scheduled_jobs()  # Save updated list to file
+    
+    st.session_state.schedule_initialized = True
 
 # Giao diện Streamlit
 st.title("🤖 Agent Testing")
@@ -942,80 +1029,105 @@ st.title("🤖 Agent Testing")
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Test đơn lẻ", "Test hàng loạt", "Lập lịch test", "Quản lý test", "Quản lý Prompts"])
 
 with tab1:
-    st.subheader("Nhập câu hỏi và câu trả lời chuẩn")
-    question = st.text_area("Câu hỏi:", height=100)
-    true_answer = st.text_area("Câu trả lời chuẩn:", height=200)
+    st.subheader("✏️ Test đơn lẻ")
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        question = st.text_area("📝 Câu hỏi:", height=150, placeholder="Nhập câu hỏi test...")
+    
+    with col2:
+        true_answer = st.text_area("✅ Câu trả lời chuẩn:", height=150, placeholder="Nhập câu trả lời mẫu...")
     
     if add_chat_history_global:
-        if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
-            st.session_state.chat_history = [
-                {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
-                {"role": "userMessage", "content": "[Cung cấp thông tin]"}
-            ]
-        st.markdown("**Thiết lập chat history:**")
-        
-        # Sử dụng một list tạm để tránh lỗi khi xóa
-        new_history = []
-        for i, msg in enumerate(st.session_state.chat_history):
-            cols = st.columns([2, 8, 1])
-            role = cols[0].selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
-            content = cols[1].text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_{i}")
-            if not cols[2].button("Xoá", key=f"delete_{i}"):
-                new_history.append({"role": role, "content": content})
-        st.session_state.chat_history = new_history
-
-        if st.button("Thêm message"):
-            st.session_state.chat_history.append({"role": "userMessage", "content": ""})
-            st.rerun()
-
-    if st.button("Test"):
-        if question and true_answer:
-            progress_container = st.empty()
-            progress_container.text("Đang xử lý...")
-            history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
-            result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history_global, custom_history=history, site=get_current_site())
+        with st.expander("💬 Thiết lập chat history", expanded=False):
+            if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
+                st.session_state.chat_history = [
+                    {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
+                    {"role": "userMessage", "content": "[Cung cấp thông tin]"}
+                ]
             
-            if isinstance(result, dict):
-                progress_container.success("Xử lý thành công!")
-                st.subheader("Kết quả")
-                st.write("**Câu trả lời từ Agent:**")
-                st.write(result["site_response"])
-                st.write("**Đánh giá:**")
-                scores = result["evaluate_result"]["scores"]
-                for metric, score in scores.items():
-                    st.write(f"- {metric}: {score}")
-                st.write("**Nhận xét và góp ý cải thiện:**")
-                st.write(result["evaluate_result"]["comments"])
+            # Sử dụng một list tạm để tránh lỗi khi xóa
+            new_history = []
+            for i, msg in enumerate(st.session_state.chat_history):
+                cols = st.columns([2, 8, 1])
+                role = cols[0].selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
+                content = cols[1].text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_{i}")
+                if not cols[2].button("🗑️", key=f"delete_{i}", help="Xóa message này"):
+                    new_history.append({"role": role, "content": content})
+            st.session_state.chat_history = new_history
+
+            if st.button("➕ Thêm message"):
+                st.session_state.chat_history.append({"role": "userMessage", "content": ""})
+                st.rerun()
+
+    col1, col2, col3 = st.columns([1, 1, 2])
+    with col2:
+        if st.button("▶️ Chạy Test", type="primary", use_container_width=True):
+            if question and true_answer:
+                with st.spinner("⏳ Đang xử lý..."):
+                    history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
+                    result = process_single_question(question, true_answer, 0, 1, add_chat_history=add_chat_history_global, custom_history=history, site=get_current_site())
+                
+                if isinstance(result, dict):
+                    st.success("✅ Xử lý thành công!")
+                    
+                    st.write("---")
+                    st.subheader("📊 Kết quả")
+                    
+                    col1, col2 = st.columns([1, 1])
+                    
+                    with col1:
+                        st.write("**💬 Câu trả lời từ Agent:**")
+                        st.info(result["site_response"])
+                    
+                    with col2:
+                        st.write("**📈 Điểm đánh giá:**")
+                        scores = result["evaluate_result"]["scores"]
+                        for metric, score in scores.items():
+                            st.metric(metric.capitalize(), f"{score}/10")
+                    
+                    st.write("**💭 Nhận xét và góp ý cải thiện:**")
+                    st.text_area("Comments", value=result["evaluate_result"]["comments"], height=150, disabled=True)
+                else:
+                    st.error(f"❌ Lỗi: {result}")
             else:
-                progress_container.error(f"Lỗi: {result}")
-        else:
-            st.warning("Vui lòng nhập cả câu hỏi và câu trả lời chuẩn")
+                st.warning("⚠️ Vui lòng nhập đầy đủ câu hỏi và câu trả lời chuẩn")
 
 with tab2:
-    st.subheader("Test hàng loạt từ file Excel")
+    st.subheader("📝 Test hàng loạt từ file Excel")
     
     if add_chat_history_global:
-        # Tương tự tab 1, hiển thị và cho phép chỉnh sửa chat history
-        if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
-            st.session_state.chat_history = [
-                {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
-                {"role": "userMessage", "content": "[Cung cấp thông tin]"}
-            ]
-        st.markdown("**Thiết lập chat history cho tất cả câu hỏi:**")
-        new_history = []
-        for i, msg in enumerate(st.session_state.chat_history):
-            cols = st.columns([2, 8, 1])
-            role = cols[0].selectbox(f"Role batch {i+1}", ["apiMessage", "userMessage"], key=f"role_batch_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
-            content = cols[1].text_area(f"Nội dung batch {i+1}", value=msg["content"], key=f"content_batch_{i}")
-            if not cols[2].button("Xoá", key=f"delete_batch_{i}"):
-                new_history.append({"role": role, "content": content})
-        st.session_state.chat_history = new_history
+        with st.expander("💬 Thiết lập chat history", expanded=False):
+            # Tương tự tab 1, hiển thị và cho phép chỉnh sửa chat history
+            if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
+                st.session_state.chat_history = [
+                    {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
+                    {"role": "userMessage", "content": "[Cung cấp thông tin]"}
+                ]
+            
+            new_history = []
+            for i, msg in enumerate(st.session_state.chat_history):
+                cols = st.columns([2, 8, 1])
+                role = cols[0].selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_batch_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
+                content = cols[1].text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_batch_{i}")
+                if not cols[2].button("🗑️", key=f"delete_batch_{i}", help="Xóa message này"):
+                    new_history.append({"role": role, "content": content})
+            st.session_state.chat_history = new_history
 
-        if st.button("Thêm message", key="add_message_batch"):
-            st.session_state.chat_history.append({"role": "userMessage", "content": ""})
-            st.rerun()
+            if st.button("➕ Thêm message", key="add_message_batch"):
+                st.session_state.chat_history.append({"role": "userMessage", "content": ""})
+                st.rerun()
 
-    uploaded_file = st.file_uploader("Chọn file Excel", type=['xlsx', 'xls'])
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        uploaded_file = st.file_uploader("📁 Chọn file Excel chứa test cases", type=['xlsx', 'xls'])
+    
+    with col2:
+        st.write("")  # Spacer
+        st.write("")  # Spacer
+        if uploaded_file:
+            st.success("✅ File đã tải lên")
     
     if uploaded_file is not None:
         try:
@@ -1024,47 +1136,128 @@ with tab2:
             questions = df.iloc[:, 0].tolist()
             true_answers = df.iloc[:, 1].tolist()
             
-            display_df = pd.DataFrame({'Câu hỏi': questions, 'Câu trả lời chuẩn': true_answers})
-            edited_df = st.dataframe(display_df, use_container_width=True, selection_mode="multi-row", on_select="rerun", hide_index=True)
+            # Khởi tạo edited test cases trong session state nếu chưa có
+            if 'test_cases_df' not in st.session_state or st.session_state.get('current_file') != uploaded_file.name:
+                st.session_state.test_cases_df = pd.DataFrame({
+                    'Chọn': [True] * len(questions),  # Checkbox column
+                    'Câu hỏi': questions, 
+                    'Câu trả lời chuẩn': true_answers
+                })
+                st.session_state.current_file = uploaded_file.name
             
-            selected_rows = edited_df['selection']['rows']
+            st.write("### 📋 Danh sách test cases (có thể chỉnh sửa)")
+            st.info("💡 Tip: Bạn có thể click vào ô để chỉnh sửa trực tiếp câu hỏi và câu trả lời. Tick ✓ vào cột 'Chọn' để chọn test case muốn chạy.")
             
-            if st.button("Test hàng loạt"):
-                if selected_rows:
-                    selected_questions = [questions[i] for i in selected_rows]
-                    selected_true_answers = [true_answers[i] for i in selected_rows]
-                    
-                    history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
-                    results, failed_questions = process_questions_batch(selected_questions, selected_true_answers, add_chat_history=add_chat_history_global, custom_history=history, test_name=uploaded_file.name, site=get_current_site())
-                    
-                    st.session_state.results = results
-                    
-                    data = {
-                        'Question': [r["question"] for r in results],
-                        'True Answer': [r["true_answer"] for r in results],
-                        'Agent Answer': [r["site_response"] for r in results],
-                        'Session ID': [r["chat_id"] for r in results],
-                        'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
-                        'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
-                        'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
-                        'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
-                        'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
-                        'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
-                        'Comment': [r["evaluate_result"].get("comments", "") for r in results]
-                    }
-                    results_df = pd.DataFrame(data)
-                    st.session_state.results_df = results_df
-                    
-                    st.subheader(f"Kết quả đánh giá ({len(results)} câu hỏi)")
-                    st.dataframe(results_df, use_container_width=True)
-                    
-                    st.download_button(label="Tải xuống kết quả", data=results_df.to_csv(index=False).encode('utf-8'), file_name='evaluation_results.csv', mime='text/csv')
-                    
-                    if failed_questions:
-                        st.warning(f"Có {len(failed_questions)} câu hỏi xử lý thất bại")
-                    st.success(f"Đã hoàn thành đánh giá {len(results)} câu hỏi")
-                else:
-                    st.warning("Vui lòng chọn ít nhất một câu hỏi để test")
+            # Sử dụng st.data_editor để có thể chỉnh sửa
+            edited_df = st.data_editor(
+                st.session_state.test_cases_df,
+                use_container_width=True,
+                hide_index=True,
+                num_rows="dynamic",  # Cho phép thêm/xóa dòng
+                column_config={
+                    "Chọn": st.column_config.CheckboxColumn(
+                        "Chọn",
+                        help="Tick để chọn test case này",
+                        default=True,
+                        width="small"
+                    ),
+                    "Câu hỏi": st.column_config.TextColumn(
+                        "Câu hỏi",
+                        help="Nội dung câu hỏi",
+                        width="large",
+                        required=True
+                    ),
+                    "Câu trả lời chuẩn": st.column_config.TextColumn(
+                        "Câu trả lời chuẩn",
+                        help="Câu trả lời mẫu để so sánh",
+                        width="large",
+                        required=True
+                    ),
+                },
+                key="test_cases_editor"
+            )
+            
+            # Cập nhật session state với dữ liệu đã chỉnh sửa
+            st.session_state.test_cases_df = edited_df
+            
+            # Lọc các dòng được chọn
+            selected_df = edited_df[edited_df['Chọn'] == True]
+            selected_rows = selected_df.index.tolist()
+            
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col1:
+                st.metric("📊 Tổng test cases", len(edited_df))
+            with col2:
+                st.metric("✅ Test cases được chọn", len(selected_df))
+            with col3:
+                if st.button("▶️ Chạy test", type="primary", use_container_width=True):
+                    if len(selected_df) > 0:
+                        selected_questions = selected_df['Câu hỏi'].tolist()
+                        selected_true_answers = selected_df['Câu trả lời chuẩn'].tolist()
+                        
+                        with st.spinner("⏳ Đang xử lý test cases..."):
+                            history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
+                            results, failed_questions = process_questions_batch(
+                                selected_questions, 
+                                selected_true_answers, 
+                                add_chat_history=add_chat_history_global, 
+                                custom_history=history, 
+                                test_name=uploaded_file.name, 
+                                site=get_current_site()
+                            )
+                        
+                        st.session_state.results = results
+                        
+                        data = {
+                            'Question': [r["question"] for r in results],
+                            'True Answer': [r["true_answer"] for r in results],
+                            'Agent Answer': [r["site_response"] for r in results],
+                            'Session ID': [r["chat_id"] for r in results],
+                            'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
+                            'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
+                            'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
+                            'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
+                            'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
+                            'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
+                            'Comment': [r["evaluate_result"].get("comments", "") for r in results]
+                        }
+                        results_df = pd.DataFrame(data)
+                        st.session_state.results_df = results_df
+                        
+                        st.write("---")
+                        st.subheader(f"📊 Kết quả đánh giá ({len(results)} câu hỏi)")
+                        
+                        # Hiển thị metrics tổng quan
+                        col1, col2, col3, col4 = st.columns(4)
+                        with col1:
+                            st.metric("✅ Passed", sum(1 for r in results if "failed_details" not in r))
+                        with col2:
+                            st.metric("❌ Failed", sum(1 for r in results if "failed_details" in r))
+                        with col3:
+                            avg_score = sum(r["evaluate_result"]["scores"].get("average", 0) for r in results) / len(results) if results else 0
+                            st.metric("📈 Điểm TB", f"{avg_score:.2f}")
+                        with col4:
+                            pass_rate = (sum(1 for r in results if "failed_details" not in r) / len(results) * 100) if results else 0
+                            st.metric("📊 Tỷ lệ pass", f"{pass_rate:.1f}%")
+                        
+                        st.dataframe(results_df, use_container_width=True, hide_index=True)
+                        
+                        col1, col2 = st.columns([1, 1])
+                        with col1:
+                            st.download_button(
+                                label="📥 Tải xuống kết quả (CSV)", 
+                                data=results_df.to_csv(index=False).encode('utf-8'), 
+                                file_name=f'evaluation_results_{uploaded_file.name}.csv', 
+                                mime='text/csv',
+                                use_container_width=True
+                            )
+                        with col2:
+                            if failed_questions:
+                                st.warning(f"⚠️ Có {len(failed_questions)} câu hỏi xử lý thất bại")
+                            else:
+                                st.success(f"✅ Đã hoàn thành đánh giá {len(results)} câu hỏi")
+                    else:
+                        st.warning("⚠️ Vui lòng chọn ít nhất một test case để chạy")
         except Exception as e:
             st.error(f"Lỗi khi đọc file Excel: {str(e)}")
     else:
@@ -1126,6 +1319,9 @@ with tab3:
                 
                 # Remove from scheduled jobs
                 remove_scheduled_job_for_site(site)
+                
+                # Reset schedule initialization flag to recreate schedule
+                st.session_state.schedule_initialized = False
                 
                 st.success(f"Đã xóa cấu hình lịch test cho site '{site}'. Kết quả test trước đó vẫn được giữ lại.")
                 st.rerun()
@@ -1288,24 +1484,10 @@ with tab3:
                         
                         save_scheduled_jobs()
                         
-                        # Recreate schedule
-                        schedule.clear()
-                        for job_config in st.session_state.scheduled_jobs:
-                            if os.path.exists(job_config["file_path"]):
-                                setup_schedule(
-                                    file_path=job_config["file_path"],
-                                    schedule_type=job_config["schedule_type"],
-                                    schedule_time=job_config["schedule_time"],
-                                    schedule_day=job_config["schedule_day"],
-                                    test_name=job_config["test_name"],
-                                    site=job_config["site"],
-                                    api_url=job_config.get("api_url", "https://site1.com"),
-                                    evaluate_api_url=job_config.get("evaluate_api_url", "https://site2.com"),
-                                    custom_interval=job_config.get("custom_interval"),
-                                    custom_unit=job_config.get("custom_unit")
-                                )
-                        
+                        # Reset schedule initialization flag to recreate schedule
+                        st.session_state.schedule_initialized = False
                         st.session_state.editing_existing_job = False
+                        
                         st.success(f"Đã cập nhật cấu hình lịch test cho site '{site}'.")
                         st.rerun()
             
@@ -1398,18 +1580,9 @@ with tab3:
                 st.session_state.scheduled_jobs.append(job_config)
                 save_scheduled_jobs()  # Save to file
                 
-                setup_schedule(
-                    file_path=job_config["file_path"],
-                    schedule_type=job_config["schedule_type"],
-                    schedule_time=job_config["schedule_time"],
-                    schedule_day=job_config["schedule_day"],
-                    test_name=job_config["test_name"],
-                    site=job_config["site"],
-                    api_url=job_config["api_url"],
-                    evaluate_api_url=job_config["evaluate_api_url"],
-                    custom_interval=job_config["custom_interval"],
-                    custom_unit=job_config["custom_unit"]
-                )
+                # Reset schedule initialization flag to recreate schedule
+                st.session_state.schedule_initialized = False
+                
                 st.success(f"Đã thiết lập lịch chạy test '{test_name}' cho site '{site}'.")
                 st.rerun()
 
@@ -1432,29 +1605,106 @@ with tab4:
         total_extract_errors = sum(test.get('num_failed_extract', 0) for test in st.session_state.test_history[site])
         total_accuracy_errors = sum(test.get('num_failed_accuracy', 0) for test in st.session_state.test_history[site])
         
-        # Hiển thị metrics tổng quan
-        col1, col2, col3, col4 = st.columns(4)
+        overall_pass_rate = (total_passed / total_questions) * 100 if total_questions > 0 else 0
+        api_error_rate = (total_api_errors / total_failed) * 100 if total_failed > 0 else 0
         
-        with col1:
-            st.metric("📈 Tổng số test", total_tests)
-            st.metric("❓ Tổng câu hỏi", total_questions)
+        # Dashboard với HTML/CSS đẹp hơn
+        st.markdown(""" 
+        <style>
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            text-align: center;
+            margin: 5px;
+        }
+        .metric-card-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        .metric-card-danger {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        .metric-card-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .metric-card-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .metric-label {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        </style>
+        """, unsafe_allow_html=True)
         
-        with col2:
-            st.metric("✅ Tổng passed", total_passed)
-            st.metric("❌ Tổng failed", total_failed)
-            if total_questions > 0:
-                overall_pass_rate = (total_passed / total_questions) * 100
-                st.metric("📊 Tỷ lệ pass tổng", f"{overall_pass_rate:.1f}%")
+        # Grid 1: Thống kê chính
+        st.markdown(f"""
+        <div class="dashboard-grid">
+            <div class="metric-card metric-card-info">
+                <div class="metric-label">📈 Tổng số test</div>
+                <div class="metric-value">{total_tests}</div>
+            </div>
+            <div class="metric-card metric-card-info">
+                <div class="metric-label">❓ Tổng câu hỏi</div>
+                <div class="metric-value">{total_questions}</div>
+            </div>
+            <div class="metric-card metric-card-success">
+                <div class="metric-label">✅ Tổng passed</div>
+                <div class="metric-value">{total_passed}</div>
+            </div>
+            <div class="metric-card metric-card-danger">
+                <div class="metric-label">❌ Tổng failed</div>
+                <div class="metric-value">{total_failed}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        with col3:
-            st.metric("🔴 API Errors", total_api_errors)
-            st.metric("🟡 Extract Errors", total_extract_errors)
-        
-        with col4:
-            st.metric("🟠 Accuracy Errors", total_accuracy_errors)
-            if total_failed > 0:
-                api_error_rate = (total_api_errors / total_failed) * 100
-                st.metric("🔴 API Error %", f"{api_error_rate:.1f}%")
+        # Grid 2: Phân loại lỗi và tỷ lệ
+        st.markdown(f"""
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-label">📊 Tỷ lệ pass tổng</div>
+                <div class="metric-value">{overall_pass_rate:.1f}%</div>
+            </div>
+            <div class="metric-card metric-card-danger">
+                <div class="metric-label">🔴 API Errors</div>
+                <div class="metric-value">{total_api_errors}</div>
+            </div>
+            <div class="metric-card metric-card-warning">
+                <div class="metric-label">🟡 Extract Errors</div>
+                <div class="metric-value">{total_extract_errors}</div>
+            </div>
+            <div class="metric-card metric-card-warning">
+                <div class="metric-label">🟠 Accuracy Errors</div>
+                <div class="metric-value">{total_accuracy_errors}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Biểu đồ phân bố lỗi
         if total_failed > 0:
@@ -1694,13 +1944,97 @@ with tab4:
     #     st.info("Thư mục kết quả cho site này chưa được tạo.")
 
 with tab5:
+    # Custom CSS cho tab Quản lý Prompts
+    st.markdown("""
+    <style>
+    /* Styling cho buttons */
+    .stButton > button {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Styling cho text areas */
+    .stTextArea textarea {
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 13px;
+    }
+    
+    .stTextArea textarea:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+    
+    /* Spacing cho columns */
+    .row-widget.stHorizontal {
+        gap: 15px;
+    }
+    
+    /* Styling cho headers */
+    h3 {
+        color: #1f77b4;
+        border-bottom: 2px solid #1f77b4;
+        padding-bottom: 8px;
+        margin-top: 20px;
+    }
+    
+    /* Card-like containers */
+    .stExpander {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    
+    /* Info boxes */
+    .stAlert {
+        border-radius: 8px;
+    }
+    
+    /* Dataframe styling */
+    .dataframe {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    /* Button container spacing */
+    div[data-testid="column"] {
+        padding: 5px;
+    }
+    
+    /* Primary button highlight */
+    .stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+    
+    .stButton > button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     st.subheader("Quản lý Prompts và Extract Sections")
     
     site = get_current_site()
     st.write(f"**Site hiện tại:** {site}")
     
     # Load current prompts
-    prompts = load_prompts_for_site(site)
+    # Check if we need to force reload from file (reset button was clicked)
+    if st.session_state.get('prompt_reset_trigger', False):
+        prompts = load_prompts_for_site(site)
+        st.session_state.prompt_reset_trigger = False
+    else:
+        prompts = load_prompts_for_site(site)
+    
     current_extract_code = load_extract_sections_for_site(site)
     
     # Prompt Management Section
@@ -1726,102 +2060,67 @@ with tab5:
             key="human_prompt_editor"
         )
     
-    # Save prompts button
-    col1, col2, col3 = st.columns([1, 1, 4])
+    # Save prompts button với styling đẹp hơn
+    st.write("")  # Spacing
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 3])
     with col1:
-        if st.button("💾 Lưu Prompts", key="save_prompts"):
+        if st.button("💾 Lưu Prompts", key="save_prompts", use_container_width=True):
             if save_prompts_for_site(site, system_prompt, human_prompt):
                 st.success("✅ Đã lưu prompts thành công!")
+                # Clear any cached values
+                if 'prompt_reset_trigger' in st.session_state:
+                    del st.session_state.prompt_reset_trigger
                 st.rerun()
             else:
                 st.error("❌ Lỗi khi lưu prompts!")
     
     with col2:
-        if st.button("🔄 Reset Prompts", key="reset_prompts"):
-            prompts = load_prompts_for_site(site)
+        if st.button("🔄 Reset Prompts", key="reset_prompts", use_container_width=True):
+            # Set a flag to trigger reload from file
+            st.session_state.prompt_reset_trigger = True
             st.rerun()
+    
+    st.write("")  # Spacing
     
     # Extract Sections Management Section
     st.write("### 🔧 Quản lý Extract Sections")
     
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.write("**Extract Sections Code**")
-    with col2:
-        if st.button("🤖 Tự động tạo từ Prompt", key="auto_generate_extract"):
-            if system_prompt:
-                auto_generated_code = auto_generate_extract_sections_from_prompt(system_prompt)
-                st.session_state.auto_generated_extract_code = auto_generated_code
-                st.success("✅ Đã tự động tạo extract sections từ system prompt!")
-            else:
-                st.warning("⚠️ Vui lòng nhập system prompt trước")
-    
-    # Hiển thị auto-generated code nếu có
-    if 'auto_generated_extract_code' in st.session_state:
+    # Tự động phân tích prompt và hiển thị mapping
+    if system_prompt:
+        # Tự động phân tích prompt hiện tại
+        result = auto_generate_extract_sections_from_prompt(system_prompt)
+        
         # Hiển thị mapping preview
         st.write("**Mapping được phát hiện từ System Prompt:**")
         
-        # Phân tích lại để lấy criteria - Logic đơn giản hơn
-        import re
-        
-        # Tìm các tiêu chí với format ### số. Tên tiêu chí
-        criteria = []
-        lines = system_prompt.split('\n')
-        
-        for line in lines:
-            line = line.strip()
-            # Tìm pattern ### số. Tên tiêu chí
-            match = re.match(r'^###\s*\d+\.\s*([^(]+?)(?:\s*\([^)]+\))?\s*$', line, re.IGNORECASE)
-            if match:
-                criterion = match.group(1).strip()
-                if criterion and len(criterion) < 50:  # Chỉ lấy tên ngắn
-                    criteria.append(criterion)
-        
-        # Nếu không tìm thấy, thử tìm với format khác
-        if not criteria:
-            for line in lines:
-                line = line.strip()
-                # Tìm pattern - Tên tiêu chí
-                match = re.match(r'^-\s*([^(]+?)(?:\s*\([^)]+\))?\s*$', line, re.IGNORECASE)
-                if match:
-                    criterion = match.group(1).strip()
-                    if criterion and len(criterion) < 50:
-                        criteria.append(criterion)
-        
-        # Chuẩn hóa tên criteria thành lowercase và thay khoảng trắng bằng _
-        normalized_criteria = []
-        for criterion in criteria:
-            # Loại bỏ số thứ tự và ký tự đặc biệt
-            clean_name = re.sub(r'^\d+\.?\s*', '', criterion)
-            clean_name = re.sub(r'[^\w\s]', '', clean_name)
-            clean_name = clean_name.strip().lower().replace(' ', '_')
-            normalized_criteria.append(clean_name)
-        
-        # Loại bỏ duplicate và giữ thứ tự
-        seen = set()
-        unique_criteria = []
-        for criterion in normalized_criteria:
-            if criterion not in seen:
-                seen.add(criterion)
-                unique_criteria.append(criterion)
-        
         # Hiển thị mapping table
-        if unique_criteria:
+        if result and result.get('normalized_criteria'):
             mapping_data = []
-            for i, criterion in enumerate(unique_criteria):
-                original_criterion = criteria[i] if i < len(criteria) else criterion
+            for i, criterion in enumerate(result['normalized_criteria']):
+                original_criterion = result['criteria'][i] if i < len(result['criteria']) else criterion
+                description = result['descriptions'][i] if i < len(result['descriptions']) else ""
+                
+                # Nếu không có description từ prompt, dùng mô tả mặc định
+                if not description:
+                    if 'relevance' in criterion:
+                        description = 'Mức độ liên quan đến câu hỏi'
+                    elif 'accuracy' in criterion:
+                        description = 'Độ chính xác của thông tin'
+                    elif 'completeness' in criterion:
+                        description = 'Tính đầy đủ của câu trả lời'
+                    elif 'access_control' in criterion:
+                        description = 'Kiểm soát truy cập và bảo mật'
+                    elif 'clarity' in criterion:
+                        description = 'Tính rõ ràng và dễ hiểu'
+                    elif 'tone' in criterion:
+                        description = 'Giọng điệu và thái độ'
+                    else:
+                        description = 'Tiêu chí khác'
+                
                 mapping_data.append({
                     'Tiêu chí trong Prompt': original_criterion,
                     'Key trong JSON': criterion,
-                    'Mô tả': [
-                        'Mức độ liên quan đến câu hỏi' if 'relevance' in criterion else
-                        'Độ chính xác của thông tin' if 'accuracy' in criterion else
-                        'Tính đầy đủ của câu trả lời' if 'completeness' in criterion else
-                        'Kiểm soát truy cập và bảo mật' if 'access_control' in criterion else
-                        'Tính rõ ràng và dễ hiểu' if 'clarity' in criterion else
-                        'Giọng điệu và thái độ' if 'tone' in criterion else
-                        'Tiêu chí khác'
-                    ][0]
+                    'Mô tả': description
                 })
             
             mapping_df = pd.DataFrame(mapping_data)
@@ -1829,57 +2128,47 @@ with tab5:
         else:
             st.warning("Không tìm thấy tiêu chí nào trong System Prompt")
         
-        col1, col2 = st.columns([1, 1])
+        st.write("")  # Spacing
+        col1, col2, col3, col4 = st.columns([1, 1, 1, 3])
         with col1:
-            if st.button("✅ Sử dụng code này", key="use_auto_generated"):
-                extract_code = st.session_state.auto_generated_extract_code
-                st.session_state.extract_code_editor = extract_code
-                del st.session_state.auto_generated_extract_code
-                st.rerun()
+            if st.button("💾 Lưu Extract Code", key="save_extract", use_container_width=True):
+                extract_code = result['code']
+                # Lưu luôn vào file
+                if save_extract_sections_for_site(site, extract_code):
+                    st.success("✅ Đã lưu extract sections thành công!")
+                    st.rerun()
+                else:
+                    st.error("❌ Lỗi khi lưu extract sections!")
         with col2:
-            if st.button("❌ Bỏ qua", key="dismiss_auto_generated"):
-                del st.session_state.auto_generated_extract_code
+            if st.button("🔄 Reset Extract Code", key="reset_extract", use_container_width=True):
+                current_extract_code = load_extract_sections_for_site(site)
                 st.rerun()
-    
-    # extract_code = st.text_area(
-    #     "Extract Sections Code", 
-    #     value=current_extract_code if current_extract_code else get_default_extract_sections_template(site), 
-    #     height=400,
-    #     key="extract_code_editor"
-    # )
-    
-    col1, col2, col3 = st.columns([1, 1, 4])
-    with col1:
-        if st.button("💾 Lưu Extract Code", key="save_extract"):
-            if save_extract_sections_for_site(site, extract_code):
-                st.success("✅ Đã lưu extract sections thành công!")
-                st.rerun()
-            else:
-                st.error("❌ Lỗi khi lưu extract sections!")
-    
-    with col2:
-        if st.button("🔄 Reset Extract Code", key="reset_extract"):
-            current_extract_code = load_extract_sections_for_site(site)
-            st.rerun()
+    else:
+        st.info("⚠️ Vui lòng nhập System Prompt để tự động tạo Extract Sections")
     
     # Preview Section
     st.write("### 👁️ Preview")
     
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write("**System Prompt Preview**")
-        if system_prompt:
-            st.text_area("Preview", value=system_prompt[:500] + "..." if len(system_prompt) > 500 else system_prompt, height=150, disabled=True)
-        else:
-            st.info("Chưa có system prompt")
-    
-    with col2:
-        st.write("**Human Prompt Preview**")
-        if human_prompt:
-            st.text_area("Preview", value=human_prompt[:500] + "..." if len(human_prompt) > 500 else human_prompt, height=150, disabled=True)
-        else:
-            st.info("Chưa có human prompt")
+    with st.container():
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("**System Prompt Preview**")
+            if system_prompt:
+                preview_text = system_prompt[:500] + "..." if len(system_prompt) > 500 else system_prompt
+                st.text_area("Preview", value=preview_text, height=150, disabled=True, key="system_preview", label_visibility="collapsed")
+                st.caption(f"📝 {len(system_prompt)} ký tự")
+            else:
+                st.info("Chưa có system prompt")
+        
+        with col2:
+            st.write("**Human Prompt Preview**")
+            if human_prompt:
+                preview_text = human_prompt[:500] + "..." if len(human_prompt) > 500 else human_prompt
+                st.text_area("Preview", value=preview_text, height=150, disabled=True, key="human_preview", label_visibility="collapsed")
+                st.caption(f"📝 {len(human_prompt)} ký tự")
+            else:
+                st.info("Chưa có human prompt")
     
     # # File Information
     # st.write("### 📁 Thông tin Files")

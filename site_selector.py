@@ -13,12 +13,26 @@ st.markdown(
     """
     Đây là công cụ tự động kiểm thử cho các Agent của VPCP.
     
-    **👈 Chọn một demo từ thanh bên** để xem các ví dụ về những gì Streamlit có thể làm!
+    **👈 Chọn một site từ thanh bên** để bắt đầu testing!
     
-    ### Bạn muốn tìm hiểu thêm?
+    ### 🎉 Tính năng mới (v2.0):
     
-    - Xem tài liệu tại [streamlit.io](https://streamlit.io)
-    - Đọc sâu hơn trong [tài liệu của chúng tôi](https://docs.streamlit.io)
-    - Đặt câu hỏi trong [diễn đàn cộng đồng](https://discuss.streamlit.io)
+    - ⚙️ **Quản lý Sites**: Thêm/xóa sites mới dễ dàng
+    - 📝 **Edit Test Cases trên UI**: Chỉnh sửa trực tiếp không cần Excel
+    - 🎯 **Cấu hình tiêu chí fail**: Điều chỉnh linh hoạt (accuracy, relevance, etc.)
+    - 🎨 **Giao diện đẹp hơn**: Layout căn chỉnh, dễ nhìn, dễ dùng
+    
+    ### 📚 Hướng dẫn chi tiết:
+    
+    - Xem file [HUONG_DAN_TINH_NANG_MOI.md](./HUONG_DAN_TINH_NANG_MOI.md)
+    - Hoặc xem hướng dẫn trong mỗi tab của ứng dụng
+    
+    ### 🚀 Bắt đầu nhanh:
+    
+    1. **Quản lý Sites**: Tạo site mới cho dự án của bạn
+    2. **Test đơn lẻ**: Test nhanh 1 câu hỏi
+    3. **Test hàng loạt**: Upload Excel và chạy nhiều test cùng lúc
+    4. **Lập lịch test**: Tự động chạy test theo lịch
+    5. **Quản lý test**: Xem lịch sử và phân tích kết quả
 """
 )

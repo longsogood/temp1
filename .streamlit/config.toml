@@ -26,3 +26,10 @@ fixMatplotlib = true
 showErrorDetails = true
 toolbarMode = "minimal"
 
+[theme]
+base="dark"
+primaryColor="#1DB954"
+backgroundColor="#0E1117"
+secondaryBackgroundColor="#262730"
+textColor="#FAFAFA"
+font="sans serif"
