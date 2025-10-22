@@ -1,66 +1,69 @@
-# Python
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
 
 # Virtual environments
 venv/
 env/
 ENV/
+.venv
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS
+# OS files
 .DS_Store
 Thumbs.db
 
 # Git
 .git/
 .gitignore
+.gitattributes
 
 # Docker
 Dockerfile
 docker-compose.yml
 .dockerignore
 
-# Logs
+# Logs và cache (sẽ mount từ host)
 *.log
+logs/
+test_results/
+scheduled_tests/
+output/
+failed_tests/
 
 # Temporary files
 *.tmp
 *.temp
+.cache/
+
+# Test files
+test_*.py
+*_test.py
+
+# Documentation
+README*.md
+docs/
 
 # Jupyter notebooks
 *.ipynb
+.ipynb_checkpoints/
 
-# Results files
+# Data files (sẽ mount từ host)
 *.pkl
 *.csv
-results.pkl
-chat_results.pkl
-filtered_autotest_results.csv
+*.xlsx
+*.xls
+QAs/
 
-# Output directory (sẽ được mount)
-output/ 
+# Backup files
+*.bak
+*.backup

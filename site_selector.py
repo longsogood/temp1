@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="VPCP AutoTest - Trang chủ",
+    page_title="AutoTest - Trang chủ",
     page_icon="🏠",
 )
 
