@@ -396,15 +396,200 @@ def get_prompt_paths(site):
         "human_prompt": os.path.join(prompt_dir, "human_prompt.txt")
     }
 
+def get_original_prompt_paths():
+    """Get original prompt file paths"""
+    return {
+        "system_prompt": os.path.join("original_prompts", "system_prompt.txt"),
+        "human_prompt": os.path.join("original_prompts", "human_prompt.txt")
+    }
+
+def get_backup_prompt_paths(site):
+    """Get backup prompt file paths for a specific site"""
+    backup_dir = os.path.join("backup_prompts", site)
+    return {
+        "system_prompt": os.path.join(backup_dir, "system_prompt.txt"),
+        "human_prompt": os.path.join(backup_dir, "human_prompt.txt")
+    }
+
+def get_backup_extract_sections_path(site):
+    """Get backup extract_sections.py file path for a specific site"""
+    backup_dir = os.path.join("backup_prompts", site)
+    return os.path.join(backup_dir, "extract_sections.py")
+
 def get_extract_sections_path(site):
     """Get extract_sections.py file path for a specific site"""
     utils_dir = os.path.join("utils", site)
     return os.path.join(utils_dir, "extract_sections.py")
 
+def load_original_prompts():
+    """Load prompts from original_prompts folder"""
+    original_paths = get_original_prompt_paths()
+    prompts = {}
+    
+    try:
+        if os.path.exists(original_paths["system_prompt"]):
+            with open(original_paths["system_prompt"], "r", encoding="utf-8") as f:
+                prompts["system_prompt"] = f.read()
+        else:
+            prompts["system_prompt"] = ""
+            logger.warning("Original system_prompt.txt không tồn tại")
+            
+        if os.path.exists(original_paths["human_prompt"]):
+            with open(original_paths["human_prompt"], "r", encoding="utf-8") as f:
+                prompts["human_prompt"] = f.read()
+        else:
+            prompts["human_prompt"] = ""
+            logger.warning("Original human_prompt.txt không tồn tại")
+            
+    except Exception as e:
+        logger.error(f"Lỗi khi đọc original prompts: {str(e)}")
+        prompts = {"system_prompt": "", "human_prompt": ""}
+    
+    return prompts
+
+def backup_prompts_for_site(site):
+    """Backup current prompts to backup_prompts folder"""
+    try:
+        # Load current prompts
+        current_prompts = load_prompts_for_site(site)
+        
+        if not (current_prompts["system_prompt"] or current_prompts["human_prompt"]):
+            logger.warning(f"Prompts hiện tại của site {site} rỗng, không thể backup")
+            return False
+        
+        # Create backup directory
+        backup_paths = get_backup_prompt_paths(site)
+        os.makedirs(os.path.dirname(backup_paths["system_prompt"]), exist_ok=True)
+        
+        # Save to backup folder
+        with open(backup_paths["system_prompt"], "w", encoding="utf-8") as f:
+            f.write(current_prompts["system_prompt"])
+        with open(backup_paths["human_prompt"], "w", encoding="utf-8") as f:
+            f.write(current_prompts["human_prompt"])
+        
+        logger.info(f"Đã backup prompts cho site {site}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi backup prompts cho site {site}: {str(e)}")
+        return False
+
+def backup_extract_sections_for_site(site):
+    """Backup current extract_sections to backup_prompts folder"""
+    try:
+        # Load current extract sections
+        current_code = load_extract_sections_for_site(site)
+        
+        if not current_code:
+            logger.warning(f"Extract sections hiện tại của site {site} rỗng, không thể backup")
+            return False
+        
+        # Create backup directory
+        backup_path = get_backup_extract_sections_path(site)
+        os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+        
+        # Save to backup folder
+        with open(backup_path, "w", encoding="utf-8") as f:
+            f.write(current_code)
+        
+        logger.info(f"Đã backup extract_sections cho site {site}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi backup extract_sections cho site {site}: {str(e)}")
+        return False
+
+def restore_prompts_from_backup(site):
+    """Restore prompts from backup, fallback to original if backup not exists"""
+    try:
+        backup_paths = get_backup_prompt_paths(site)
+        
+        # Check if backup exists
+        if os.path.exists(backup_paths["system_prompt"]) and os.path.exists(backup_paths["human_prompt"]):
+            # Load from backup
+            with open(backup_paths["system_prompt"], "r", encoding="utf-8") as f:
+                system_prompt = f.read()
+            with open(backup_paths["human_prompt"], "r", encoding="utf-8") as f:
+                human_prompt = f.read()
+            
+            # Save to site folder
+            save_prompts_for_site(site, system_prompt, human_prompt)
+            logger.info(f"Đã restore prompts từ backup cho site {site}")
+            return "backup"
+        else:
+            # Fallback to original
+            original_prompts = load_original_prompts()
+            if original_prompts["system_prompt"] or original_prompts["human_prompt"]:
+                save_prompts_for_site(site, original_prompts["system_prompt"], original_prompts["human_prompt"])
+                logger.info(f"Không tìm thấy backup, đã restore prompts từ original cho site {site}")
+                return "original"
+            else:
+                logger.warning("Cả backup và original prompts đều rỗng")
+                return False
+                
+    except Exception as e:
+        logger.error(f"Lỗi khi restore prompts cho site {site}: {str(e)}")
+        return False
+
+def restore_extract_sections_from_backup(site):
+    """Restore extract_sections from backup, fallback to original if backup not exists"""
+    try:
+        backup_path = get_backup_extract_sections_path(site)
+        
+        # Check if backup exists
+        if os.path.exists(backup_path):
+            # Load from backup
+            with open(backup_path, "r", encoding="utf-8") as f:
+                extract_code = f.read()
+            
+            # Save to site folder
+            save_extract_sections_for_site(site, extract_code)
+            logger.info(f"Đã restore extract_sections từ backup cho site {site}")
+            return "backup"
+        else:
+            # Fallback to original
+            original_code = load_original_extract_sections()
+            if original_code:
+                save_extract_sections_for_site(site, original_code)
+                logger.info(f"Không tìm thấy backup, đã restore extract_sections từ original cho site {site}")
+                return "original"
+            else:
+                logger.warning("Cả backup và original extract_sections đều rỗng")
+                return False
+                
+    except Exception as e:
+        logger.error(f"Lỗi khi restore extract_sections cho site {site}: {str(e)}")
+        return False
+
+def copy_original_prompts_to_site(site):
+    """Copy prompts from original_prompts to site folder"""
+    try:
+        original_prompts = load_original_prompts()
+        
+        if original_prompts["system_prompt"] or original_prompts["human_prompt"]:
+            # Save to site folder
+            save_prompts_for_site(site, original_prompts["system_prompt"], original_prompts["human_prompt"])
+            logger.info(f"Đã copy original prompts sang site {site}")
+            return True
+        else:
+            logger.warning("Original prompts rỗng, không thể copy")
+            return False
+    except Exception as e:
+        logger.error(f"Lỗi khi copy original prompts sang site {site}: {str(e)}")
+        return False
+
 def load_prompts_for_site(site):
-    """Load prompts for a specific site"""
+    """Load prompts for a specific site, copy from original if not exists"""
     prompt_paths = get_prompt_paths(site)
     prompts = {}
+    
+    # Check if prompts exist for this site
+    site_prompts_exist = os.path.exists(prompt_paths["system_prompt"]) and os.path.exists(prompt_paths["human_prompt"])
+    
+    # If not exist, copy from original_prompts
+    if not site_prompts_exist:
+        logger.info(f"Prompts cho site {site} chưa tồn tại, đang copy từ original_prompts")
+        copy_original_prompts_to_site(site)
     
     try:
         if os.path.exists(prompt_paths["system_prompt"]):
@@ -448,9 +633,50 @@ def save_prompts_for_site(site, system_prompt, human_prompt):
         logger.error(f"Lỗi khi lưu prompts cho site {site}: {str(e)}")
         return False
 
+def get_original_extract_sections_path():
+    """Get original extract_sections.py file path"""
+    return os.path.join("original_prompts", "extract_sections.py")
+
+def load_original_extract_sections():
+    """Load extract_sections from original_prompts folder"""
+    original_path = get_original_extract_sections_path()
+    
+    try:
+        if os.path.exists(original_path):
+            with open(original_path, "r", encoding="utf-8") as f:
+                return f.read()
+        else:
+            logger.warning("Original extract_sections.py không tồn tại")
+            return ""
+    except Exception as e:
+        logger.error(f"Lỗi khi đọc original extract_sections: {str(e)}")
+        return ""
+
+def copy_original_extract_sections_to_site(site):
+    """Copy extract_sections from original_prompts to site folder"""
+    try:
+        original_code = load_original_extract_sections()
+        
+        if original_code:
+            # Save to site folder
+            save_extract_sections_for_site(site, original_code)
+            logger.info(f"Đã copy original extract_sections sang site {site}")
+            return True
+        else:
+            logger.warning("Original extract_sections rỗng, không thể copy")
+            return False
+    except Exception as e:
+        logger.error(f"Lỗi khi copy original extract_sections sang site {site}: {str(e)}")
+        return False
+
 def load_extract_sections_for_site(site):
-    """Load extract_sections.py for a specific site"""
+    """Load extract_sections.py for a specific site, copy from original if not exists"""
     extract_path = get_extract_sections_path(site)
+    
+    # If not exist, copy from original_prompts
+    if not os.path.exists(extract_path):
+        logger.info(f"Extract sections cho site {site} chưa tồn tại, đang copy từ original_prompts")
+        copy_original_extract_sections_to_site(site)
     
     try:
         if os.path.exists(extract_path):
@@ -2046,12 +2272,7 @@ with tab5:
     st.write(f"**Site hiện tại:** {site}")
     
     # Load current prompts
-    # Check if we need to force reload from file (reset button was clicked)
-    if st.session_state.get('prompt_reset_trigger', False):
-        prompts = load_prompts_for_site(site)
-        st.session_state.prompt_reset_trigger = False
-    else:
-        prompts = load_prompts_for_site(site)
+    prompts = load_prompts_for_site(site)
     
     current_extract_code = load_extract_sections_for_site(site)
     
@@ -2078,30 +2299,67 @@ with tab5:
             key="human_prompt_editor"
         )
     
-    # Save prompts button với styling đẹp hơn
+    # Save/Backup/Reset buttons - xử lý cả prompts và extract sections
     st.write("")  # Spacing
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 3])
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 2])
     with col1:
-        if st.button("💾 Lưu Prompts", key="save_prompts", use_container_width=True):
-            if save_prompts_for_site(site, system_prompt, human_prompt):
-                st.success("✅ Đã lưu prompts thành công!")
-                # Clear any cached values
-                if 'prompt_reset_trigger' in st.session_state:
-                    del st.session_state.prompt_reset_trigger
-                st.rerun()
+        if st.button("💾 Lưu", key="save_all", use_container_width=True, help="Lưu cả Prompts và Extract Sections"):
+            success_prompts = save_prompts_for_site(site, system_prompt, human_prompt)
+            
+            # Tự động sinh và lưu extract sections từ system prompt
+            if system_prompt:
+                result = auto_generate_extract_sections_from_prompt(system_prompt)
+                if result and result.get('code'):
+                    success_extract = save_extract_sections_for_site(site, result['code'])
+                else:
+                    success_extract = False
             else:
-                st.error("❌ Lỗi khi lưu prompts!")
+                success_extract = True  # Không có lỗi nếu không có prompt
+            
+            if success_prompts and success_extract:
+                st.success("✅ Đã lưu prompts & extract sections!")
+                st.rerun()
+            elif success_prompts:
+                st.warning("⚠️ Đã lưu prompts nhưng có lỗi khi lưu extract sections!")
+            else:
+                st.error("❌ Lỗi khi lưu!")
     
     with col2:
-        if st.button("🔄 Reset Prompts", key="reset_prompts", use_container_width=True):
-            # Set a flag to trigger reload from file
-            st.session_state.prompt_reset_trigger = True
+        if st.button("📦 Backup", key="backup_all", use_container_width=True, help="Backup cả Prompts và Extract Sections"):
+            success_prompts = backup_prompts_for_site(site)
+            success_extract = backup_extract_sections_for_site(site)
+            
+            if success_prompts and success_extract:
+                st.success("✅ Đã backup prompts & extract sections!")
+                st.info("💡 Backup được lưu tại backup_prompts/" + site)
+                st.rerun()
+            elif success_prompts or success_extract:
+                st.warning("⚠️ Đã backup một phần, vui lòng kiểm tra!")
+            else:
+                st.error("❌ Lỗi khi backup!")
+    
+    with col3:
+        if st.button("🔄 Reset", key="reset_all", use_container_width=True, help="Reset cả Prompts và Extract Sections"):
+            # Restore prompts
+            result_prompts = restore_prompts_from_backup(site)
+            # Restore extract sections
+            result_extract = restore_extract_sections_from_backup(site)
+            
+            if result_prompts == "backup" and result_extract == "backup":
+                st.success("✅ Đã reset từ backup!")
+            elif result_prompts == "original" or result_extract == "original":
+                st.info("📄 Đã reset (một phần từ backup, một phần từ original)!")
+            elif result_prompts and result_extract:
+                st.success("✅ Đã reset thành công!")
+            else:
+                st.warning("⚠️ Không thể reset. Vui lòng kiểm tra backup hoặc original_prompts")
             st.rerun()
     
     st.write("")  # Spacing
     
     # Extract Sections Management Section
-    st.write("### 🔧 Quản lý Extract Sections")
+    st.write("### 🔧 Preview Extract Sections")
+    # st.info("💡 Extract sections sẽ tự động được tạo và lưu khi bạn nhấn nút **💾 Lưu** ở trên")
     
     # Tự động phân tích prompt và hiển thị mapping
     if system_prompt:
@@ -2109,7 +2367,7 @@ with tab5:
         result = auto_generate_extract_sections_from_prompt(system_prompt)
         
         # Hiển thị mapping preview
-        st.write("**Mapping được phát hiện từ System Prompt:**")
+        st.write("**Mapping sẽ được tạo từ System Prompt:**")
         
         # Hiển thị mapping table
         if result and result.get('normalized_criteria'):
@@ -2143,26 +2401,14 @@ with tab5:
             
             mapping_df = pd.DataFrame(mapping_data)
             st.dataframe(mapping_df, use_container_width=True)
+            
+            # Hiển thị preview code
+            with st.expander("👁️ Xem preview Extract Sections code", expanded=False):
+                st.code(result['code'], language='python')
         else:
             st.warning("Không tìm thấy tiêu chí nào trong System Prompt")
-        
-        st.write("")  # Spacing
-        col1, col2, col3, col4 = st.columns([1, 1, 1, 3])
-        with col1:
-            if st.button("💾 Lưu Extract Code", key="save_extract", use_container_width=True):
-                extract_code = result['code']
-                # Lưu luôn vào file
-                if save_extract_sections_for_site(site, extract_code):
-                    st.success("✅ Đã lưu extract sections thành công!")
-                    st.rerun()
-                else:
-                    st.error("❌ Lỗi khi lưu extract sections!")
-        with col2:
-            if st.button("🔄 Reset Extract Code", key="reset_extract", use_container_width=True):
-                current_extract_code = load_extract_sections_for_site(site)
-                st.rerun()
     else:
-        st.info("⚠️ Vui lòng nhập System Prompt để tự động tạo Extract Sections")
+        st.info("⚠️ Vui lòng nhập System Prompt để xem preview Extract Sections")
     
     # Preview Section
     st.write("### 👁️ Preview")
