@@ -381,11 +381,33 @@ with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
     with col3:
         st.write("**Tóm tắt cấu hình**")
         st.info(f"Fail nếu **{fail_criterion}** < {fail_threshold}")
+        
+        # Nút lưu cấu hình
+        st.write("")  # Spacing
+        if st.button("💾 Lưu cấu hình", type="primary", use_container_width=True, help="Lưu và áp dụng cấu hình cho tất cả test"):
+            st.session_state.api_url = API_URL
+            st.session_state.evaluate_api_url = EVALUATE_API_URL
+            st.session_state.fail_criterion = fail_criterion
+            st.session_state.fail_threshold = fail_threshold
+            st.session_state.max_workers = MAX_WORKERS
+            st.session_state.add_chat_history_global = add_chat_history_global
+            
+            st.success("✅ Đã lưu cấu hình! Áp dụng cho tất cả test (đơn lẻ, hàng loạt, lập lịch)")
+            st.rerun()
     
-    st.session_state.api_url = API_URL
-    st.session_state.evaluate_api_url = EVALUATE_API_URL
-    st.session_state.fail_criterion = fail_criterion
-    st.session_state.fail_threshold = fail_threshold
+    # Lưu vào session state (fallback nếu chưa click nút Lưu)
+    if 'api_url' not in st.session_state:
+        st.session_state.api_url = API_URL
+    if 'evaluate_api_url' not in st.session_state:
+        st.session_state.evaluate_api_url = EVALUATE_API_URL
+    if 'fail_criterion' not in st.session_state:
+        st.session_state.fail_criterion = fail_criterion
+    if 'fail_threshold' not in st.session_state:
+        st.session_state.fail_threshold = fail_threshold
+    if 'max_workers' not in st.session_state:
+        st.session_state.max_workers = MAX_WORKERS
+    if 'add_chat_history_global' not in st.session_state:
+        st.session_state.add_chat_history_global = add_chat_history_global
 
 # --- Prompt Management Functions ---
 def get_prompt_paths(site):
@@ -1463,41 +1485,48 @@ with tab2:
                         }
                         results_df = pd.DataFrame(data)
                         st.session_state.results_df = results_df
-                        
-                        st.write("---")
-                        st.subheader(f"📊 Kết quả đánh giá ({len(results)} câu hỏi)")
-                        
-                        # Hiển thị metrics tổng quan
-                        col1, col2, col3, col4 = st.columns(4)
-                        with col1:
-                            st.metric("✅ Passed", sum(1 for r in results if "failed_details" not in r))
-                        with col2:
-                            st.metric("❌ Failed", sum(1 for r in results if "failed_details" in r))
-                        with col3:
-                            avg_score = sum(r["evaluate_result"]["scores"].get("average", 0) for r in results) / len(results) if results else 0
-                            st.metric("📈 Điểm TB", f"{avg_score:.2f}")
-                        with col4:
-                            pass_rate = (sum(1 for r in results if "failed_details" not in r) / len(results) * 100) if results else 0
-                            st.metric("📊 Tỷ lệ pass", f"{pass_rate:.1f}%")
-                        
-                        st.dataframe(results_df, use_container_width=True, hide_index=True)
-                        
-                        col1, col2 = st.columns([1, 1])
-                        with col1:
-                            st.download_button(
-                                label="📥 Tải xuống kết quả (CSV)", 
-                                data=results_df.to_csv(index=False).encode('utf-8'), 
-                                file_name=f'evaluation_results_{uploaded_file.name}.csv', 
-                                mime='text/csv',
-                                use_container_width=True
-                            )
-                        with col2:
-                            if failed_questions:
-                                st.warning(f"⚠️ Có {len(failed_questions)} câu hỏi xử lý thất bại")
-                            else:
-                                st.success(f"✅ Đã hoàn thành đánh giá {len(results)} câu hỏi")
+                        st.rerun()  # Reload để hiển thị kết quả bên ngoài
                     else:
                         st.warning("⚠️ Vui lòng chọn ít nhất một test case để chạy")
+            
+            # Hiển thị kết quả test hàng loạt (toàn màn hình)
+            if 'results' in st.session_state and st.session_state.results:
+                results = st.session_state.results
+                results_df = st.session_state.results_df
+                
+                st.write("---")
+                st.subheader(f"📊 Kết quả đánh giá ({len(results)} câu hỏi)")
+                
+                # Hiển thị metrics tổng quan
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("✅ Passed", sum(1 for r in results if "failed_details" not in r))
+                with col2:
+                    st.metric("❌ Failed", sum(1 for r in results if "failed_details" in r))
+                with col3:
+                    avg_score = sum(r["evaluate_result"]["scores"].get("average", 0) for r in results) / len(results) if results else 0
+                    st.metric("📈 Điểm TB", f"{avg_score:.2f}")
+                with col4:
+                    pass_rate = (sum(1 for r in results if "failed_details" not in r) / len(results) * 100) if results else 0
+                    st.metric("📊 Tỷ lệ pass", f"{pass_rate:.1f}%")
+                
+                st.dataframe(results_df, use_container_width=True, hide_index=True)
+                
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    st.download_button(
+                        label="📥 Tải xuống kết quả (CSV)", 
+                        data=results_df.to_csv(index=False).encode('utf-8'), 
+                        file_name=f'evaluation_results_{uploaded_file.name}.csv', 
+                        mime='text/csv',
+                        use_container_width=True
+                    )
+                with col2:
+                    failed_count = sum(1 for r in results if "failed_details" in r)
+                    if failed_count > 0:
+                        st.warning(f"⚠️ Có {failed_count} câu hỏi xử lý thất bại")
+                    else:
+                        st.success(f"✅ Đã hoàn thành đánh giá {len(results)} câu hỏi")
         except Exception as e:
             st.error(f"Lỗi khi đọc file Excel: {str(e)}")
     else:
