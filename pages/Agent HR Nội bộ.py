@@ -2253,7 +2253,32 @@ with tab5:
     site = get_current_site()
     st.write(f"**Site hiện tại:** {site}")
     
-    # Load current prompts
+    # Hiển thị thông báo nếu có trong session state
+    if 'prompt_action_message' in st.session_state:
+        msg_type = st.session_state.prompt_action_message.get('type', 'info')
+        msg_text = st.session_state.prompt_action_message.get('text', '')
+        
+        if msg_type == 'success':
+            st.success(msg_text)
+        elif msg_type == 'error':
+            st.error(msg_text)
+        elif msg_type == 'warning':
+            st.warning(msg_text)
+        else:
+            st.info(msg_text)
+        
+        # Clear message sau khi hiển thị
+        del st.session_state.prompt_action_message
+    
+    # Load current prompts - Force reload nếu có flag reset
+    if 'force_reload_prompts' in st.session_state and st.session_state.force_reload_prompts:
+        # Clear text area keys để force reload
+        if 'system_prompt_editor' in st.session_state:
+            del st.session_state.system_prompt_editor
+        if 'human_prompt_editor' in st.session_state:
+            del st.session_state.human_prompt_editor
+        st.session_state.force_reload_prompts = False
+    
     prompts = load_prompts_for_site(site)
     
     current_extract_code = load_extract_sections_for_site(site)
@@ -2299,12 +2324,22 @@ with tab5:
                 success_extract = True  # Không có lỗi nếu không có prompt
             
             if success_prompts and success_extract:
-                st.success("✅ Đã lưu prompts & extract sections!")
-                st.rerun()
+                st.session_state.prompt_action_message = {
+                    'type': 'success',
+                    'text': '✅ Đã lưu prompts & extract sections!'
+                }
             elif success_prompts:
-                st.warning("⚠️ Đã lưu prompts nhưng có lỗi khi lưu extract sections!")
+                st.session_state.prompt_action_message = {
+                    'type': 'warning',
+                    'text': '⚠️ Đã lưu prompts nhưng có lỗi khi lưu extract sections!'
+                }
             else:
-                st.error("❌ Lỗi khi lưu!")
+                st.session_state.prompt_action_message = {
+                    'type': 'error',
+                    'text': '❌ Lỗi khi lưu!'
+                }
+            time.sleep(0.5)  # Delay nhỏ để user thấy button được click
+            st.rerun()
     
     with col2:
         if st.button("📦 Backup", key="backup_all", use_container_width=True, help="Backup cả Prompts và Extract Sections"):
@@ -2312,13 +2347,22 @@ with tab5:
             success_extract = backup_extract_sections_for_site(site)
             
             if success_prompts and success_extract:
-                st.success("✅ Đã backup prompts & extract sections!")
-                st.info("💡 Backup được lưu tại backup_prompts/" + site)
-                st.rerun()
+                st.session_state.prompt_action_message = {
+                    'type': 'success',
+                    'text': f'✅ Đã backup prompts & extract sections!\n💡 Backup được lưu tại: backup_prompts/{site}/'
+                }
             elif success_prompts or success_extract:
-                st.warning("⚠️ Đã backup một phần, vui lòng kiểm tra!")
+                st.session_state.prompt_action_message = {
+                    'type': 'warning',
+                    'text': '⚠️ Đã backup một phần, vui lòng kiểm tra!'
+                }
             else:
-                st.error("❌ Lỗi khi backup!")
+                st.session_state.prompt_action_message = {
+                    'type': 'error',
+                    'text': '❌ Lỗi khi backup!'
+                }
+            time.sleep(0.5)
+            st.rerun()
     
     with col3:
         if st.button("🔄 Reset", key="reset_all", use_container_width=True, help="Reset cả Prompts và Extract Sections"):
@@ -2327,21 +2371,37 @@ with tab5:
             # Restore extract sections
             result_extract = restore_extract_sections_from_backup(site)
             
+            # Set flag để force reload prompts
+            st.session_state.force_reload_prompts = True
+            
             if result_prompts == "backup" and result_extract == "backup":
-                st.success("✅ Đã reset từ backup!")
+                st.session_state.prompt_action_message = {
+                    'type': 'success',
+                    'text': '✅ Đã reset từ backup!'
+                }
             elif result_prompts == "original" or result_extract == "original":
-                st.info("📄 Đã reset (một phần từ backup, một phần từ original)!")
+                st.session_state.prompt_action_message = {
+                    'type': 'info',
+                    'text': '📄 Đã reset (một phần từ backup, một phần từ original)!'
+                }
             elif result_prompts and result_extract:
-                st.success("✅ Đã reset thành công!")
+                st.session_state.prompt_action_message = {
+                    'type': 'success',
+                    'text': '✅ Đã reset thành công!'
+                }
             else:
-                st.warning("⚠️ Không thể reset. Vui lòng kiểm tra backup hoặc original_prompts")
+                st.session_state.prompt_action_message = {
+                    'type': 'warning',
+                    'text': '⚠️ Không thể reset. Vui lòng kiểm tra backup hoặc original_prompts'
+                }
+            time.sleep(0.5)
             st.rerun()
     
     st.write("")  # Spacing
     
     # Extract Sections Management Section
     st.write("### 🔧 Preview Extract Sections")
-    st.info("💡 Extract sections sẽ tự động được tạo và lưu khi bạn nhấn nút **💾 Lưu** ở trên")
+    # st.info("💡 Extract sections sẽ tự động được tạo và lưu khi bạn nhấn nút **💾 Lưu** ở trên")
     
     # Tự động phân tích prompt và hiển thị mapping
     if system_prompt:

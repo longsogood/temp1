@@ -31,7 +31,7 @@ if not logger.handlers:
     logger.addHandler(file_handler)
 
 # Global site variable - được set dựa trên trang hiện tại
-SITE = "Agent HR Nội bộ"
+SITE = "admin"
 
 # Khởi tạo session state
 if 'results' not in st.session_state:
