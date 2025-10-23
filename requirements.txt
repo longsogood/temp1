@@ -19,6 +19,10 @@ numpy>=1.24.0
 
 # JSON processing
 json-repair
+
+# Scheduling
+schedule>=1.2.0
+
 # Optional: For better performance with concurrent processing
 # concurrent-futures is part of Python standard library since Python 3.2
 # multiprocessing is part of Python standard library

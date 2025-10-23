@@ -25,6 +25,8 @@ RUN mkdir -p /app/test_results \
     /app/logs \
     /app/scheduled_tests \
     /app/prompts \
+    /app/original_prompts \
+    /app/backup_prompts \
     /app/utils \
     /app/pages \
     /app/QAs \
@@ -36,6 +38,8 @@ RUN chmod -R 777 /app/test_results \
     /app/logs \
     /app/scheduled_tests \
     /app/prompts \
+    /app/original_prompts \
+    /app/backup_prompts \
     /app/utils \
     /app/pages \
     /app/QAs \

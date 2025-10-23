@@ -7,3 +7,6 @@ logs/
 *.pkl
 *.xlsx
 *.csv
+
+# Backup prompts - có thể uncomment dòng dưới nếu muốn giữ backup local only
+# backup_prompts/

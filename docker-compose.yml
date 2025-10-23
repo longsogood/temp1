@@ -13,9 +13,12 @@ services:
       - ./pages:/app/pages
       - ./utils:/app/utils
       - ./prompts:/app/prompts
+      - ./original_prompts:/app/original_prompts
+      - ./backup_prompts:/app/backup_prompts
       
       # Mount các file Python chính
       - ./site_selector.py:/app/site_selector.py
+      - ./original_site.py:/app/original_site.py
       - ./utils.py:/app/utils.py
       - ./general_purpose_agent.py:/app/general_purpose_agent.py
       - ./multi_turn_chat_test.py:/app/multi_turn_chat_test.py
