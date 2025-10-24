@@ -12,7 +12,8 @@
     "api_url": "https://stock.cmcts.ai/c-agent/api/v1/prediction/a5f9840d-49c4-453d-aa4d-b9cc77833be2abc",
     "evaluate_api_url": "https://stock.cmcts.ai/c-agent/api/v1/prediction/a1514d8f-749c-4e01-b961-811e9346d83e",
     "job_id": "f0078e73-f367-4278-883d-55246a993e31",
-    "cached_next_run": "2025-10-24T17:04:12.026982+07:00"
+    "cached_next_run": "2025-10-24T17:41:14.824410+07:00",
+    "last_scheduled_time": "2025-10-24T17:36:14.824410+07:00"
   },
   "Test sprint 7": {
     "file_path": "test_cases/Test sprint 7/Test sprint 7_test_cases.xlsx",
@@ -26,6 +27,6 @@
     "api_url": "https://stock.cmcts.ai/c-agent/api/v1/prediction/bf23459b-7de5-40fd-ab6e-55024cc798e8",
     "evaluate_api_url": "https://stock.cmcts.ai/c-agent/api/v1/prediction/a1514d8f-749c-4e01-b961-811e9346d83e",
     "job_id": "cd2e4a41-3aaf-4b38-9cf8-7531896a1dec",
-    "cached_next_run": "2025-10-24T16:42:17.169261+07:00"
+    "cached_next_run": "2025-10-24T19:13:03.279846+07:00"
   }
 }

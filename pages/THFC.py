@@ -238,7 +238,7 @@ def run_scheduled_test(file_path, test_name, site, api_url, evaluate_api_url):
                 configs = schedule_manager.get_all_schedule_configs()
                 if site in configs and configs[site]:
                     # Cập nhật thời gian lần chạy cuối
-                    configs[site]['last_scheduled_time'] = datetime.now(VN_TZ).isoformat()
+                    configs[site]['last_scheduled_time'] = datetime.datetime.now(VN_TZ).isoformat()
                     schedule_manager.save_schedules(configs)
                     logger.info(f"Đã cập nhật thời gian lần chạy cuối cho {site}")
         except Exception as e:
