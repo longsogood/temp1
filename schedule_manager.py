@@ -426,7 +426,16 @@ class ScheduleManager:
         logger.info("Schedule loop started")
         while self.running:
             try:
-                schedule.run_pending()
+                # Check for pending jobs and run them
+                for job in schedule.jobs:
+                    try:
+                        if job.next_run and job.next_run <= datetime.now():
+                            logger.info(f"Running scheduled job: {job}")
+                            job.job_func()
+                            logger.info(f"Job completed successfully")
+                    except Exception as job_error:
+                        logger.error(f"Error running job: {job_error}")
+                
                 time.sleep(1)
             except Exception as e:
                 logger.error(f"Error in schedule loop: {e}")

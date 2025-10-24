@@ -783,8 +783,8 @@ with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
     
     with col1:
         st.write("**Cấu hình API**")
-        API_URL = st.text_input("API URL", value=st.session_state.get("api_url", "https://site1.com"), key="api_url_input")
-        EVALUATE_API_URL = st.text_input("Evaluate API URL", value=st.session_state.get("evaluate_api_url", "https://site2.com"), key="evaluate_api_url_input")
+        API_URL = st.text_input("API URL", value=st.session_state.get("api_url", "https://site1.com"), key="test_sprint_7_api_url_input")
+        EVALUATE_API_URL = st.text_input("Evaluate API URL", value=st.session_state.get("evaluate_api_url", "https://site2.com"), key="test_sprint_7_evaluate_api_url_input")
     
     with col2:
         st.write("**Cấu hình Test**")
@@ -3123,8 +3123,8 @@ with tab2:
         st.write(f"Site hiện tại: **{site}**")
         
         st.write("### Bước 1: Cấu hình API URLs cho lịch test")
-        schedule_api_url = st.text_input("API URL cho lịch test", st.session_state.get("schedule_api_url", "https://site1.com"), key="schedule_api_url_input")
-        schedule_evaluate_api_url = st.text_input("Evaluate API URL cho lịch test", st.session_state.get("schedule_evaluate_api_url", "https://site2.com"), key="schedule_evaluate_api_url_input")
+        schedule_api_url = st.text_input("API URL cho lịch test", st.session_state.get("schedule_api_url", "https://site1.com"), key="test_sprint_7_schedule_api_url_input")
+        schedule_evaluate_api_url = st.text_input("Evaluate API URL cho lịch test", st.session_state.get("schedule_evaluate_api_url", "https://site2.com"), key="test_sprint_7_schedule_evaluate_api_url_input")
         
         # Lưu vào session state
         st.session_state.schedule_api_url = schedule_api_url
@@ -3148,7 +3148,7 @@ with tab2:
             st.error("❌ Lỗi khi đọc test cases!")
             st.stop()
         
-        test_name = st.text_input("Tên bộ test (để nhận diện trong lịch sử)", key="test_name_input")
+        test_name = st.text_input("Tên bộ test (để nhận diện trong lịch sử)", key="test_sprint_7_test_name_input")
 
         if test_name:
             st.write("### Bước 3: Thiết lập lịch chạy test")
@@ -3171,7 +3171,7 @@ with tab2:
                     schedule_custom_interval = st.number_input("Mỗi", 1, 100, 2, key="schedule_custom_interval")
                     schedule_custom_unit = st.selectbox("Đơn vị", ["phút", "giờ", "ngày", "tuần"], key="schedule_custom_unit")
                 else:
-                    schedule_time_input = st.time_input("Thời gian", key="schedule_time_input")
+                    schedule_time_input = st.time_input("Thời gian", key="test_sprint_7_schedule_time_input")
                     schedule_time = schedule_time_input.strftime("%H:%M")
             
             with col2:
