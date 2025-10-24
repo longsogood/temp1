@@ -10,6 +10,8 @@ import threading
 from uuid import uuid4
 import concurrent.futures
 import logging
+import pytz
+from schedule_manager import get_schedule_manager
 
 ## Cấu hình streamlit
 st.set_page_config(
@@ -964,48 +966,122 @@ def get_test_cases_dir(site):
     os.makedirs(test_cases_dir, exist_ok=True)
     return test_cases_dir
 
-def save_test_cases(site, test_cases_df, test_name):
-    """Save test cases to file"""
+def get_test_cases_file_path(site):
+    """Get the single test cases file path for a site"""
+    test_cases_dir = get_test_cases_dir(site)
+    return os.path.join(test_cases_dir, f"{site}_test_cases.xlsx")
+
+def save_test_cases(site, test_cases_df):
+    """Save test cases to file (overwrites existing)"""
     try:
-        test_cases_dir = get_test_cases_dir(site)
-        filename = f"{test_name.replace(' ', '_')}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.xlsx"
-        filepath = os.path.join(test_cases_dir, filename)
-        
+        filepath = get_test_cases_file_path(site)
         test_cases_df.to_excel(filepath, index=False)
-        logger.info(f"Đã lưu test cases cho site {site}: {filename}")
+        logger.info(f"Đã lưu test cases cho site {site}")
         return filepath
     except Exception as e:
         logger.error(f"Lỗi khi lưu test cases cho site {site}: {str(e)}")
         return None
 
-def load_test_cases_list(site):
-    """Load list of test cases files for a specific site"""
+def load_test_cases(site):
+    """Load test cases for a specific site"""
     try:
-        test_cases_dir = get_test_cases_dir(site)
-        if not os.path.exists(test_cases_dir):
-            return []
-        
-        files = [f for f in os.listdir(test_cases_dir) if f.lower().endswith(('.xlsx', '.xls'))]
-        return sorted(files, reverse=True)  # Mới nhất trước
-    except Exception as e:
-        logger.error(f"Lỗi khi load danh sách test cases cho site {site}: {str(e)}")
-        return []
-
-def load_test_cases_from_file(site, filename):
-    """Load test cases from specific file"""
-    try:
-        test_cases_dir = get_test_cases_dir(site)
-        filepath = os.path.join(test_cases_dir, filename)
+        filepath = get_test_cases_file_path(site)
         
         if os.path.exists(filepath):
             df = pd.read_excel(filepath)
             return df
         else:
-            logger.warning(f"File test cases không tồn tại: {filepath}")
             return None
     except Exception as e:
-        logger.error(f"Lỗi khi load test cases từ file {filename}: {str(e)}")
+        logger.error(f"Lỗi khi load test cases cho site {site}: {str(e)}")
         return None
+
+def test_cases_exists(site):
+    """Check if test cases exist for a site"""
+    filepath = get_test_cases_file_path(site)
+    return os.path.exists(filepath)
+
+def delete_test_cases(site):
+    """Delete test cases file for a site"""
+    try:
+        filepath = get_test_cases_file_path(site)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            logger.info(f"Đã xóa test cases cho site {site}")
+            return True
+        return False
+    except Exception as e:
+        logger.error(f"Lỗi khi xóa test cases cho site {site}: {str(e)}")
+        return False
+
+def delete_site_completely(site):
+    """Delete all data related to a site"""
+    import shutil
+    
+    try:
+        deleted_items = []
+        
+        # 1. Delete prompts folder
+        prompts_dir = os.path.join("prompts", site)
+        if os.path.exists(prompts_dir):
+            shutil.rmtree(prompts_dir)
+            deleted_items.append(f"prompts/{site}")
+        
+        # 2. Delete backup prompts folder
+        backup_dir = os.path.join("backup_prompts", site)
+        if os.path.exists(backup_dir):
+            shutil.rmtree(backup_dir)
+            deleted_items.append(f"backup_prompts/{site}")
+        
+        # 3. Delete utils folder (extract_sections)
+        utils_dir = os.path.join("utils", site)
+        if os.path.exists(utils_dir):
+            shutil.rmtree(utils_dir)
+            deleted_items.append(f"utils/{site}")
+        
+        # 4. Delete test_cases folder
+        test_cases_dir = get_test_cases_dir(site)
+        if os.path.exists(test_cases_dir):
+            shutil.rmtree(test_cases_dir)
+            deleted_items.append(f"test_cases/{site}")
+        
+        # 5. Delete test_results folder
+        test_results_dir = os.path.join("test_results", site)
+        if os.path.exists(test_results_dir):
+            shutil.rmtree(test_results_dir)
+            deleted_items.append(f"test_results/{site}")
+        
+        # 6. Delete scheduled_tests folder
+        scheduled_tests_dir = os.path.join("scheduled_tests", site)
+        if os.path.exists(scheduled_tests_dir):
+            shutil.rmtree(scheduled_tests_dir)
+            deleted_items.append(f"scheduled_tests/{site}")
+        
+        # 7. Delete config file
+        config_file = get_config_file_path(site)
+        if os.path.exists(config_file):
+            os.remove(config_file)
+            deleted_items.append(f"config/{site}_config.pkl")
+        
+        # 8. Remove scheduled job
+        remove_scheduled_job_for_site(site)
+        
+        # 9. Clear session state
+        if site in st.session_state.get('test_history', {}):
+            del st.session_state.test_history[site]
+        if site in st.session_state.get('failed_tests', {}):
+            del st.session_state.failed_tests[site]
+        if site in st.session_state.get('schedule_enabled', {}):
+            del st.session_state.schedule_enabled[site]
+        if site in st.session_state.get('schedule_thread', {}):
+            del st.session_state.schedule_thread[site]
+        
+        logger.info(f"Đã xóa site '{site}' hoàn toàn. Các mục đã xóa: {', '.join(deleted_items)}")
+        return True, deleted_items
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi xóa site '{site}': {str(e)}")
+        return False, []
 
 def get_default_extract_sections_template(site):
     """Get default extract_sections template based on site"""
@@ -1211,7 +1287,7 @@ def auto_generate_extract_sections_from_prompt(system_prompt):
         code_lines.append(f'        results["scores"]["{criterion}"] = {criterion}')
     
     # Tính average
-    criteria_list = ', '.join(unique_criteria)
+    criteria_list = ' + '.join(unique_criteria)
     code_lines.extend([
         f'        results["scores"]["average"] = ({criteria_list}) / {len(unique_criteria)}',
         '        results["comments"] = json_data["comments"]',
@@ -1548,9 +1624,8 @@ def load_scheduled_jobs():
 
 def get_scheduled_job_for_site(site):
     """Get scheduled job for a specific site"""
-    for job in st.session_state.scheduled_jobs:
-        if job.get('site') == site:
-            return job
+    if schedule_manager:
+        return schedule_manager.get_schedule_config(site)
     return None
 
 def remove_scheduled_job_for_site(site):
@@ -1558,594 +1633,20 @@ def remove_scheduled_job_for_site(site):
     st.session_state.scheduled_jobs = [job for job in st.session_state.scheduled_jobs if job.get('site') != site]
     save_scheduled_jobs()
 
-# Initialize scheduled jobs
-if 'scheduled_jobs' not in st.session_state:
-    st.session_state.scheduled_jobs = load_scheduled_jobs()
-
-# Initialize schedule_initialized flag
-if 'schedule_initialized' not in st.session_state:
-    st.session_state.schedule_initialized = False
-
-# Only setup schedule once when app starts, not on every rerun
-# This prevents schedule from being reset every time user interacts with the page
-if not st.session_state.schedule_initialized:
-    schedule.clear()
-    for job_config in st.session_state.scheduled_jobs:
-        if os.path.exists(job_config["file_path"]):
-            setup_schedule(
-                file_path=job_config["file_path"],
-                schedule_type=job_config["schedule_type"],
-                schedule_time=job_config["schedule_time"],
-                schedule_day=job_config["schedule_day"],
-                test_name=job_config["test_name"],
-                site=job_config["site"],
-                api_url=job_config.get("api_url", st.session_state.get("schedule_api_url", "https://site1.com")),
-                evaluate_api_url=job_config.get("evaluate_api_url", st.session_state.get("schedule_evaluate_api_url", "https://site2.com")),
-                custom_interval=job_config.get("custom_interval"),
-                custom_unit=job_config.get("custom_unit")
-            )
-        else:
-            # If file is missing, mark the job for removal
-            st.session_state.scheduled_jobs = [j for j in st.session_state.scheduled_jobs if j['job_id'] != job_config['job_id']]
-            save_scheduled_jobs()  # Save updated list to file
-    
-    st.session_state.schedule_initialized = True
+# Initialize Persistent Schedule Manager (Global, thread-safe)
+# Chỉ khởi tạo một lần, schedule manager sẽ tự load từ JSON
+try:
+    schedule_manager = get_schedule_manager()
+    logger.info("Schedule Manager initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing Schedule Manager: {e}")
+    schedule_manager = None
 
 # Giao diện Streamlit
 st.title("🤖 Agent Testing")
 
 # Tạo các tab
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Test hàng loạt", "Lập lịch test", "Quản lý test", "Quản lý Test Cases", "Quản lý Prompts"])
-
-with tab1:
-    st.subheader("📝 Test hàng loạt từ file Excel")
-    
-    if add_chat_history_global:
-        with st.expander("💬 Thiết lập chat history", expanded=False):
-            # Tương tự tab 1, hiển thị và cho phép chỉnh sửa chat history
-            if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
-                st.session_state.chat_history = [
-                    {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
-                    {"role": "userMessage", "content": "[Cung cấp thông tin]"}
-                ]
-            
-            new_history = []
-            for i, msg in enumerate(st.session_state.chat_history):
-                cols = st.columns([2, 8, 1])
-                role = cols[0].selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_batch_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
-                content = cols[1].text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_batch_{i}")
-                if not cols[2].button("🗑️", key=f"delete_batch_{i}", help="Xóa message này"):
-                    new_history.append({"role": role, "content": content})
-            st.session_state.chat_history = new_history
-
-            if st.button("➕ Thêm message", key="add_message_batch"):
-                st.session_state.chat_history.append({"role": "userMessage", "content": ""})
-                st.rerun()
-
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        uploaded_file = st.file_uploader("📁 Chọn file Excel chứa test cases", type=['xlsx', 'xls'])
-    
-    with col2:
-        st.write("")  # Spacer
-        st.write("")  # Spacer
-        if uploaded_file:
-            st.success("✅ File đã tải lên")
-    
-    if uploaded_file is not None:
-        try:
-            df = pd.read_excel(uploaded_file)
-            
-            # Kiểm tra file rỗng
-            if df.empty:
-                st.error("❌ File Excel rỗng! Vui lòng tải lên file có dữ liệu.")
-                st.stop()
-            
-            df = df.dropna(subset=[df.columns[0], df.columns[1]])
-            
-            # Kiểm tra sau khi dropna
-            if df.empty:
-                st.error("❌ File Excel không có dữ liệu hợp lệ! Vui lòng kiểm tra lại file.")
-                st.stop()
-            
-            questions = df.iloc[:, 0].tolist()
-            true_answers = df.iloc[:, 1].tolist()
-            
-            # Khởi tạo edited test cases trong session state nếu chưa có
-            if 'test_cases_df' not in st.session_state or st.session_state.get('current_file') != uploaded_file.name:
-                st.session_state.test_cases_df = pd.DataFrame({
-                    'Chọn': [True] * len(questions),  # Checkbox column
-                    'Câu hỏi': questions, 
-                    'Câu trả lời chuẩn': true_answers
-                })
-                st.session_state.current_file = uploaded_file.name
-            
-            st.write("### 📋 Danh sách test cases")
-            st.info("💡 Tip: Chọn các dòng bạn muốn chạy test bằng cách click vào checkbox ở đầu mỗi dòng.")
-            
-            # Sử dụng st.dataframe với selection
-            selected_df = st.dataframe(
-                st.session_state.test_cases_df,
-                use_container_width=True,
-                hide_index=True,
-                on_select="rerun",
-                selection_mode="multi-row",
-                key="test_cases_selection"
-            )
-            
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col1:
-                st.metric("📊 Tổng test cases", len(st.session_state.test_cases_df))
-            with col2:
-                # Lấy số dòng được chọn từ selection
-                selected_count = len(selected_df.selection.rows) if selected_df.selection.rows else 0
-                st.metric("✅ Test cases được chọn", selected_count)
-            with col3:
-                if st.button("▶️ Chạy test", type="primary", use_container_width=True):
-                    if selected_df.selection.rows:
-                        # Lấy các dòng được chọn
-                        selected_indices = selected_df.selection.rows
-                        selected_questions = [st.session_state.test_cases_df.iloc[i]['Câu hỏi'] for i in selected_indices]
-                        selected_true_answers = [st.session_state.test_cases_df.iloc[i]['Câu trả lời chuẩn'] for i in selected_indices]
-                        
-                        # Tạo progress container toàn màn hình
-                        st.markdown("---")
-                        progress_container = st.container()
-                        with progress_container:
-                            st.markdown("### ⏳ Tiến trình xử lý")
-                            progress_bar = st.progress(0)
-                            status_text = st.empty()
-                            current_question_text = st.empty()
-                        
-                            history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
-                            results, failed_questions = process_questions_batch(
-                                selected_questions, 
-                                selected_true_answers, 
-                                add_chat_history=add_chat_history_global, 
-                                custom_history=history, 
-                                test_name=uploaded_file.name, 
-                            site=get_current_site(),
-                            progress_bar=progress_bar,
-                            status_text=status_text,
-                            current_question_text=current_question_text
-                            )
-                        
-                        st.session_state.results = results
-                        
-                        data = {
-                            'Question': [r["question"] for r in results],
-                            'True Answer': [r["true_answer"] for r in results],
-                            'Agent Answer': [r["site_response"] for r in results],
-                            'Session ID': [r["chat_id"] for r in results],
-                            'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
-                            'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
-                            'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
-                            'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
-                            'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
-                            'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
-                            'Comment': [r["evaluate_result"].get("comments", "") for r in results]
-                        }
-                        results_df = pd.DataFrame(data)
-                        st.session_state.results_df = results_df
-                        st.rerun()  # Reload để hiển thị kết quả bên ngoài
-                    else:
-                        st.warning("⚠️ Vui lòng chọn ít nhất một test case để chạy")
-            
-        except Exception as e:
-            st.error(f"Lỗi khi đọc file Excel: {str(e)}")
-    
-    # Hiển thị kết quả test hàng loạt (toàn màn hình) - di chuyển ra ngoài column
-    if 'results' in st.session_state and st.session_state.results:
-        results = st.session_state.results
-        results_df = st.session_state.results_df
-        
-        st.write("---")
-        st.subheader(f"📊 Kết quả đánh giá ({len(results)} câu hỏi)")
-        
-        # Hiển thị metrics tổng quan với styling đẹp hơn
-        st.markdown("""
-            <style>
-            .metric-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                color: white;
-                text-align: center;
-                margin: 5px;
-            }
-            .metric-card-success {
-                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            }
-            .metric-card-danger {
-                background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-            }
-            .metric-card-info {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            }
-            .metric-label {
-                font-size: 14px;
-                font-weight: 500;
-                opacity: 0.9;
-                margin-bottom: 5px;
-            }
-            .metric-value {
-                font-size: 32px;
-                font-weight: bold;
-                margin: 10px 0;
-            }
-            .dashboard-grid {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
-                margin-bottom: 20px;
-            }
-            @media (max-width: 1200px) {
-                .dashboard-grid {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-            }
-            @media (max-width: 600px) {
-                .dashboard-grid {
-                    grid-template-columns: 1fr;
-                }
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
-        # Grid metrics với styling đẹp
-        passed_count = sum(1 for r in results if "failed_details" not in r)
-        failed_count = sum(1 for r in results if "failed_details" in r)
-        avg_score = sum(r["evaluate_result"]["scores"].get("average", 0) for r in results) / len(results) if results else 0
-        pass_rate = (passed_count / len(results) * 100) if results else 0
-            
-        st.markdown(f"""
-        <div class="dashboard-grid">
-            <div class="metric-card metric-card-success">
-                <div class="metric-label">✅ Passed</div>
-                <div class="metric-value">{passed_count}</div>
-            </div>
-            <div class="metric-card metric-card-danger">
-                <div class="metric-label">❌ Failed</div>
-                <div class="metric-value">{failed_count}</div>
-            </div>
-            <div class="metric-card metric-card-info">
-                <div class="metric-label">📈 Điểm TB</div>
-                <div class="metric-value">{avg_score:.2f}</div>
-            </div>
-            <div class="metric-card metric-card-info">
-                <div class="metric-label">📊 Tỷ lệ pass</div>
-                <div class="metric-value">{pass_rate:.1f}%</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-            
-        # Hiển thị dataframe với styling tốt hơn
-        st.write("### 📋 Chi tiết kết quả")
-        st.dataframe(
-            results_df, 
-            use_container_width=True, 
-            hide_index=True,
-            height=400  # Tăng chiều cao để hiển thị nhiều dòng hơn
-        )
-        
-        # Nút tải xuống và thông báo
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            st.download_button(
-                label="📥 Tải xuống kết quả (CSV)", 
-                data=results_df.to_csv(index=False).encode('utf-8'), 
-                file_name=f'evaluation_results_{uploaded_file.name}.csv', 
-                mime='text/csv',
-                use_container_width=True
-            )
-        with col2:
-            if failed_count > 0:
-                st.warning(f"⚠️ Có {failed_count} câu hỏi xử lý thất bại")
-            else:
-                st.success(f"✅ Đã hoàn thành đánh giá {len(results)} câu hỏi")
-    else:
-        st.info("Vui lòng tải lên file Excel để bắt đầu")
-
-with tab2:
-    st.subheader("Lập lịch chạy test tự động")
-
-    site = get_current_site()
-    existing_job = get_scheduled_job_for_site(site)
-    
-    if existing_job:
-        st.info(f"Site **{site}** đã có cấu hình lịch test. Bạn có thể chỉnh sửa hoặc xóa cấu hình hiện tại.")
-        
-        st.write("### Cấu hình hiện tại")
-        col1, col2 = st.columns([3, 1])
-        
-        with col1:
-            st.write(f"**Tên Test:** {existing_job['test_name']}")
-            st.write(f"**Loại lịch:** {existing_job['schedule_type']}")
-            st.write(f"**Thời gian:** {existing_job.get('schedule_time', 'N/A')}")
-            if existing_job.get('schedule_day'):
-                st.write(f"**Ngày:** {existing_job['schedule_day']}")
-            if existing_job.get('custom_interval') and existing_job.get('custom_unit'):
-                st.write(f"**Tùy chỉnh:** Mỗi {existing_job['custom_interval']} {existing_job['custom_unit']}")
-            st.write(f"**API URL:** `{existing_job.get('api_url', 'Chưa cấu hình')}`")
-            st.write(f"**Evaluate API URL:** `{existing_job.get('evaluate_api_url', 'Chưa cấu hình')}`")
-            
-            # Show next run time
-            found_job = None
-            for job in schedule.jobs:
-                try:
-                    if job.job_func.args[1] == existing_job['test_name'] and job.job_func.args[2] == existing_job['site']:
-                        found_job = job
-                        break
-                except (IndexError, AttributeError):
-                    continue
-            
-            if found_job:
-                st.write(f"**Chạy lần tới:** {found_job.next_run.strftime('%Y-%m-%d %H:%M:%S') if found_job.next_run else 'N/A'}")
-            else:
-                st.warning("Không thể lấy thông tin chi tiết lịch chạy.")
-        
-        with col2:
-            if st.button("Chỉnh sửa", key="edit_existing_job"):
-                st.session_state.editing_existing_job = True
-                st.rerun()
-            
-            if st.button("Xóa cấu hình", key="delete_existing_job"):
-                # Không xóa file test cases vì có thể được sử dụng cho lịch khác
-                # Chỉ xóa cấu hình lịch
-                
-                # Remove from scheduled jobs
-                remove_scheduled_job_for_site(site)
-                
-                # Reset schedule initialization flag to recreate schedule
-                st.session_state.schedule_initialized = False
-                
-                st.success(f"Đã xóa cấu hình lịch test cho site '{site}'. Test cases và kết quả test trước đó vẫn được giữ lại.")
-                st.rerun()
-        
-        # Show edit form if editing
-        if st.session_state.get('editing_existing_job', False):
-            st.write("### Chỉnh sửa cấu hình")
-            
-            # API URLs
-            new_api_url = st.text_input("API URL", value=existing_job.get('api_url', "https://site1.com"), key="edit_api_url")
-            new_eval_api_url = st.text_input("Evaluate API URL", value=existing_job.get('evaluate_api_url', "https://site2.com"), key="edit_eval_api_url")
-            
-            # Test cases
-            st.write("**Test cases hiện tại:**")
-            if os.path.exists(existing_job['file_path']):
-                try:
-                    df_current = pd.read_excel(existing_job['file_path'])
-                    st.write(f"File: `{os.path.basename(existing_job['file_path'])}` ({len(df_current)} test cases)")
-                    st.write("**Preview 5 test cases đầu tiên:**")
-                    st.dataframe(df_current.head(5), use_container_width=True)
-                except Exception as e:
-                    st.error(f"Lỗi khi đọc file hiện tại: {str(e)}")
-            else:
-                st.warning("File test cases hiện tại không tồn tại")
-            
-            st.write("**Chọn test cases mới (để trống nếu không thay đổi):**")
-            test_cases_files = load_test_cases_list(site)
-            if test_cases_files:
-                new_test_cases_file = st.selectbox("Test cases mới", [""] + test_cases_files, key="edit_test_cases_selector")
-                
-                # Hiển thị preview test cases mới nếu có
-                if new_test_cases_file:
-                    new_test_cases_df = load_test_cases_from_file(site, new_test_cases_file)
-                    if new_test_cases_df is not None:
-                        st.write("**Preview 5 test cases đầu tiên của test cases mới:**")
-                        st.dataframe(new_test_cases_df.head(5), use_container_width=True)
-            else:
-                st.warning("Chưa có test cases nào được lưu")
-                new_test_cases_file = None
-            
-            new_test_name = st.text_input("Tên test mới", value=existing_job['test_name'], key="edit_test_name")
-            
-            # Schedule settings
-            current_schedule_type = existing_job.get('schedule_type', 'daily')
-            if current_schedule_type is None:
-                current_schedule_type = 'daily'
-            schedule_type_index = ["minute", "hourly", "daily", "weekly", "custom"].index(current_schedule_type) if current_schedule_type in ["minute", "hourly", "daily", "weekly", "custom"] else 2
-            new_schedule_type = st.selectbox("Loại lịch", ["minute", "hourly", "daily", "weekly", "custom"], 
-                                            index=schedule_type_index, 
-                                            key="edit_schedule_type")
-            
-            new_schedule_time = None
-            new_schedule_day = None
-            new_custom_interval = None
-            new_custom_unit = None
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                if new_schedule_type == "minute":
-                    st.info("Test sẽ chạy mỗi phút")
-                    
-                elif new_schedule_type == "hourly":
-                    # Safe parsing for hourly schedule
-                    current_time = existing_job.get('schedule_time')
-                    if current_time is None or current_time == '':
-                        current_time = '00:00'
-                    try:
-                        time_parts = current_time.split(':')
-                        if len(time_parts) >= 2:
-                            current_minute = int(time_parts[1])
-                        else:
-                            current_minute = 0
-                    except (ValueError, IndexError):
-                        current_minute = 0
-                    minute = st.number_input("Phút", 0, 59, current_minute, key="edit_schedule_minute")
-                    new_schedule_time = f"00:{minute:02d}"
-                    
-                elif new_schedule_type == "custom":
-                    # Safe parsing for custom schedule
-                    current_interval = existing_job.get('custom_interval')
-                    if current_interval is None:
-                        current_interval = 2
-                    new_custom_interval = st.number_input("Mỗi", 1, 100, current_interval, key="edit_custom_interval")
-                    
-                    current_custom_unit = existing_job.get('custom_unit')
-                    if current_custom_unit is None or current_custom_unit not in ["phút", "giờ", "ngày", "tuần"]:
-                        current_custom_unit = 'giờ'
-                    unit_index = ["phút", "giờ", "ngày", "tuần"].index(current_custom_unit) if current_custom_unit in ["phút", "giờ", "ngày", "tuần"] else 1
-                    new_custom_unit = st.selectbox("Đơn vị", ["phút", "giờ", "ngày", "tuần"], 
-                                                 index=unit_index, 
-                                                 key="edit_custom_unit")
-                    
-                else:  # daily or weekly
-                    # Safe parsing for daily/weekly schedule
-                    current_time = existing_job.get('schedule_time')
-                    if current_time is None or current_time == '':
-                        current_time = '00:00'
-                    try:
-                        time_parts = current_time.split(':')
-                        if len(time_parts) >= 2:
-                            hour = int(time_parts[0])
-                            minute = int(time_parts[1])
-                            time_obj = datetime.time(hour, minute)
-                        else:
-                            time_obj = datetime.time(0, 0)
-                    except (ValueError, IndexError):
-                        time_obj = datetime.time(0, 0)
-                    schedule_time_input = st.time_input("Thời gian", value=time_obj, key="edit_schedule_time")
-                    new_schedule_time = schedule_time_input.strftime("%H:%M")
-            
-            with col2:
-                if new_schedule_type == "weekly":
-                    current_day = existing_job.get('schedule_day')
-                    if current_day is None or current_day not in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
-                        current_day = 'Monday'
-                    day_index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].index(current_day)
-                    new_schedule_day = st.selectbox("Ngày trong tuần", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 
-                                                 index=day_index, 
-                                                 key="edit_schedule_day")
-            
-            col1, col2, col3 = st.columns([1, 1, 4])
-            with col1:
-                if st.button("Lưu thay đổi", key="save_edit_existing"):
-                    # Update job config
-                    job_index = next((i for i, job in enumerate(st.session_state.scheduled_jobs) if job['job_id'] == existing_job['job_id']), None)
-                    if job_index is not None:
-                        # Update file if new test cases provided
-                        if new_test_cases_file:
-                            # Lấy đường dẫn file test cases mới
-                            test_cases_dir = get_test_cases_dir(site)
-                            new_file_path = os.path.join(test_cases_dir, new_test_cases_file)
-                            
-                            st.session_state.scheduled_jobs[job_index]['file_path'] = new_file_path
-                            st.info(f"Đã cập nhật test cases: {new_test_cases_file}")
-                        
-                        # Update other fields
-                        st.session_state.scheduled_jobs[job_index]['test_name'] = new_test_name
-                        st.session_state.scheduled_jobs[job_index]['schedule_type'] = new_schedule_type
-                        st.session_state.scheduled_jobs[job_index]['schedule_time'] = new_schedule_time
-                        st.session_state.scheduled_jobs[job_index]['schedule_day'] = new_schedule_day
-                        st.session_state.scheduled_jobs[job_index]['custom_interval'] = new_custom_interval
-                        st.session_state.scheduled_jobs[job_index]['custom_unit'] = new_custom_unit
-                        st.session_state.scheduled_jobs[job_index]['api_url'] = new_api_url
-                        st.session_state.scheduled_jobs[job_index]['evaluate_api_url'] = new_eval_api_url
-                        
-                        save_scheduled_jobs()
-                        
-                        # Reset schedule initialization flag to recreate schedule
-                        st.session_state.schedule_initialized = False
-                        st.session_state.editing_existing_job = False
-                        
-                        st.success(f"Đã cập nhật cấu hình lịch test cho site '{site}'.")
-                        st.rerun()
-            
-            with col2:
-                if st.button("Hủy", key="cancel_edit_existing"):
-                    st.session_state.editing_existing_job = False
-                    st.rerun()
-    
-    else:
-        st.write("### Tạo cấu hình lịch test mới")
-        st.write(f"Site hiện tại: **{site}**")
-        
-        st.write("### Bước 1: Cấu hình API URLs cho lịch test")
-        schedule_api_url = st.text_input("API URL cho lịch test", st.session_state.get("schedule_api_url", "https://site1.com"), key="schedule_api_url_input")
-        schedule_evaluate_api_url = st.text_input("Evaluate API URL cho lịch test", st.session_state.get("schedule_evaluate_api_url", "https://site2.com"), key="schedule_evaluate_api_url_input")
-        
-        # Lưu vào session state
-        st.session_state.schedule_api_url = schedule_api_url
-        st.session_state.schedule_evaluate_api_url = schedule_evaluate_api_url
-
-        st.write("### Bước 2: Chọn test cases và đặt tên")
-        
-        # Load danh sách test cases đã lưu
-        test_cases_files = load_test_cases_list(site)
-        
-        if not test_cases_files:
-            st.warning("⚠️ Chưa có test cases nào được lưu. Vui lòng tạo test cases trong tab 'Quản lý Test Cases' trước.")
-            st.stop()
-        
-        selected_test_cases_file = st.selectbox("Chọn bộ test cases", test_cases_files, key="schedule_test_cases_selector")
-        
-        # Hiển thị preview test cases được chọn
-        if selected_test_cases_file:
-            test_cases_df = load_test_cases_from_file(site, selected_test_cases_file)
-            if test_cases_df is not None:
-                st.write(f"**Test cases:** `{selected_test_cases_file}` ({len(test_cases_df)} test cases)")
-                st.write("**Preview 5 test cases đầu tiên:**")
-                st.dataframe(test_cases_df.head(5), use_container_width=True)
-        
-        test_name = st.text_input("Tên bộ test (để nhận diện trong lịch sử)", key="test_name_input")
-
-        if selected_test_cases_file and test_name:
-            st.write("### Bước 3: Thiết lập lịch chạy test")
-            
-            schedule_type = st.selectbox("Loại lịch", ["minute", "hourly", "daily", "weekly", "custom"], key="schedule_type_select")
-            
-            schedule_time = None
-            schedule_day = None
-            schedule_custom_interval = None
-            schedule_custom_unit = None
-
-            col1, col2 = st.columns(2)
-            with col1:
-                if schedule_type == "minute":
-                    st.info("Test sẽ chạy mỗi phút")
-                elif schedule_type == "hourly":
-                    minute = st.number_input("Phút", 0, 59, 0, key="schedule_minute")
-                    schedule_time = f"00:{minute:02d}"
-                elif schedule_type == "custom":
-                    schedule_custom_interval = st.number_input("Mỗi", 1, 100, 2, key="schedule_custom_interval")
-                    schedule_custom_unit = st.selectbox("Đơn vị", ["phút", "giờ", "ngày", "tuần"], key="schedule_custom_unit")
-                else:
-                    schedule_time_input = st.time_input("Thời gian", key="schedule_time_input")
-                    schedule_time = schedule_time_input.strftime("%H:%M")
-            
-            with col2:
-                if schedule_type == "weekly":
-                    schedule_day = st.selectbox("Ngày trong tuần", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], key="schedule_day_select")
-
-            if st.button("Thiết lập lịch"):
-                # Lấy đường dẫn file test cases đã lưu
-                test_cases_dir = get_test_cases_dir(site)
-                saved_file_path = os.path.join(test_cases_dir, selected_test_cases_file)
-
-                job_config = {
-                    "file_path": saved_file_path,
-                    "schedule_type": schedule_type,
-                    "schedule_time": schedule_time,
-                    "schedule_day": schedule_day,
-                    "test_name": test_name,
-                    "site": site,
-                    "custom_interval": schedule_custom_interval,
-                    "custom_unit": schedule_custom_unit,
-                    "api_url": schedule_api_url,
-                    "evaluate_api_url": schedule_evaluate_api_url,
-                    "job_id": str(uuid4())
-                }
-                st.session_state.scheduled_jobs.append(job_config)
-                save_scheduled_jobs()  # Save to file
-                
-                # Reset schedule initialization flag to recreate schedule
-                st.session_state.schedule_initialized = False
-                
-                st.success(f"Đã thiết lập lịch chạy test '{test_name}' cho site '{site}'.")
-                st.rerun()
-
 
 with tab3:
     st.subheader("Quản lý test và cập nhật tập test")
@@ -2280,7 +1781,16 @@ with tab3:
             }
             error_df = pd.DataFrame(error_data)
             st.dataframe(error_df, use_container_width=True)
+    else:
+        # Empty state cho Dashboard
+        st.markdown("""
+        <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #ddd;">
+            <h3 style="color: #999; margin-bottom: 10px;">📊 Dashboard sẽ xuất hiện ở đây</h3>
+            <p style="color: #666; font-size: 14px;">Sau khi bạn chạy test, metrics và biểu đồ thống kê sẽ được hiển thị tại đây</p>
+        </div>
+        """, unsafe_allow_html=True)
     
+    st.write("---")  # Divider
     st.write("### 📋 Lịch sử test")
     if site in st.session_state.test_history and st.session_state.test_history[site]:
         history_df = pd.DataFrame(st.session_state.test_history[site])
@@ -2403,7 +1913,28 @@ with tab3:
                 else:
                     st.warning("File kết quả không tồn tại")
     else:
-        st.info(f"Chưa có lịch sử test nào cho site {site}")
+        # Empty state với hướng dẫn chi tiết
+        st.markdown("""
+        <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 10px; margin: 20px 0;">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📊 Chưa có lịch sử test</h2>
+            <p style="font-size: 16px; color: #666; margin-bottom: 30px;">
+                Để xem dashboard và lịch sử test, bạn cần chạy test trước.
+            </p>
+            <div style="text-align: left; max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h4 style="color: #333; margin-bottom: 15px;">🚀 Hướng dẫn nhanh:</h4>
+                <ol style="color: #555; line-height: 1.8;">
+                    <li><strong>Vào Tab "Test hàng loạt"</strong> ở phía trên</li>
+                    <li>Upload file Excel chứa câu hỏi và câu trả lời chuẩn</li>
+                    <li>Chọn các câu hỏi muốn test</li>
+                    <li>Nhấn nút <strong>"▶️ Chạy test"</strong></li>
+                    <li>Quay lại tab này để xem kết quả và thống kê</li>
+                </ol>
+            </div>
+            <p style="margin-top: 30px; color: #888; font-size: 14px;">
+                💡 Tip: Bạn cũng có thể lập lịch test tự động ở Tab "Lập lịch test"
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
     # st.write("### Test cases thất bại")
     # if site in st.session_state.failed_tests and st.session_state.failed_tests[site]:
@@ -2586,53 +2117,43 @@ with tab4:
                         )
                         
                         # Nút lưu test cases
-                        col1, col2, col3 = st.columns([1, 1, 2])
+                        col1, col2 = st.columns([1, 3])
                         
                         with col1:
-                            test_name = st.text_input("Tên bộ test cases", value=f"Test_Cases_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}", key="test_cases_name")
-                        
-                        with col2:
                             if st.button("💾 Lưu Test Cases", type="primary", use_container_width=True):
-                                if test_name.strip():
-                                    filepath = save_test_cases(site, edited_df, test_name.strip())
-                                    if filepath:
-                                        st.session_state.test_cases_action_message = {
-                                            'type': 'success',
-                                            'text': f'✅ Đã lưu test cases "{test_name}" thành công!'
-                                        }
-                                    else:
-                                        st.session_state.test_cases_action_message = {
-                                            'type': 'error',
-                                            'text': '❌ Lỗi khi lưu test cases!'
-                                        }
-                                    st.rerun()
+                                filepath = save_test_cases(site, edited_df)
+                                if filepath:
+                                    st.session_state.test_cases_action_message = {
+                                        'type': 'success',
+                                        'text': f'✅ Đã lưu test cases cho site "{site}" thành công!'
+                                    }
                                 else:
                                     st.session_state.test_cases_action_message = {
-                                        'type': 'warning',
-                                        'text': '⚠️ Vui lòng nhập tên bộ test cases!'
+                                        'type': 'error',
+                                        'text': '❌ Lỗi khi lưu test cases!'
                                     }
-                                    st.rerun()
+                                st.rerun()
                         
-                        with col3:
+                        with col2:
                             st.metric("📊 Số test cases", len(edited_df))
         
         except Exception as e:
             st.error(f"❌ Lỗi khi đọc file Excel: {str(e)}")
     
-    # Hiển thị danh sách test cases đã lưu
-    st.write("### 📚 Danh sách Test Cases đã lưu")
+    # Hiển thị test cases hiện tại
+    st.write("### 📚 Test Cases hiện tại")
     
-    test_cases_files = load_test_cases_list(site)
-    
-    if test_cases_files:
-        selected_file = st.selectbox("Chọn file test cases để xem", test_cases_files, key="test_cases_file_selector")
+    if test_cases_exists(site):
+        # Load test cases
+        test_cases_df = load_test_cases(site)
         
-        if selected_file:
-            # Load và hiển thị test cases
-            test_cases_df = load_test_cases_from_file(site, selected_file)
+        if test_cases_df is not None:
+            # Kiểm tra xem có đang ở chế độ chỉnh sửa không
+            editing_mode = st.session_state.get('editing_test_cases', False)
             
-            if test_cases_df is not None:
-                st.write(f"**File:** `{selected_file}` ({len(test_cases_df)} test cases)")
+            if not editing_mode:
+                # Chế độ xem
+                st.write(f"**Số test cases:** {len(test_cases_df)}")
                 
                 # Hiển thị preview
                 st.dataframe(test_cases_df.head(10), use_container_width=True)
@@ -2640,44 +2161,137 @@ with tab4:
                 if len(test_cases_df) > 10:
                     st.caption(f"Hiển thị 10/{len(test_cases_df)} test cases đầu tiên")
                 
-                # Nút xóa file
-                col1, col2 = st.columns([1, 1])
+                # Các nút action
+                col1, col2, col3 = st.columns([1, 1, 1])
                 
                 with col1:
-                    if st.button("🗑️ Xóa file", key="delete_test_cases_file"):
-                        try:
-                            test_cases_dir = get_test_cases_dir(site)
-                            filepath = os.path.join(test_cases_dir, selected_file)
-                            os.remove(filepath)
-                            st.session_state.test_cases_action_message = {
-                                'type': 'success',
-                                'text': f'✅ Đã xóa file "{selected_file}"'
-                            }
-                            st.rerun()
-                        except Exception as e:
-                            st.session_state.test_cases_action_message = {
-                                'type': 'error',
-                                'text': f'❌ Lỗi khi xóa file: {str(e)}'
-                            }
-                            st.rerun()
+                    if st.button("✏️ Chỉnh sửa", key="edit_test_cases_btn", type="primary", use_container_width=True):
+                        st.session_state.editing_test_cases = True
+                        st.rerun()
                 
                 with col2:
                     # Nút tải xuống
                     try:
-                        test_cases_dir = get_test_cases_dir(site)
-                        filepath = os.path.join(test_cases_dir, selected_file)
+                        filepath = get_test_cases_file_path(site)
                         with open(filepath, "rb") as f:
                             st.download_button(
                                 label="📥 Tải xuống",
                                 data=f.read(),
-                                file_name=selected_file,
+                                file_name=f"{site}_test_cases.xlsx",
                                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                key=f"download_test_cases_{selected_file}"
+                                key="download_test_cases",
+                                use_container_width=True
                             )
                     except Exception as e:
                         st.error(f"Lỗi khi tải xuống file: {str(e)}")
+                
+                with col3:
+                    if st.button("🗑️ Xóa", key="delete_test_cases_btn", type="secondary", use_container_width=True):
+                        if delete_test_cases(site):
+                            st.session_state.test_cases_action_message = {
+                                'type': 'success',
+                                'text': f'✅ Đã xóa test cases cho site "{site}"'
+                            }
+                        else:
+                            st.session_state.test_cases_action_message = {
+                                'type': 'error',
+                                'text': '❌ Lỗi khi xóa test cases!'
+                            }
+                        st.rerun()
+            
+            else:
+                # Chế độ chỉnh sửa
+                st.info("💡 Bạn đang ở chế độ chỉnh sửa. Thêm/xóa/sửa dòng trực tiếp trong bảng dưới đây.")
+                
+                # Sử dụng st.data_editor để chỉnh sửa
+                edited_df = st.data_editor(
+                    test_cases_df,
+                    use_container_width=True,
+                    hide_index=True,
+                    num_rows="dynamic",
+                    column_config={
+                        test_cases_df.columns[0]: st.column_config.TextColumn(
+                            test_cases_df.columns[0],
+                            help="Nội dung câu hỏi",
+                            width="large",
+                            required=True
+                        ),
+                        test_cases_df.columns[1]: st.column_config.TextColumn(
+                            test_cases_df.columns[1],
+                            help="Câu trả lời mẫu để so sánh",
+                            width="large",
+                            required=True
+                        ),
+                        test_cases_df.columns[2]: st.column_config.TextColumn(
+                            test_cases_df.columns[2],
+                            help="Cấp độ câu hỏi",
+                            width="medium",
+                            required=True
+                        ),
+                        test_cases_df.columns[3]: st.column_config.TextColumn(
+                            test_cases_df.columns[3],
+                            help="Phòng ban liên quan",
+                            width="medium",
+                            required=True
+                        ),
+                    },
+                    key="edit_existing_test_cases_editor"
+                )
+                
+                # Nút lưu và hủy
+                col1, col2, col3 = st.columns([1, 1, 4])
+                
+                with col1:
+                    if st.button("💾 Lưu", type="primary", use_container_width=True, key="save_edited_test_cases"):
+                        filepath = save_test_cases(site, edited_df)
+                        if filepath:
+                            st.session_state.test_cases_action_message = {
+                                'type': 'success',
+                                'text': f'✅ Đã cập nhật test cases cho site "{site}" thành công!'
+                            }
+                            st.session_state.editing_test_cases = False
+                        else:
+                            st.session_state.test_cases_action_message = {
+                                'type': 'error',
+                                'text': '❌ Lỗi khi lưu test cases!'
+                            }
+                        st.rerun()
+                
+                with col2:
+                    if st.button("❌ Hủy", use_container_width=True, key="cancel_edit_test_cases"):
+                        st.session_state.editing_test_cases = False
+                        st.rerun()
+                
+                with col3:
+                    st.metric("📊 Số test cases", len(edited_df))
     else:
-        st.info("Chưa có test cases nào được lưu cho site này")
+        # Empty state với hướng dẫn chi tiết
+        st.markdown("""
+        <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 10px; margin: 20px 0;">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📚 Chưa có Test Cases</h2>
+            <p style="font-size: 16px; color: #666; margin-bottom: 30px;">
+                Test cases giúp bạn quản lý và tái sử dụng bộ câu hỏi test.
+            </p>
+            <div style="text-align: left; max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h4 style="color: #333; margin-bottom: 15px;">🎯 Để tạo Test Cases:</h4>
+                <ol style="color: #555; line-height: 1.8;">
+                    <li>Cuộn lên phía trên tab này</li>
+                    <li>Tìm phần <strong>"📤 Upload và chỉnh sửa Test Cases"</strong></li>
+                    <li>Upload file Excel chứa test cases (4 cột: Câu hỏi, Câu trả lời chuẩn, Level, Department)</li>
+                    <li>Chỉnh sửa nếu cần thiết</li>
+                    <li>Đặt tên và nhấn <strong>"💾 Lưu Test Cases"</strong></li>
+                </ol>
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-left: 4px solid #667eea; border-radius: 4px;">
+                    <strong style="color: #667eea;">💡 Lợi ích:</strong><br>
+                    <span style="color: #666; font-size: 14px;">
+                        • Dễ dàng chọn test cases cho lập lịch test tự động<br>
+                        • Quản lý nhiều bộ test khác nhau<br>
+                        • Tái sử dụng test cases cho nhiều lần chạy
+                    </span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 with tab5:
     # Custom CSS cho tab Quản lý Prompts
@@ -3050,6 +2664,541 @@ with tab5:
     # - Kiểm tra syntax Python trước khi lưu extract sections
     # - Tính năng tự động tạo sẽ phân tích các tiêu chí trong system prompt và tạo code tương ứng
     # """)
+
+
+with tab1:
+    st.subheader("📝 Test hàng loạt từ file Excel")
+    
+    if add_chat_history_global:
+        with st.expander("💬 Thiết lập chat history", expanded=False):
+            # Tương tự tab 1, hiển thị và cho phép chỉnh sửa chat history
+            if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
+                st.session_state.chat_history = [
+                    {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
+                    {"role": "userMessage", "content": "[Cung cấp thông tin]"}
+                ]
+            
+            new_history = []
+            for i, msg in enumerate(st.session_state.chat_history):
+                cols = st.columns([2, 8, 1])
+                role = cols[0].selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_batch_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
+                content = cols[1].text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_batch_{i}")
+                if not cols[2].button("🗑️", key=f"delete_batch_{i}", help="Xóa message này"):
+                    new_history.append({"role": role, "content": content})
+            st.session_state.chat_history = new_history
+
+            if st.button("➕ Thêm message", key="add_message_batch"):
+                st.session_state.chat_history.append({"role": "userMessage", "content": ""})
+                st.rerun()
+
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        uploaded_file = st.file_uploader("📁 Chọn file Excel chứa test cases", type=['xlsx', 'xls'])
+    
+    with col2:
+        st.write("")  # Spacer
+        st.write("")  # Spacer
+        if uploaded_file:
+            st.success("✅ File đã tải lên")
+    
+    if uploaded_file is not None:
+        try:
+            df = pd.read_excel(uploaded_file)
+            
+            # Kiểm tra file rỗng
+            if df.empty:
+                st.error("❌ File Excel rỗng! Vui lòng tải lên file có dữ liệu.")
+                st.stop()
+            
+            df = df.dropna(subset=[df.columns[0], df.columns[1]])
+            
+            # Kiểm tra sau khi dropna
+            if df.empty:
+                st.error("❌ File Excel không có dữ liệu hợp lệ! Vui lòng kiểm tra lại file.")
+                st.stop()
+            
+            questions = df.iloc[:, 0].tolist()
+            true_answers = df.iloc[:, 1].tolist()
+            
+            # Khởi tạo edited test cases trong session state nếu chưa có
+            if 'test_cases_df' not in st.session_state or st.session_state.get('current_file') != uploaded_file.name:
+                st.session_state.test_cases_df = pd.DataFrame({
+                    'Chọn': [True] * len(questions),  # Checkbox column
+                    'Câu hỏi': questions, 
+                    'Câu trả lời chuẩn': true_answers
+                })
+                st.session_state.current_file = uploaded_file.name
+            
+            st.write("### 📋 Danh sách test cases")
+            st.info("💡 Tip: Chọn các dòng bạn muốn chạy test bằng cách click vào checkbox ở đầu mỗi dòng.")
+            
+            # Sử dụng st.dataframe với selection
+            selected_df = st.dataframe(
+                st.session_state.test_cases_df,
+                use_container_width=True,
+                hide_index=True,
+                on_select="rerun",
+                selection_mode="multi-row",
+                key="test_cases_selection"
+            )
+            
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col1:
+                st.metric("📊 Tổng test cases", len(st.session_state.test_cases_df))
+            with col2:
+                # Lấy số dòng được chọn từ selection
+                selected_count = len(selected_df.selection.rows) if selected_df.selection.rows else 0
+                st.metric("✅ Test cases được chọn", selected_count)
+            with col3:
+                if st.button("▶️ Chạy test", type="primary", use_container_width=True):
+                    if selected_df.selection.rows:
+                        # Lấy các dòng được chọn
+                        selected_indices = selected_df.selection.rows
+                        selected_questions = [st.session_state.test_cases_df.iloc[i]['Câu hỏi'] for i in selected_indices]
+                        selected_true_answers = [st.session_state.test_cases_df.iloc[i]['Câu trả lời chuẩn'] for i in selected_indices]
+                        
+                        # Tạo progress container toàn màn hình
+                        st.markdown("---")
+                        progress_container = st.container()
+                        with progress_container:
+                            st.markdown("### ⏳ Tiến trình xử lý")
+                            progress_bar = st.progress(0)
+                            status_text = st.empty()
+                            current_question_text = st.empty()
+                        
+                            history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
+                            results, failed_questions = process_questions_batch(
+                                selected_questions, 
+                                selected_true_answers, 
+                                add_chat_history=add_chat_history_global, 
+                                custom_history=history, 
+                                test_name=uploaded_file.name, 
+                            site=get_current_site(),
+                            progress_bar=progress_bar,
+                            status_text=status_text,
+                            current_question_text=current_question_text
+                            )
+                        
+                        st.session_state.results = results
+                        
+                        data = {
+                            'Question': [r["question"] for r in results],
+                            'True Answer': [r["true_answer"] for r in results],
+                            'Agent Answer': [r["site_response"] for r in results],
+                            'Session ID': [r["chat_id"] for r in results],
+                            'Relevance Score': [r["evaluate_result"]["scores"].get("relevance", 0) for r in results],
+                            'Accuracy Score': [r["evaluate_result"]["scores"].get("accuracy", 0) for r in results],
+                            'Completeness Score': [r["evaluate_result"]["scores"].get("completeness", 0) for r in results],
+                            'Clarity Score': [r["evaluate_result"]["scores"].get("clarity", 0) for r in results],
+                            'Tone Score': [r["evaluate_result"]["scores"].get("tone", 0) for r in results],
+                            'Average Score': [r["evaluate_result"]["scores"].get("average", 0) for r in results],
+                            'Comment': [r["evaluate_result"].get("comments", "") for r in results]
+                        }
+                        results_df = pd.DataFrame(data)
+                        st.session_state.results_df = results_df
+                        st.rerun()  # Reload để hiển thị kết quả bên ngoài
+                    else:
+                        st.warning("⚠️ Vui lòng chọn ít nhất một test case để chạy")
+            
+        except Exception as e:
+            st.error(f"Lỗi khi đọc file Excel: {str(e)}")
+    
+    # Hiển thị kết quả test hàng loạt (toàn màn hình) - di chuyển ra ngoài column
+    if 'results' in st.session_state and st.session_state.results:
+        results = st.session_state.results
+        results_df = st.session_state.results_df
+        
+        st.write("---")
+        st.subheader(f"📊 Kết quả đánh giá ({len(results)} câu hỏi)")
+        
+        # Hiển thị metrics tổng quan với styling đẹp hơn
+        st.markdown("""
+            <style>
+            .metric-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                color: white;
+                text-align: center;
+                margin: 5px;
+            }
+            .metric-card-success {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+            .metric-card-danger {
+                background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            }
+            .metric-card-info {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+            .metric-label {
+                font-size: 14px;
+                font-weight: 500;
+                opacity: 0.9;
+                margin-bottom: 5px;
+            }
+            .metric-value {
+                font-size: 32px;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            @media (max-width: 1200px) {
+                .dashboard-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            @media (max-width: 600px) {
+                .dashboard-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+        # Grid metrics với styling đẹp
+        passed_count = sum(1 for r in results if "failed_details" not in r)
+        failed_count = sum(1 for r in results if "failed_details" in r)
+        avg_score = sum(r["evaluate_result"]["scores"].get("average", 0) for r in results) / len(results) if results else 0
+        pass_rate = (passed_count / len(results) * 100) if results else 0
+            
+        st.markdown(f"""
+        <div class="dashboard-grid">
+            <div class="metric-card metric-card-success">
+                <div class="metric-label">✅ Passed</div>
+                <div class="metric-value">{passed_count}</div>
+            </div>
+            <div class="metric-card metric-card-danger">
+                <div class="metric-label">❌ Failed</div>
+                <div class="metric-value">{failed_count}</div>
+            </div>
+            <div class="metric-card metric-card-info">
+                <div class="metric-label">📈 Điểm TB</div>
+                <div class="metric-value">{avg_score:.2f}</div>
+            </div>
+            <div class="metric-card metric-card-info">
+                <div class="metric-label">📊 Tỷ lệ pass</div>
+                <div class="metric-value">{pass_rate:.1f}%</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+            
+        # Hiển thị dataframe với styling tốt hơn
+        st.write("### 📋 Chi tiết kết quả")
+        st.dataframe(
+            results_df, 
+            use_container_width=True, 
+            hide_index=True,
+            height=400  # Tăng chiều cao để hiển thị nhiều dòng hơn
+        )
+        
+        # Nút tải xuống và thông báo
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            st.download_button(
+                label="📥 Tải xuống kết quả (CSV)", 
+                data=results_df.to_csv(index=False).encode('utf-8'), 
+                file_name=f'evaluation_results_{uploaded_file.name}.csv', 
+                mime='text/csv',
+                use_container_width=True
+            )
+        with col2:
+            if failed_count > 0:
+                st.warning(f"⚠️ Có {failed_count} câu hỏi xử lý thất bại")
+            else:
+                st.success(f"✅ Đã hoàn thành đánh giá {len(results)} câu hỏi")
+    else:
+        st.info("Vui lòng tải lên file Excel để bắt đầu")
+
+with tab2:
+    st.subheader("Lập lịch chạy test tự động")
+
+    site = get_current_site()
+    existing_job = get_scheduled_job_for_site(site)
+    
+    if existing_job:
+        st.info(f"Site **{site}** đã có cấu hình lịch test. Bạn có thể chỉnh sửa hoặc xóa cấu hình hiện tại.")
+        
+        st.write("### Cấu hình hiện tại")
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            st.write(f"**Tên Test:** {existing_job['test_name']}")
+            st.write(f"**Loại lịch:** {existing_job['schedule_type']}")
+            st.write(f"**Thời gian:** {existing_job.get('schedule_time', 'N/A')}")
+            if existing_job.get('schedule_day'):
+                st.write(f"**Ngày:** {existing_job['schedule_day']}")
+            if existing_job.get('custom_interval') and existing_job.get('custom_unit'):
+                st.write(f"**Tùy chỉnh:** Mỗi {existing_job['custom_interval']} {existing_job['custom_unit']}")
+            st.write(f"**API URL:** `{existing_job.get('api_url', 'Chưa cấu hình')}`")
+            st.write(f"**Evaluate API URL:** `{existing_job.get('evaluate_api_url', 'Chưa cấu hình')}`")
+            
+            # Show next run time - Dùng Schedule Manager
+            if schedule_manager:
+                next_run_vn = schedule_manager.get_next_run(site)
+                if next_run_vn:
+                    st.write(f"**Chạy lần tới:** {next_run_vn.strftime('%Y-%m-%d %H:%M:%S')} (GMT+7)")
+                    st.caption("⏰ Thời gian được tính toán tự động và persistent qua các lần reload")
+                else:
+                    st.write(f"**Chạy lần tới:** Đang tính toán...")
+            else:
+                st.warning("⚠️ Schedule Manager chưa khởi tạo")
+        
+        with col2:
+            if st.button("Chỉnh sửa", key="edit_existing_job"):
+                st.session_state.editing_existing_job = True
+                st.rerun()
+            
+            if st.button("Xóa cấu hình", key="delete_existing_job"):
+                # Sử dụng Schedule Manager để xóa
+                if schedule_manager:
+                    if schedule_manager.remove_schedule(site):
+                        st.success(f"✅ Đã xóa lịch test cho site '{site}'. Test cases và kết quả test vẫn được giữ lại.")
+                    else:
+                        st.error("❌ Lỗi khi xóa lịch test!")
+                else:
+                    st.error("❌ Schedule Manager chưa khởi tạo!")
+                
+                st.rerun()
+        
+        # Show edit form if editing
+        if st.session_state.get('editing_existing_job', False):
+            st.write("### Chỉnh sửa cấu hình")
+            
+            # API URLs
+            new_api_url = st.text_input("API URL", value=existing_job.get('api_url', "https://site1.com"), key="edit_api_url")
+            new_eval_api_url = st.text_input("Evaluate API URL", value=existing_job.get('evaluate_api_url', "https://site2.com"), key="edit_eval_api_url")
+            
+            # Test cases
+            st.write("**Test cases hiện tại:**")
+            if os.path.exists(existing_job['file_path']):
+                try:
+                    df_current = pd.read_excel(existing_job['file_path'])
+                    st.write(f"File: `{os.path.basename(existing_job['file_path'])}` ({len(df_current)} test cases)")
+                    st.write("**Preview 5 test cases đầu tiên:**")
+                    st.dataframe(df_current.head(5), use_container_width=True)
+                except Exception as e:
+                    st.error(f"Lỗi khi đọc file hiện tại: {str(e)}")
+            else:
+                st.warning("File test cases hiện tại không tồn tại")
+            
+            st.write("**Test cases hiện tại của site:**")
+            if test_cases_exists(site):
+                test_cases_df = load_test_cases(site)
+                if test_cases_df is not None:
+                    st.write(f"Số test cases: {len(test_cases_df)}")
+                    st.write("**Preview 5 test cases đầu tiên:**")
+                    st.dataframe(test_cases_df.head(5), use_container_width=True)
+                    st.info("💡 Lịch test sẽ tự động sử dụng test cases này")
+            else:
+                st.warning("⚠️ Site chưa có test cases. Vui lòng tạo test cases trong Tab 'Quản lý Test Cases' trước.")
+            
+            new_test_name = st.text_input("Tên test mới", value=existing_job['test_name'], key="edit_test_name")
+            
+            # Schedule settings
+            current_schedule_type = existing_job.get('schedule_type', 'daily')
+            if current_schedule_type is None:
+                current_schedule_type = 'daily'
+            schedule_type_index = ["minute", "hourly", "daily", "weekly", "custom"].index(current_schedule_type) if current_schedule_type in ["minute", "hourly", "daily", "weekly", "custom"] else 2
+            new_schedule_type = st.selectbox("Loại lịch", ["minute", "hourly", "daily", "weekly", "custom"], 
+                                            index=schedule_type_index, 
+                                            key="edit_schedule_type")
+            
+            new_schedule_time = None
+            new_schedule_day = None
+            new_custom_interval = None
+            new_custom_unit = None
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if new_schedule_type == "minute":
+                    st.info("Test sẽ chạy mỗi phút")
+                    
+                elif new_schedule_type == "hourly":
+                    # Safe parsing for hourly schedule
+                    current_time = existing_job.get('schedule_time')
+                    if current_time is None or current_time == '':
+                        current_time = '00:00'
+                    try:
+                        time_parts = current_time.split(':')
+                        if len(time_parts) >= 2:
+                            current_minute = int(time_parts[1])
+                        else:
+                            current_minute = 0
+                    except (ValueError, IndexError):
+                        current_minute = 0
+                    minute = st.number_input("Phút", 0, 59, current_minute, key="edit_schedule_minute")
+                    new_schedule_time = f"00:{minute:02d}"
+                    
+                elif new_schedule_type == "custom":
+                    # Safe parsing for custom schedule
+                    current_interval = existing_job.get('custom_interval')
+                    if current_interval is None:
+                        current_interval = 2
+                    new_custom_interval = st.number_input("Mỗi", 1, 100, current_interval, key="edit_custom_interval")
+                    
+                    current_custom_unit = existing_job.get('custom_unit')
+                    if current_custom_unit is None or current_custom_unit not in ["phút", "giờ", "ngày", "tuần"]:
+                        current_custom_unit = 'giờ'
+                    unit_index = ["phút", "giờ", "ngày", "tuần"].index(current_custom_unit) if current_custom_unit in ["phút", "giờ", "ngày", "tuần"] else 1
+                    new_custom_unit = st.selectbox("Đơn vị", ["phút", "giờ", "ngày", "tuần"], 
+                                                 index=unit_index, 
+                                                 key="edit_custom_unit")
+                    
+                else:  # daily or weekly
+                    # Safe parsing for daily/weekly schedule
+                    current_time = existing_job.get('schedule_time')
+                    if current_time is None or current_time == '':
+                        current_time = '00:00'
+                    try:
+                        time_parts = current_time.split(':')
+                        if len(time_parts) >= 2:
+                            hour = int(time_parts[0])
+                            minute = int(time_parts[1])
+                            time_obj = datetime.time(hour, minute)
+                        else:
+                            time_obj = datetime.time(0, 0)
+                    except (ValueError, IndexError):
+                        time_obj = datetime.time(0, 0)
+                    schedule_time_input = st.time_input("Thời gian", value=time_obj, key="edit_schedule_time")
+                    new_schedule_time = schedule_time_input.strftime("%H:%M")
+            
+            with col2:
+                if new_schedule_type == "weekly":
+                    current_day = existing_job.get('schedule_day')
+                    if current_day is None or current_day not in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+                        current_day = 'Monday'
+                    day_index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].index(current_day)
+                    new_schedule_day = st.selectbox("Ngày trong tuần", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 
+                                                 index=day_index, 
+                                                 key="edit_schedule_day")
+            
+            col1, col2, col3 = st.columns([1, 1, 4])
+            with col1:
+                if st.button("Lưu thay đổi", key="save_edit_existing"):
+                    # Update job config
+                    job_index = next((i for i, job in enumerate(st.session_state.scheduled_jobs) if job['job_id'] == existing_job['job_id']), None)
+                    if job_index is not None:
+                        # Update file path to current test cases file
+                        st.session_state.scheduled_jobs[job_index]['file_path'] = get_test_cases_file_path(site)
+                        
+                        # Update other fields
+                        st.session_state.scheduled_jobs[job_index]['test_name'] = new_test_name
+                        st.session_state.scheduled_jobs[job_index]['schedule_type'] = new_schedule_type
+                        st.session_state.scheduled_jobs[job_index]['schedule_time'] = new_schedule_time
+                        st.session_state.scheduled_jobs[job_index]['schedule_day'] = new_schedule_day
+                        st.session_state.scheduled_jobs[job_index]['custom_interval'] = new_custom_interval
+                        st.session_state.scheduled_jobs[job_index]['custom_unit'] = new_custom_unit
+                        st.session_state.scheduled_jobs[job_index]['api_url'] = new_api_url
+                        st.session_state.scheduled_jobs[job_index]['evaluate_api_url'] = new_eval_api_url
+                        
+                        save_scheduled_jobs()
+                        
+                        # Reset schedule initialization flag to recreate schedule
+                        st.session_state.schedule_initialized = False
+                        st.session_state.editing_existing_job = False
+                        
+                        st.success(f"Đã cập nhật cấu hình lịch test cho site '{site}'.")
+                        st.rerun()
+            
+            with col2:
+                if st.button("Hủy", key="cancel_edit_existing"):
+                    st.session_state.editing_existing_job = False
+                    st.rerun()
+    
+    else:
+        st.write("### Tạo cấu hình lịch test mới")
+        st.write(f"Site hiện tại: **{site}**")
+        
+        st.write("### Bước 1: Cấu hình API URLs cho lịch test")
+        schedule_api_url = st.text_input("API URL cho lịch test", st.session_state.get("schedule_api_url", "https://site1.com"), key="schedule_api_url_input")
+        schedule_evaluate_api_url = st.text_input("Evaluate API URL cho lịch test", st.session_state.get("schedule_evaluate_api_url", "https://site2.com"), key="schedule_evaluate_api_url_input")
+        
+        # Lưu vào session state
+        st.session_state.schedule_api_url = schedule_api_url
+        st.session_state.schedule_evaluate_api_url = schedule_evaluate_api_url
+
+        st.write("### Bước 2: Kiểm tra test cases và đặt tên")
+        
+        # Check if test cases exist
+        if not test_cases_exists(site):
+            st.warning("⚠️ Chưa có test cases cho site này. Vui lòng tạo test cases trong tab 'Quản lý Test Cases' trước.")
+            st.stop()
+        
+        # Load test cases
+        test_cases_df = load_test_cases(site)
+        
+        if test_cases_df is not None:
+            st.write(f"**Test cases hiện tại:** {len(test_cases_df)} test cases")
+            st.write("**Preview 5 test cases đầu tiên:**")
+            st.dataframe(test_cases_df.head(5), use_container_width=True)
+        else:
+            st.error("❌ Lỗi khi đọc test cases!")
+            st.stop()
+        
+        test_name = st.text_input("Tên bộ test (để nhận diện trong lịch sử)", key="test_name_input")
+
+        if test_name:
+            st.write("### Bước 3: Thiết lập lịch chạy test")
+            
+            schedule_type = st.selectbox("Loại lịch", ["minute", "hourly", "daily", "weekly", "custom"], key="schedule_type_select")
+            
+            schedule_time = None
+            schedule_day = None
+            schedule_custom_interval = None
+            schedule_custom_unit = None
+
+            col1, col2 = st.columns(2)
+            with col1:
+                if schedule_type == "minute":
+                    st.info("Test sẽ chạy mỗi phút")
+                elif schedule_type == "hourly":
+                    minute = st.number_input("Phút", 0, 59, 0, key="schedule_minute")
+                    schedule_time = f"00:{minute:02d}"
+                elif schedule_type == "custom":
+                    schedule_custom_interval = st.number_input("Mỗi", 1, 100, 2, key="schedule_custom_interval")
+                    schedule_custom_unit = st.selectbox("Đơn vị", ["phút", "giờ", "ngày", "tuần"], key="schedule_custom_unit")
+                else:
+                    schedule_time_input = st.time_input("Thời gian", key="schedule_time_input")
+                    schedule_time = schedule_time_input.strftime("%H:%M")
+            
+            with col2:
+                if schedule_type == "weekly":
+                    schedule_day = st.selectbox("Ngày trong tuần", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], key="schedule_day_select")
+
+            if st.button("Thiết lập lịch"):
+                # Lấy đường dẫn file test cases của site
+                saved_file_path = get_test_cases_file_path(site)
+
+                job_config = {
+                    "file_path": saved_file_path,
+                    "schedule_type": schedule_type,
+                    "schedule_time": schedule_time,
+                    "schedule_day": schedule_day,
+                    "test_name": test_name,
+                    "site": site,
+                    "custom_interval": schedule_custom_interval,
+                    "custom_unit": schedule_custom_unit,
+                    "api_url": schedule_api_url,
+                    "evaluate_api_url": schedule_evaluate_api_url,
+                    "job_id": str(uuid4())
+                }
+                st.session_state.scheduled_jobs.append(job_config)
+                save_scheduled_jobs()  # Save to file
+                
+                # Reset schedule initialization flag to recreate schedule
+                st.session_state.schedule_initialized = False
+                
+                st.success(f"Đã thiết lập lịch chạy test '{test_name}' cho site '{site}'.")
+                st.rerun()
+
+
 
 # Hiển thị hướng dẫn sử dụng
 st.sidebar.subheader("Hướng dẫn sử dụng")

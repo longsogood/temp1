@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import shutil
+import json
 from pathlib import Path
 
 st.set_page_config(
@@ -106,6 +107,27 @@ def create_new_site(site_name):
                 dest_extract = os.path.join(site_utils_dir, "extract_sections.py")
                 shutil.copy2(source_extract, dest_extract)
         
+        # Initialize schedule config for the new site in schedule_config.json
+        schedule_config_file = "schedule_config.json"
+        try:
+            # Load existing config
+            if os.path.exists(schedule_config_file):
+                with open(schedule_config_file, 'r', encoding='utf-8') as f:
+                    schedule_config = json.load(f)
+            else:
+                schedule_config = {}
+            
+            # Initialize empty schedule for new site (only if not exists)
+            if site_name not in schedule_config:
+                schedule_config[site_name] = None
+                
+                # Save updated config
+                with open(schedule_config_file, 'w', encoding='utf-8') as f:
+                    json.dump(schedule_config, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            # Log but don't fail site creation if schedule init fails
+            print(f"Warning: Failed to initialize schedule config for {site_name}: {e}")
+        
         return True, f"Đã tạo site mới: {site_name} (bao gồm prompts & extract sections)"
         
     except Exception as e:
@@ -151,6 +173,25 @@ def delete_site(site_name):
         if os.path.exists(scheduled_dir):
             shutil.rmtree(scheduled_dir)
             deleted_items.append("Scheduled tests")
+        
+        # Remove schedule config from schedule_config.json
+        schedule_config_file = "schedule_config.json"
+        try:
+            if os.path.exists(schedule_config_file):
+                with open(schedule_config_file, 'r', encoding='utf-8') as f:
+                    schedule_config = json.load(f)
+                
+                # Remove site's schedule if it exists
+                if site_name in schedule_config:
+                    del schedule_config[site_name]
+                    deleted_items.append("Schedule config")
+                    
+                    # Save updated config
+                    with open(schedule_config_file, 'w', encoding='utf-8') as f:
+                        json.dump(schedule_config, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            # Log but don't fail deletion if schedule cleanup fails
+            print(f"Warning: Failed to remove schedule config for {site_name}: {e}")
         
         return True, f"Đã xóa: {', '.join(deleted_items)}"
         

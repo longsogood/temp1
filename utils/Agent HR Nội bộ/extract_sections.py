@@ -38,7 +38,7 @@ def extract_section(text):
         results["scores"]["clarity"] = clarity
         tone = json_data["tone"]
         results["scores"]["tone"] = tone
-        results["scores"]["average"] = (relevance, accuracy, completeness, clarity, tone) / 5
+        results["scores"]["average"] = (relevance + accuracy + completeness + clarity + tone) / 5
         results["comments"] = json_data["comments"]
         print(f"Extracted: {results}")
         return results
