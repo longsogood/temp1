@@ -8,7 +8,7 @@ import schedule
 import threading
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
 # Setup logging
@@ -147,6 +147,11 @@ class ScheduleManager:
     def _setup_schedule_from_config(self, site, config):
         """Setup schedule from config"""
         try:
+            # Clear cached next run time when setting up new schedule
+            if 'cached_next_run' in config:
+                del config['cached_next_run']
+                self.save_schedules(self.get_all_schedule_configs())
+            
             # Import dynamically để tránh circular dependency
             import importlib
             import sys
@@ -234,6 +239,140 @@ class ScheduleManager:
         except Exception as e:
             logger.error(f"Error getting next run for {site}: {e}")
         return None
+    
+    def calculate_next_run_time(self, site):
+        """Calculate next run time based on schedule config"""
+        try:
+            config = self.get_schedule_config(site)
+            if not config:
+                logger.warning(f"No config found for site {site}")
+                return None
+            
+            # Check if we already have a cached next run time that's still valid
+            cached_next_run = config.get('cached_next_run')
+            if cached_next_run:
+                try:
+                    cached_time = datetime.fromisoformat(cached_next_run)
+                    # If cached time is still in the future, use it
+                    if cached_time > datetime.now(VN_TZ):
+                        logger.info(f"Using cached next run time for {site}: {cached_time}")
+                        return cached_time
+                except (ValueError, TypeError):
+                    pass
+            
+            now = datetime.now(VN_TZ)
+            schedule_type = config.get('schedule_type')
+            schedule_time = config.get('schedule_time')
+            schedule_day = config.get('schedule_day')
+            custom_interval = config.get('custom_interval')
+            custom_unit = config.get('custom_unit')
+            
+            logger.info(f"Calculating next run for {site}: type={schedule_type}, interval={custom_interval}, unit={custom_unit}")
+            
+            if schedule_type == "minute":
+                # Next minute
+                next_run = now.replace(second=0, microsecond=0) + timedelta(minutes=1)
+                self._cache_next_run_time(site, next_run)
+                return next_run
+                
+            elif schedule_type == "hourly":
+                # Next hour at specified minute
+                if schedule_time and ':' in schedule_time:
+                    minute = int(schedule_time.split(':')[1])
+                    next_run = now.replace(minute=minute, second=0, microsecond=0)
+                    if next_run <= now:
+                        next_run += timedelta(hours=1)
+                    self._cache_next_run_time(site, next_run)
+                    return next_run
+                else:
+                    # Default: next hour
+                    next_run = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+                    self._cache_next_run_time(site, next_run)
+                    return next_run
+                    
+            elif schedule_type == "daily":
+                # Next day at specified time
+                if schedule_time and ':' in schedule_time:
+                    hour, minute = map(int, schedule_time.split(':'))
+                    next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                    if next_run <= now:
+                        next_run += timedelta(days=1)
+                    self._cache_next_run_time(site, next_run)
+                    return next_run
+                else:
+                    # Default: tomorrow at same time
+                    next_run = now + timedelta(days=1)
+                    self._cache_next_run_time(site, next_run)
+                    return next_run
+                    
+            elif schedule_type == "weekly":
+                # Next week on specified day at specified time
+                if schedule_day and schedule_time and ':' in schedule_time:
+                    hour, minute = map(int, schedule_time.split(':'))
+                    # Map day names to numbers (Monday=0, Sunday=6)
+                    day_map = {
+                        'monday': 0, 'tuesday': 1, 'wednesday': 2, 'thursday': 3,
+                        'friday': 4, 'saturday': 5, 'sunday': 6
+                    }
+                    target_day = day_map.get(schedule_day.lower(), 0)
+                    current_day = now.weekday()
+                    days_ahead = (target_day - current_day) % 7
+                    if days_ahead == 0:  # Same day
+                        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                        if next_run <= now:
+                            days_ahead = 7  # Next week
+                    if days_ahead > 0:
+                        next_run = now.replace(hour=hour, minute=minute, second=0, microsecond=0) + timedelta(days=days_ahead)
+                        self._cache_next_run_time(site, next_run)
+                        return next_run
+                else:
+                    # Default: next week same day
+                    next_run = now + timedelta(weeks=1)
+                    self._cache_next_run_time(site, next_run)
+                    return next_run
+                    
+            elif schedule_type == "custom" and custom_interval and custom_unit:
+                # Custom interval
+                logger.info(f"Processing custom schedule: interval={custom_interval}, unit={custom_unit}")
+                unit_map = {
+                    "phút": "minutes", "giờ": "hours", 
+                    "ngày": "days", "tuần": "weeks"
+                }
+                unit_en = unit_map.get(custom_unit, "hours")
+                logger.info(f"Mapped unit: {custom_unit} -> {unit_en}")
+                
+                if unit_en == "minutes":
+                    next_run = now + timedelta(minutes=custom_interval)
+                elif unit_en == "hours":
+                    next_run = now + timedelta(hours=custom_interval)
+                elif unit_en == "days":
+                    next_run = now + timedelta(days=custom_interval)
+                elif unit_en == "weeks":
+                    next_run = now + timedelta(weeks=custom_interval)
+                else:
+                    next_run = now + timedelta(hours=custom_interval)
+                
+                logger.info(f"Calculated next run: {next_run}")
+                # Cache the calculated time
+                self._cache_next_run_time(site, next_run)
+                return next_run
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error calculating next run time for {site}: {e}")
+            return None
+    
+    def _cache_next_run_time(self, site, next_run_time):
+        """Cache the next run time for a site"""
+        try:
+            configs = self.get_all_schedule_configs()
+            if site in configs:
+                configs[site]['cached_next_run'] = next_run_time.isoformat()
+                self.save_schedules(configs)
+                logger.info(f"Cached next run time for {site}: {next_run_time}")
+        except Exception as e:
+            logger.error(f"Error caching next run time for {site}: {e}")
     
     def start(self):
         """Start the schedule manager thread"""

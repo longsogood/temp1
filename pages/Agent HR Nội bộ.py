@@ -882,6 +882,7 @@ with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
                 st.success("✅ Đã lưu cấu hình vào file! Áp dụng cho tất cả test (đơn lẻ, hàng loạt, lập lịch)")
             else:
                 st.error("❌ Lỗi khi lưu cấu hình vào file!")
+            time.sleep(0.5)  # Delay để user thấy thông báo
             st.rerun()
     
     # Configuration đã được load từ file ở trên
@@ -970,7 +971,7 @@ def get_test_cases_file_path(site):
     """Get the single test cases file path for a site"""
     test_cases_dir = get_test_cases_dir(site)
     return os.path.join(test_cases_dir, f"{site}_test_cases.xlsx")
-
+        
 def save_test_cases(site, test_cases_df):
     """Save test cases to file (overwrites existing)"""
     try:
@@ -1602,25 +1603,8 @@ SCHEDULED_TESTS_DIR = "scheduled_tests"
 SCHEDULED_JOBS_FILE = os.path.join(SCHEDULED_TESTS_DIR, "scheduled_jobs.pkl")
 os.makedirs(SCHEDULED_TESTS_DIR, exist_ok=True)
 
-# Functions to save and load scheduled jobs
-def save_scheduled_jobs():
-    """Save scheduled jobs to file"""
-    try:
-        with open(SCHEDULED_JOBS_FILE, "wb") as f:
-            pickle.dump(st.session_state.scheduled_jobs, f)
-    except Exception as e:
-        logger.error(f"Lỗi khi lưu scheduled jobs: {str(e)}")
-
-def load_scheduled_jobs():
-    """Load scheduled jobs from file"""
-    try:
-        if os.path.exists(SCHEDULED_JOBS_FILE):
-            with open(SCHEDULED_JOBS_FILE, "rb") as f:
-                return pickle.load(f)
-        return []
-    except Exception as e:
-        logger.error(f"Lỗi khi tải scheduled jobs: {str(e)}")
-        return []
+# Deprecated functions - now using schedule_manager
+# def save_scheduled_jobs() and load_scheduled_jobs() are no longer needed
 
 def get_scheduled_job_for_site(site):
     """Get scheduled job for a specific site"""
@@ -1629,9 +1613,10 @@ def get_scheduled_job_for_site(site):
     return None
 
 def remove_scheduled_job_for_site(site):
-    """Remove scheduled job for a specific site"""
-    st.session_state.scheduled_jobs = [job for job in st.session_state.scheduled_jobs if job.get('site') != site]
-    save_scheduled_jobs()
+    """Remove scheduled job for a specific site - now using schedule_manager"""
+    if schedule_manager:
+        return schedule_manager.remove_schedule(site)
+    return False
 
 # Initialize Persistent Schedule Manager (Global, thread-safe)
 # Chỉ khởi tạo một lần, schedule manager sẽ tự load từ JSON
@@ -2146,7 +2131,7 @@ with tab4:
     if test_cases_exists(site):
         # Load test cases
         test_cases_df = load_test_cases(site)
-        
+            
         if test_cases_df is not None:
             # Kiểm tra xem có đang ở chế độ chỉnh sửa không
             editing_mode = st.session_state.get('editing_test_cases', False)
@@ -2199,17 +2184,17 @@ with tab4:
                             }
                         st.rerun()
             
-            else:
-                # Chế độ chỉnh sửa
-                st.info("💡 Bạn đang ở chế độ chỉnh sửa. Thêm/xóa/sửa dòng trực tiếp trong bảng dưới đây.")
-                
-                # Sử dụng st.data_editor để chỉnh sửa
-                edited_df = st.data_editor(
-                    test_cases_df,
-                    use_container_width=True,
-                    hide_index=True,
-                    num_rows="dynamic",
-                    column_config={
+        else:
+            # Chế độ chỉnh sửa
+            st.info("💡 Bạn đang ở chế độ chỉnh sửa. Thêm/xóa/sửa dòng trực tiếp trong bảng dưới đây.")
+            
+            # Sử dụng st.data_editor để chỉnh sửa
+            edited_df = st.data_editor(
+                test_cases_df,
+                use_container_width=True,
+                hide_index=True,
+                num_rows="dynamic",
+                column_config={
                         test_cases_df.columns[0]: st.column_config.TextColumn(
                             test_cases_df.columns[0],
                             help="Nội dung câu hỏi",
@@ -2237,33 +2222,33 @@ with tab4:
                     },
                     key="edit_existing_test_cases_editor"
                 )
-                
-                # Nút lưu và hủy
-                col1, col2, col3 = st.columns([1, 1, 4])
-                
-                with col1:
-                    if st.button("💾 Lưu", type="primary", use_container_width=True, key="save_edited_test_cases"):
-                        filepath = save_test_cases(site, edited_df)
-                        if filepath:
-                            st.session_state.test_cases_action_message = {
-                                'type': 'success',
-                                'text': f'✅ Đã cập nhật test cases cho site "{site}" thành công!'
-                            }
-                            st.session_state.editing_test_cases = False
-                        else:
-                            st.session_state.test_cases_action_message = {
-                                'type': 'error',
-                                'text': '❌ Lỗi khi lưu test cases!'
-                            }
-                        st.rerun()
-                
-                with col2:
-                    if st.button("❌ Hủy", use_container_width=True, key="cancel_edit_test_cases"):
+            
+            # Nút lưu và hủy
+            col1, col2, col3 = st.columns([1, 1, 4])
+            
+            with col1:
+                if st.button("💾 Lưu", type="primary", use_container_width=True, key="save_edited_test_cases"):
+                    filepath = save_test_cases(site, edited_df)
+                    if filepath:
+                        st.session_state.test_cases_action_message = {
+                            'type': 'success',
+                            'text': f'✅ Đã cập nhật test cases cho site "{site}" thành công!'
+                        }
                         st.session_state.editing_test_cases = False
-                        st.rerun()
-                
-                with col3:
-                    st.metric("📊 Số test cases", len(edited_df))
+                    else:
+                        st.session_state.test_cases_action_message = {
+                            'type': 'error',
+                            'text': '❌ Lỗi khi lưu test cases!'
+                        }
+                    st.rerun()
+            
+            with col2:
+                if st.button("❌ Hủy", use_container_width=True, key="cancel_edit_test_cases"):
+                    st.session_state.editing_test_cases = False
+                    st.rerun()
+            
+            with col3:
+                st.metric("📊 Số test cases", len(edited_df))
     else:
         # Empty state với hướng dẫn chi tiết
         st.markdown("""
@@ -2929,24 +2914,55 @@ with tab2:
         col1, col2 = st.columns([3, 1])
         
         with col1:
-            st.write(f"**Tên Test:** {existing_job['test_name']}")
-            st.write(f"**Loại lịch:** {existing_job['schedule_type']}")
+            st.write(f"**Tên Test:** {existing_job.get('test_name', 'Chưa đặt tên')}")
+            st.write(f"**Loại lịch:** {existing_job.get('schedule_type', 'N/A')}")
             st.write(f"**Thời gian:** {existing_job.get('schedule_time', 'N/A')}")
             if existing_job.get('schedule_day'):
-                st.write(f"**Ngày:** {existing_job['schedule_day']}")
+                st.write(f"**Ngày:** {existing_job.get('schedule_day', 'N/A')}")
             if existing_job.get('custom_interval') and existing_job.get('custom_unit'):
-                st.write(f"**Tùy chỉnh:** Mỗi {existing_job['custom_interval']} {existing_job['custom_unit']}")
+                st.write(f"**Tùy chỉnh:** Mỗi {existing_job.get('custom_interval', 'N/A')} {existing_job.get('custom_unit', 'N/A')}")
             st.write(f"**API URL:** `{existing_job.get('api_url', 'Chưa cấu hình')}`")
             st.write(f"**Evaluate API URL:** `{existing_job.get('evaluate_api_url', 'Chưa cấu hình')}`")
             
             # Show next run time - Dùng Schedule Manager
             if schedule_manager:
+                # Thử lấy thời gian từ schedule job trước
                 next_run_vn = schedule_manager.get_next_run(site)
+                
+                # Nếu không có, tính toán từ config
+                if not next_run_vn:
+                    next_run_vn = schedule_manager.calculate_next_run_time(site)
+                
                 if next_run_vn:
                     st.write(f"**Chạy lần tới:** {next_run_vn.strftime('%Y-%m-%d %H:%M:%S')} (GMT+7)")
                     st.caption("⏰ Thời gian được tính toán tự động và persistent qua các lần reload")
+                    
+                    # Tự động save config sau khi hiển thị
+                    try:
+                        schedule_manager.save_schedules(schedule_manager.get_all_schedule_configs())
+                        st.caption("💾 Cấu hình đã được lưu tự động")
+                    except Exception as e:
+                        logger.warning(f"Không thể lưu config: {e}")
                 else:
-                    st.write(f"**Chạy lần tới:** Đang tính toán...")
+                    # Fallback: Hiển thị thông tin lịch
+                    schedule_type = existing_job.get('schedule_type', 'N/A')
+                    schedule_time = existing_job.get('schedule_time', 'N/A')
+                    schedule_day = existing_job.get('schedule_day', 'N/A')
+                    
+                    if schedule_type == "minute":
+                        st.write(f"**Chạy lần tới:** Mỗi phút")
+                    elif schedule_type == "hourly":
+                        st.write(f"**Chạy lần tới:** Mỗi giờ tại phút {schedule_time.split(':')[1] if ':' in schedule_time else '00'}")
+                    elif schedule_type == "daily":
+                        st.write(f"**Chạy lần tới:** Mỗi ngày lúc {schedule_time}")
+                    elif schedule_type == "weekly":
+                        st.write(f"**Chạy lần tới:** Mỗi {schedule_day} lúc {schedule_time}")
+                    elif schedule_type == "custom":
+                        interval = existing_job.get('custom_interval', 'N/A')
+                        unit = existing_job.get('custom_unit', 'N/A')
+                        st.write(f"**Chạy lần tới:** Mỗi {interval} {unit}")
+                    else:
+                        st.write(f"**Chạy lần tới:** {schedule_type} - {schedule_time}")
             else:
                 st.warning("⚠️ Schedule Manager chưa khởi tạo")
         
@@ -2977,10 +2993,10 @@ with tab2:
             
             # Test cases
             st.write("**Test cases hiện tại:**")
-            if os.path.exists(existing_job['file_path']):
+            if existing_job.get('file_path') and os.path.exists(existing_job['file_path']):
                 try:
-                    df_current = pd.read_excel(existing_job['file_path'])
-                    st.write(f"File: `{os.path.basename(existing_job['file_path'])}` ({len(df_current)} test cases)")
+                    df_current = pd.read_excel(existing_job.get('file_path', ''))
+                    st.write(f"File: `{os.path.basename(existing_job.get('file_path', ''))}` ({len(df_current)} test cases)")
                     st.write("**Preview 5 test cases đầu tiên:**")
                     st.dataframe(df_current.head(5), use_container_width=True)
                 except Exception as e:
@@ -2999,7 +3015,7 @@ with tab2:
             else:
                 st.warning("⚠️ Site chưa có test cases. Vui lòng tạo test cases trong Tab 'Quản lý Test Cases' trước.")
             
-            new_test_name = st.text_input("Tên test mới", value=existing_job['test_name'], key="edit_test_name")
+            new_test_name = st.text_input("Tên test mới", value=existing_job.get('test_name', 'Test mới'), key="edit_test_name")
             
             # Schedule settings
             current_schedule_type = existing_job.get('schedule_type', 'daily')
@@ -3082,30 +3098,32 @@ with tab2:
             col1, col2, col3 = st.columns([1, 1, 4])
             with col1:
                 if st.button("Lưu thay đổi", key="save_edit_existing"):
-                    # Update job config
-                    job_index = next((i for i, job in enumerate(st.session_state.scheduled_jobs) if job['job_id'] == existing_job['job_id']), None)
-                    if job_index is not None:
-                        # Update file path to current test cases file
-                        st.session_state.scheduled_jobs[job_index]['file_path'] = get_test_cases_file_path(site)
-                        
-                        # Update other fields
-                        st.session_state.scheduled_jobs[job_index]['test_name'] = new_test_name
-                        st.session_state.scheduled_jobs[job_index]['schedule_type'] = new_schedule_type
-                        st.session_state.scheduled_jobs[job_index]['schedule_time'] = new_schedule_time
-                        st.session_state.scheduled_jobs[job_index]['schedule_day'] = new_schedule_day
-                        st.session_state.scheduled_jobs[job_index]['custom_interval'] = new_custom_interval
-                        st.session_state.scheduled_jobs[job_index]['custom_unit'] = new_custom_unit
-                        st.session_state.scheduled_jobs[job_index]['api_url'] = new_api_url
-                        st.session_state.scheduled_jobs[job_index]['evaluate_api_url'] = new_eval_api_url
-                        
-                        save_scheduled_jobs()
-                        
-                        # Reset schedule initialization flag to recreate schedule
-                        st.session_state.schedule_initialized = False
-                        st.session_state.editing_existing_job = False
-                        
-                        st.success(f"Đã cập nhật cấu hình lịch test cho site '{site}'.")
-                        st.rerun()
+                    # Tạo config mới
+                    new_job_config = {
+                        "file_path": get_test_cases_file_path(site),
+                        "schedule_type": new_schedule_type,
+                        "schedule_time": new_schedule_time,
+                        "schedule_day": new_schedule_day,
+                        "test_name": new_test_name,
+                        "site": site,
+                        "custom_interval": new_custom_interval,
+                        "custom_unit": new_custom_unit,
+                        "api_url": new_api_url,
+                        "evaluate_api_url": new_eval_api_url,
+                        "job_id": existing_job.get('job_id', str(uuid4()))
+                    }
+                    
+                    # Sử dụng Schedule Manager để cập nhật
+                    if schedule_manager:
+                        if schedule_manager.update_schedule(site, new_job_config):
+                            st.session_state.editing_existing_job = False
+                            st.success(f"✅ Đã cập nhật cấu hình lịch test cho site '{site}'.")
+                        else:
+                            st.error("❌ Lỗi khi cập nhật lịch test!")
+                    else:
+                        st.error("❌ Schedule Manager chưa khởi tạo!")
+                    
+                    st.rerun()
             
             with col2:
                 if st.button("Hủy", key="cancel_edit_existing"):
@@ -3189,13 +3207,16 @@ with tab2:
                     "evaluate_api_url": schedule_evaluate_api_url,
                     "job_id": str(uuid4())
                 }
-                st.session_state.scheduled_jobs.append(job_config)
-                save_scheduled_jobs()  # Save to file
                 
-                # Reset schedule initialization flag to recreate schedule
-                st.session_state.schedule_initialized = False
+                # Sử dụng Schedule Manager để lưu
+                if schedule_manager:
+                    if schedule_manager.update_schedule(site, job_config):
+                        st.success(f"Đã thiết lập lịch chạy test '{test_name}' cho site '{site}'.")
+                    else:
+                        st.error("❌ Lỗi khi lưu lịch test!")
+                else:
+                    st.error("❌ Schedule Manager chưa khởi tạo!")
                 
-                st.success(f"Đã thiết lập lịch chạy test '{test_name}' cho site '{site}'.")
                 st.rerun()
 
 

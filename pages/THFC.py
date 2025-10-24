@@ -55,6 +55,8 @@ if 'test_changes_history' not in st.session_state:
     st.session_state.test_changes_history = {}
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = None
+if 'scheduled_jobs' not in st.session_state:
+    st.session_state.scheduled_jobs = []
 
 # Đường dẫn file
 RESULTS_DIR = "test_results"
@@ -574,6 +576,9 @@ def get_default_config():
         "add_chat_history_global": False
     }
 
+# Giao diện Streamlit
+st.title("🤖 Agent Testing")
+
 # --- Load configuration from file ---
 def load_site_config():
     """Load configuration for current site"""
@@ -602,9 +607,6 @@ def load_site_config():
 if 'config_loaded' not in st.session_state:
     load_site_config()
     st.session_state.config_loaded = True
-
-# Giao diện Streamlit
-st.title("🤖 Agent Testing")
 
 # --- Cấu hình và các biến toàn cục ---
 with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
@@ -711,6 +713,7 @@ with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
                 st.success("✅ Đã lưu cấu hình vào file! Áp dụng cho tất cả test (đơn lẻ, hàng loạt, lập lịch)")
             else:
                 st.error("❌ Lỗi khi lưu cấu hình vào file!")
+            time.sleep(0.5)  # Delay để user thấy thông báo
             st.rerun()
     
     # Configuration đã được load từ file ở trên
@@ -2987,12 +2990,43 @@ with tab2:
             
             # Show next run time - Dùng Schedule Manager
             if schedule_manager:
+                # Thử lấy thời gian từ schedule job trước
                 next_run_vn = schedule_manager.get_next_run(site)
+                
+                # Nếu không có, tính toán từ config
+                if not next_run_vn:
+                    next_run_vn = schedule_manager.calculate_next_run_time(site)
+                
                 if next_run_vn:
                     st.write(f"**Chạy lần tới:** {next_run_vn.strftime('%Y-%m-%d %H:%M:%S')} (GMT+7)")
                     st.caption("⏰ Thời gian được tính toán tự động và persistent qua các lần reload")
+                    
+                    # Tự động save config sau khi hiển thị
+                    try:
+                        schedule_manager.save_schedules(schedule_manager.get_all_schedule_configs())
+                        st.caption("💾 Cấu hình đã được lưu tự động")
+                    except Exception as e:
+                        logger.warning(f"Không thể lưu config: {e}")
                 else:
-                    st.write(f"**Chạy lần tới:** Đang tính toán...")
+                    # Fallback: Hiển thị thông tin lịch
+                    schedule_type = existing_job.get('schedule_type', 'N/A')
+                    schedule_time = existing_job.get('schedule_time', 'N/A')
+                    schedule_day = existing_job.get('schedule_day', 'N/A')
+                    
+                    if schedule_type == "minute":
+                        st.write(f"**Chạy lần tới:** Mỗi phút")
+                    elif schedule_type == "hourly":
+                        st.write(f"**Chạy lần tới:** Mỗi giờ tại phút {schedule_time.split(':')[1] if ':' in schedule_time else '00'}")
+                    elif schedule_type == "daily":
+                        st.write(f"**Chạy lần tới:** Mỗi ngày lúc {schedule_time}")
+                    elif schedule_type == "weekly":
+                        st.write(f"**Chạy lần tới:** Mỗi {schedule_day} lúc {schedule_time}")
+                    elif schedule_type == "custom":
+                        interval = existing_job.get('custom_interval', 'N/A')
+                        unit = existing_job.get('custom_unit', 'N/A')
+                        st.write(f"**Chạy lần tới:** Mỗi {interval} {unit}")
+                    else:
+                        st.write(f"**Chạy lần tới:** {schedule_type} - {schedule_time}")
             else:
                 st.warning("⚠️ Schedule Manager chưa khởi tạo")
         
@@ -3284,24 +3318,16 @@ with tab2:
                     "evaluate_api_url": schedule_evaluate_api_url,
                     "job_id": str(uuid4())
                 }
-                st.session_state.scheduled_jobs.append(job_config)
-                save_scheduled_jobs()  # Save to file
                 
-                # Thêm job mới vào schedule ngay lập tức
-                setup_schedule(
-                    file_path=saved_file_path,
-                    schedule_type=schedule_type,
-                    schedule_time=schedule_time,
-                    schedule_day=schedule_day,
-                    test_name=test_name,
-                    site=site,
-                    api_url=schedule_api_url,
-                    evaluate_api_url=schedule_evaluate_api_url,
-                    custom_interval=schedule_custom_interval,
-                    custom_unit=schedule_custom_unit
-                )
+                # Sử dụng Schedule Manager để lưu
+                if schedule_manager:
+                    if schedule_manager.update_schedule(site, job_config):
+                        st.success(f"Đã thiết lập lịch chạy test '{test_name}' cho site '{site}'.")
+                    else:
+                        st.error("❌ Lỗi khi lưu lịch test!")
+                else:
+                    st.error("❌ Schedule Manager chưa khởi tạo!")
                 
-                st.success(f"Đã thiết lập lịch chạy test '{test_name}' cho site '{site}'.")
                 st.rerun()
 
 # Hiển thị hướng dẫn sử dụng
