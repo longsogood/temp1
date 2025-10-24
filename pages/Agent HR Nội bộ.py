@@ -13,6 +13,9 @@ import logging
 import pytz
 from schedule_manager import get_schedule_manager
 
+# Timezone
+VN_TZ = pytz.timezone('Asia/Ho_Chi_Minh')
+
 ## Cấu hình streamlit
 st.set_page_config(
     layout="wide",
@@ -208,6 +211,21 @@ def run_scheduled_test(file_path, test_name, site, api_url, evaluate_api_url):
             logger.error(f"Lỗi khi lưu kết quả test {test_name}: {str(e)}")
         if failed_questions:
             logger.warning(f"Có {len(failed_questions)} câu hỏi thất bại trong test: {test_name}")
+        
+        # Cập nhật thời gian lần chạy cuối trong schedule config
+        try:
+            from schedule_manager import get_schedule_manager
+            schedule_manager = get_schedule_manager()
+            if schedule_manager:
+                # Lấy config hiện tại
+                configs = schedule_manager.get_all_schedule_configs()
+                if site in configs and configs[site]:
+                    # Cập nhật thời gian lần chạy cuối
+                    configs[site]['last_scheduled_time'] = datetime.now(VN_TZ).isoformat()
+                    schedule_manager.save_schedules(configs)
+                    logger.info(f"Đã cập nhật thời gian lần chạy cuối cho {site}")
+        except Exception as e:
+            logger.warning(f"Không thể cập nhật thời gian lần chạy cuối: {e}")
 
     except Exception as e:
         logger.error(f"Lỗi khi chạy test theo lịch {test_name}: {str(e)}")
@@ -321,12 +339,10 @@ def setup_schedule(file_path, schedule_type, schedule_time, schedule_day,
     else:
         logger.warning(f"Không có lịch hợp lệ cho loại {schedule_type}")
     
-    # Khởi động thread nếu chưa có cho site
-    if site not in st.session_state.schedule_thread or not st.session_state.schedule_thread[site].is_alive():
-        thread = threading.Thread(target=schedule_manager, daemon=True)
-        st.session_state.schedule_thread[site] = thread
-        thread.start()
-        logger.info(f"Đã khởi động thread quản lý lịch cho site: {site}")
+    # ScheduleManager đã có thread daemon riêng, không cần tạo thêm
+    # Chỉ cần đảm bảo schedule manager được khởi tạo
+    if schedule_manager:
+        logger.info(f"Schedule manager đã sẵn sàng cho site: {site}")
 
 # --- Helper Functions ---
 def get_criteria_from_prompt(system_prompt):
@@ -2184,17 +2200,17 @@ with tab4:
                             }
                         st.rerun()
             
-        else:
-            # Chế độ chỉnh sửa
-            st.info("💡 Bạn đang ở chế độ chỉnh sửa. Thêm/xóa/sửa dòng trực tiếp trong bảng dưới đây.")
-            
-            # Sử dụng st.data_editor để chỉnh sửa
-            edited_df = st.data_editor(
-                test_cases_df,
-                use_container_width=True,
-                hide_index=True,
-                num_rows="dynamic",
-                column_config={
+            else:
+                # Chế độ chỉnh sửa
+                st.info("💡 Bạn đang ở chế độ chỉnh sửa. Thêm/xóa/sửa dòng trực tiếp trong bảng dưới đây.")
+                
+                # Sử dụng st.data_editor để chỉnh sửa
+                edited_df = st.data_editor(
+                    test_cases_df,
+                    use_container_width=True,
+                    hide_index=True,
+                    num_rows="dynamic",
+                    column_config={
                         test_cases_df.columns[0]: st.column_config.TextColumn(
                             test_cases_df.columns[0],
                             help="Nội dung câu hỏi",
@@ -2207,48 +2223,36 @@ with tab4:
                             width="large",
                             required=True
                         ),
-                        test_cases_df.columns[2]: st.column_config.TextColumn(
-                            test_cases_df.columns[2],
-                            help="Cấp độ câu hỏi",
-                            width="medium",
-                            required=True
-                        ),
-                        test_cases_df.columns[3]: st.column_config.TextColumn(
-                            test_cases_df.columns[3],
-                            help="Phòng ban liên quan",
-                            width="medium",
-                            required=True
-                        ),
                     },
                     key="edit_existing_test_cases_editor"
                 )
-            
-            # Nút lưu và hủy
-            col1, col2, col3 = st.columns([1, 1, 4])
-            
-            with col1:
-                if st.button("💾 Lưu", type="primary", use_container_width=True, key="save_edited_test_cases"):
-                    filepath = save_test_cases(site, edited_df)
-                    if filepath:
-                        st.session_state.test_cases_action_message = {
-                            'type': 'success',
-                            'text': f'✅ Đã cập nhật test cases cho site "{site}" thành công!'
-                        }
+                
+                # Nút lưu và hủy
+                col1, col2, col3 = st.columns([1, 1, 4])
+                
+                with col1:
+                    if st.button("💾 Lưu", type="primary", use_container_width=True, key="save_edited_test_cases"):
+                        filepath = save_test_cases(site, edited_df)
+                        if filepath:
+                            st.session_state.test_cases_action_message = {
+                                'type': 'success',
+                                'text': f'✅ Đã cập nhật test cases cho site "{site}" thành công!'
+                            }
+                            st.session_state.editing_test_cases = False
+                        else:
+                            st.session_state.test_cases_action_message = {
+                                'type': 'error',
+                                'text': '❌ Lỗi khi lưu test cases!'
+                            }
+                        st.rerun()
+                
+                with col2:
+                    if st.button("❌ Hủy", use_container_width=True, key="cancel_edit_test_cases"):
                         st.session_state.editing_test_cases = False
-                    else:
-                        st.session_state.test_cases_action_message = {
-                            'type': 'error',
-                            'text': '❌ Lỗi khi lưu test cases!'
-                        }
-                    st.rerun()
-            
-            with col2:
-                if st.button("❌ Hủy", use_container_width=True, key="cancel_edit_test_cases"):
-                    st.session_state.editing_test_cases = False
-                    st.rerun()
-            
-            with col3:
-                st.metric("📊 Số test cases", len(edited_df))
+                        st.rerun()
+                
+                with col3:
+                    st.metric("📊 Số test cases", len(edited_df))
     else:
         # Empty state với hướng dẫn chi tiết
         st.markdown("""
@@ -2262,7 +2266,7 @@ with tab4:
                 <ol style="color: #555; line-height: 1.8;">
                     <li>Cuộn lên phía trên tab này</li>
                     <li>Tìm phần <strong>"📤 Upload và chỉnh sửa Test Cases"</strong></li>
-                    <li>Upload file Excel chứa test cases (4 cột: Câu hỏi, Câu trả lời chuẩn, Level, Department)</li>
+                    <li>Upload file Excel chứa test cases (2 cột: Câu hỏi, Câu trả lời chuẩn)</li>
                     <li>Chỉnh sửa nếu cần thiết</li>
                     <li>Đặt tên và nhấn <strong>"💾 Lưu Test Cases"</strong></li>
                 </ol>

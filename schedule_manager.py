@@ -85,6 +85,16 @@ class ScheduleManager:
             logger.error(f"Error getting schedule config for {site}: {e}")
         return None
     
+    def get_all_schedule_configs(self):
+        """Get all schedule configs"""
+        try:
+            if os.path.exists(SCHEDULE_CONFIG_FILE):
+                with open(SCHEDULE_CONFIG_FILE, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception as e:
+            logger.error(f"Error getting all schedule configs: {e}")
+        return {}
+    
     def update_schedule(self, site, config):
         """Update schedule for a site"""
         try:
@@ -257,6 +267,11 @@ class ScheduleManager:
                     if cached_time > datetime.now(VN_TZ):
                         logger.info(f"Using cached next run time for {site}: {cached_time}")
                         return cached_time
+                    else:
+                        # Cached time has passed, clear it and recalculate
+                        logger.info(f"Cached time has passed for {site}, recalculating...")
+                        config.pop('cached_next_run', None)
+                        self.save_schedules(self.get_all_schedule_configs())
                 except (ValueError, TypeError):
                     pass
             
@@ -332,8 +347,22 @@ class ScheduleManager:
                     return next_run
                     
             elif schedule_type == "custom" and custom_interval and custom_unit:
-                # Custom interval
+                # Custom interval - Calculate from last scheduled time, not current time
                 logger.info(f"Processing custom schedule: interval={custom_interval}, unit={custom_unit}")
+                
+                # Get the last scheduled time from config
+                last_scheduled_time_str = config.get('last_scheduled_time')
+                if last_scheduled_time_str:
+                    try:
+                        last_scheduled_time = datetime.fromisoformat(last_scheduled_time_str)
+                        logger.info(f"Using last scheduled time for {site}: {last_scheduled_time}")
+                    except (ValueError, TypeError):
+                        last_scheduled_time = now
+                        logger.info(f"Invalid last scheduled time for {site}, using current time")
+                else:
+                    last_scheduled_time = now
+                    logger.info(f"No last scheduled time found for {site}, using current time")
+                
                 unit_map = {
                     "phút": "minutes", "giờ": "hours", 
                     "ngày": "days", "tuần": "weeks"
@@ -342,17 +371,17 @@ class ScheduleManager:
                 logger.info(f"Mapped unit: {custom_unit} -> {unit_en}")
                 
                 if unit_en == "minutes":
-                    next_run = now + timedelta(minutes=custom_interval)
+                    next_run = last_scheduled_time + timedelta(minutes=custom_interval)
                 elif unit_en == "hours":
-                    next_run = now + timedelta(hours=custom_interval)
+                    next_run = last_scheduled_time + timedelta(hours=custom_interval)
                 elif unit_en == "days":
-                    next_run = now + timedelta(days=custom_interval)
+                    next_run = last_scheduled_time + timedelta(days=custom_interval)
                 elif unit_en == "weeks":
-                    next_run = now + timedelta(weeks=custom_interval)
+                    next_run = last_scheduled_time + timedelta(weeks=custom_interval)
                 else:
-                    next_run = now + timedelta(hours=custom_interval)
+                    next_run = last_scheduled_time + timedelta(hours=custom_interval)
                 
-                logger.info(f"Calculated next run: {next_run}")
+                logger.info(f"Calculated next run from {last_scheduled_time}: {next_run}")
                 # Cache the calculated time
                 self._cache_next_run_time(site, next_run)
                 return next_run

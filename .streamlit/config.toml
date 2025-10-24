@@ -1,5 +1,5 @@
     [server]
-    port = 1234
+    port = 8501
     address = "0.0.0.0"
     headless = true
     enableCORS = false
@@ -8,7 +8,7 @@
     [browser]
     gatherUsageStats = false
     serverAddress = "localhost"
-    serverPort = 1234
+    serverPort = 8501
 
     [theme]
     base = "light"

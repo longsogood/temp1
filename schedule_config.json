@@ -1,4 +1,18 @@
 {
   "THFC": null,
-  "Agent HR Nội bộ": null
+  "Agent HR Nội bộ": null,
+  "Test sprint 7": {
+    "file_path": "test_cases/Test sprint 7/Test sprint 7_test_cases.xlsx",
+    "schedule_type": "custom",
+    "schedule_time": null,
+    "schedule_day": null,
+    "test_name": "test_round_1",
+    "site": "Test sprint 7",
+    "custom_interval": 2,
+    "custom_unit": "giờ",
+    "api_url": "https://stock.cmcts.ai/c-agent/api/v1/prediction/bf23459b-7de5-40fd-ab6e-55024cc798e8",
+    "evaluate_api_url": "https://stock.cmcts.ai/c-agent/api/v1/prediction/a1514d8f-749c-4e01-b961-811e9346d83e",
+    "job_id": "cd2e4a41-3aaf-4b38-9cf8-7531896a1dec",
+    "cached_next_run": "2025-10-24T16:42:17.169261+07:00"
+  }
 }

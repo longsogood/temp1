@@ -33,7 +33,7 @@ if not logger.handlers:
     logger.addHandler(file_handler)
 
 # Global site variable - được set dựa trên trang hiện tại
-SITE = "Agent HR Nội bộ"
+SITE = "Test sprint 7"
 
 # Config cứng cho số luồng xử lý đồng thời
 MAX_WORKERS = 5

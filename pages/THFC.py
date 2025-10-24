@@ -5,6 +5,7 @@ import time
 import datetime
 import os
 import pickle
+import pytz
 import schedule
 import threading
 from uuid import uuid4
@@ -12,8 +13,10 @@ import concurrent.futures
 import logging
 from utils import extract_section
 import warnings
-import pytz
 from schedule_manager import get_schedule_manager
+
+# Timezone
+VN_TZ = pytz.timezone('Asia/Ho_Chi_Minh')
 warnings.filterwarnings("ignore")
 
 ## Cấu hình streamlit
@@ -225,6 +228,21 @@ def run_scheduled_test(file_path, test_name, site, api_url, evaluate_api_url):
             logger.error(f"Lỗi khi lưu kết quả test {test_name}: {str(e)}")
         if failed_questions:
             logger.warning(f"Có {len(failed_questions)} câu hỏi thất bại trong test: {test_name}")
+        
+        # Cập nhật thời gian lần chạy cuối trong schedule config
+        try:
+            from schedule_manager import get_schedule_manager
+            schedule_manager = get_schedule_manager()
+            if schedule_manager:
+                # Lấy config hiện tại
+                configs = schedule_manager.get_all_schedule_configs()
+                if site in configs and configs[site]:
+                    # Cập nhật thời gian lần chạy cuối
+                    configs[site]['last_scheduled_time'] = datetime.now(VN_TZ).isoformat()
+                    schedule_manager.save_schedules(configs)
+                    logger.info(f"Đã cập nhật thời gian lần chạy cuối cho {site}")
+        except Exception as e:
+            logger.warning(f"Không thể cập nhật thời gian lần chạy cuối: {e}")
 
     except Exception as e:
         logger.error(f"Lỗi khi chạy test theo lịch {test_name}: {str(e)}")
@@ -338,12 +356,10 @@ def setup_schedule(file_path, schedule_type, schedule_time, schedule_day,
     else:
         logger.warning(f"Không có lịch hợp lệ cho loại {schedule_type}")
     
-    # Khởi động thread nếu chưa có cho site
-    if site not in st.session_state.schedule_thread or not st.session_state.schedule_thread[site].is_alive():
-        thread = threading.Thread(target=schedule_manager, daemon=True)
-        st.session_state.schedule_thread[site] = thread
-        thread.start()
-        logger.info(f"Đã khởi động thread quản lý lịch cho site: {site}")
+    # ScheduleManager đã có thread daemon riêng, không cần tạo thêm
+    # Chỉ cần đảm bảo schedule manager được khởi tạo
+    if schedule_manager:
+        logger.info(f"Schedule manager đã sẵn sàng cho site: {site}")
 
 # --- Helper Functions ---
 def get_criteria_from_prompt(system_prompt):
