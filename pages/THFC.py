@@ -35,6 +35,9 @@ if not logger.handlers:
 # Global site variable - được set dựa trên trang hiện tại
 SITE = "THFC"
 
+# Config cứng cho số luồng xử lý đồng thời
+MAX_WORKERS = 5
+
 # Khởi tạo session state
 if 'results' not in st.session_state:
     st.session_state.results = None
@@ -338,6 +341,266 @@ def setup_schedule(file_path, schedule_type, schedule_time, schedule_day,
         thread.start()
         logger.info(f"Đã khởi động thread quản lý lịch cho site: {site}")
 
+# --- Helper Functions ---
+def get_criteria_from_prompt(system_prompt):
+    """Lấy danh sách criteria từ system prompt để sử dụng cho fail criterion selection"""
+    import re
+    
+    if not system_prompt:
+        return ["accuracy", "relevance", "completeness", "clarity", "access_control", "average"]
+    
+    criteria = []
+    lines = system_prompt.split('\n')
+    
+    for line in lines:
+        line = line.strip()
+        # Tìm pattern ### số. Tên tiêu chí (Mô tả)
+        match = re.match(r'^###\s*\d+\.\s*([^(]+?)\s*\(([^)]+)\)\s*$', line, re.IGNORECASE)
+        if match:
+            criterion = match.group(1).strip()
+            if criterion and len(criterion) < 50:
+                criteria.append(criterion)
+        else:
+            # Thử pattern không có mô tả
+            match = re.match(r'^###\s*\d+\.\s*([^(]+?)\s*$', line, re.IGNORECASE)
+            if match:
+                criterion = match.group(1).strip()
+                if criterion and len(criterion) < 50:
+                    criteria.append(criterion)
+    
+    # Nếu không tìm thấy, thử tìm với format khác (dấu -)
+    if not criteria:
+        for line in lines:
+            line = line.strip()
+            # Tìm pattern - Tên tiêu chí (Mô tả)
+            match = re.match(r'^-\s*([^(]+?)\s*\(([^)]+)\)\s*$', line, re.IGNORECASE)
+            if match:
+                criterion = match.group(1).strip()
+                if criterion and len(criterion) < 50:
+                    criteria.append(criterion)
+            else:
+                # Thử pattern không có mô tả
+                match = re.match(r'^-\s*([^(]+?)\s*$', line, re.IGNORECASE)
+                if match:
+                    criterion = match.group(1).strip()
+                    if criterion and len(criterion) < 50:
+                        criteria.append(criterion)
+    
+    # Chuẩn hóa tên criteria thành lowercase và thay khoảng trắng bằng _
+    normalized_criteria = []
+    for criterion in criteria:
+        # Loại bỏ số thứ tự và ký tự đặc biệt
+        clean_name = re.sub(r'^\d+\.?\s*', '', criterion)
+        clean_name = re.sub(r'[^\w\s]', '', clean_name)
+        clean_name = clean_name.strip().lower().replace(' ', '_')
+        normalized_criteria.append(clean_name)
+    
+    # Loại bỏ duplicate và giữ thứ tự
+    seen = set()
+    unique_criteria = []
+    for criterion in normalized_criteria:
+        if criterion not in seen:
+            seen.add(criterion)
+            unique_criteria.append(criterion)
+    
+    # Thêm "average" nếu chưa có
+    if "average" not in unique_criteria:
+        unique_criteria.append("average")
+    
+    # Fallback nếu không tìm thấy criteria nào
+    if not unique_criteria:
+        unique_criteria = ["accuracy", "relevance", "completeness", "clarity", "access_control", "average"]
+    
+    return unique_criteria
+
+# --- Prompt Management Functions ---
+def get_prompt_paths(site):
+    """Get prompt file paths for a specific site"""
+    prompt_dir = os.path.join("prompts", site)
+    return {
+        "system_prompt": os.path.join(prompt_dir, "system_prompt.txt"),
+        "human_prompt": os.path.join(prompt_dir, "human_prompt.txt")
+    }
+
+def get_original_prompt_paths():
+    """Get original prompt file paths"""
+    return {
+        "system_prompt": os.path.join("original_prompts", "system_prompt.txt"),
+        "human_prompt": os.path.join("original_prompts", "human_prompt.txt")
+    }
+
+def copy_original_prompts_to_site(site):
+    """Copy prompts from original_prompts to site folder"""
+    try:
+        original_prompts = load_original_prompts()
+        
+        if original_prompts["system_prompt"] or original_prompts["human_prompt"]:
+            # Save to site folder
+            save_prompts_for_site(site, original_prompts["system_prompt"], original_prompts["human_prompt"])
+            logger.info(f"Đã copy original prompts sang site {site}")
+            return True
+        else:
+            logger.warning("Original prompts rỗng, không thể copy")
+            return False
+    except Exception as e:
+        logger.error(f"Lỗi khi copy original prompts sang site {site}: {str(e)}")
+        return False
+
+def load_original_prompts():
+    """Load prompts from original_prompts folder"""
+    original_paths = get_original_prompt_paths()
+    prompts = {}
+    
+    try:
+        if os.path.exists(original_paths["system_prompt"]):
+            with open(original_paths["system_prompt"], "r", encoding="utf-8") as f:
+                prompts["system_prompt"] = f.read()
+        else:
+            prompts["system_prompt"] = ""
+            logger.warning("Original system_prompt.txt không tồn tại")
+            
+        if os.path.exists(original_paths["human_prompt"]):
+            with open(original_paths["human_prompt"], "r", encoding="utf-8") as f:
+                prompts["human_prompt"] = f.read()
+        else:
+            prompts["human_prompt"] = ""
+            logger.warning("Original human_prompt.txt không tồn tại")
+            
+    except Exception as e:
+        logger.error(f"Lỗi khi đọc original prompts: {str(e)}")
+        prompts = {"system_prompt": "", "human_prompt": ""}
+    
+    return prompts
+
+def save_prompts_for_site(site, system_prompt, human_prompt):
+    """Save prompts for a specific site"""
+    prompt_paths = get_prompt_paths(site)
+    
+    try:
+        # Create directory if not exists
+        os.makedirs(os.path.dirname(prompt_paths["system_prompt"]), exist_ok=True)
+        
+        # Save system prompt
+        with open(prompt_paths["system_prompt"], "w", encoding="utf-8") as f:
+            f.write(system_prompt)
+            
+        # Save human prompt
+        with open(prompt_paths["human_prompt"], "w", encoding="utf-8") as f:
+            f.write(human_prompt)
+            
+        logger.info(f"Đã lưu prompts cho site {site}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi lưu prompts cho site {site}: {str(e)}")
+        return False
+
+def load_prompts_for_site(site):
+    """Load prompts for a specific site, copy from original if not exists"""
+    prompt_paths = get_prompt_paths(site)
+    prompts = {}
+    
+    # Check if prompts exist for this site
+    site_prompts_exist = os.path.exists(prompt_paths["system_prompt"]) and os.path.exists(prompt_paths["human_prompt"])
+    
+    # If not exist, copy from original_prompts
+    if not site_prompts_exist:
+        logger.info(f"Prompts cho site {site} chưa tồn tại, đang copy từ original_prompts")
+        copy_original_prompts_to_site(site)
+    
+    try:
+        if os.path.exists(prompt_paths["system_prompt"]):
+            with open(prompt_paths["system_prompt"], "r", encoding="utf-8") as f:
+                prompts["system_prompt"] = f.read()
+        else:
+            prompts["system_prompt"] = ""
+            
+        if os.path.exists(prompt_paths["human_prompt"]):
+            with open(prompt_paths["human_prompt"], "r", encoding="utf-8") as f:
+                prompts["human_prompt"] = f.read()
+        else:
+            prompts["human_prompt"] = ""
+            
+    except Exception as e:
+        logger.error(f"Lỗi khi đọc prompts cho site {site}: {str(e)}")
+        prompts = {"system_prompt": "", "human_prompt": ""}
+    
+    return prompts
+
+# --- Configuration Management Functions ---
+def get_config_file_path(site):
+    """Get configuration file path for a specific site"""
+    config_dir = "config"
+    os.makedirs(config_dir, exist_ok=True)
+    return os.path.join(config_dir, f"{site}_config.pkl")
+
+def save_config_to_file(site, config):
+    """Save configuration to file"""
+    try:
+        config_file = get_config_file_path(site)
+        with open(config_file, "wb") as f:
+            pickle.dump(config, f)
+        logger.info(f"Đã lưu cấu hình cho site {site}")
+        return True
+    except Exception as e:
+        logger.error(f"Lỗi khi lưu cấu hình cho site {site}: {str(e)}")
+        return False
+
+def load_config_from_file(site):
+    """Load configuration from file"""
+    try:
+        config_file = get_config_file_path(site)
+        if os.path.exists(config_file):
+            with open(config_file, "rb") as f:
+                config = pickle.load(f)
+            logger.info(f"Đã tải cấu hình cho site {site}")
+            return config
+        else:
+            logger.info(f"Chưa có file cấu hình cho site {site}")
+            return None
+    except Exception as e:
+        logger.error(f"Lỗi khi tải cấu hình cho site {site}: {str(e)}")
+        return None
+
+def get_default_config():
+    """Get default configuration"""
+    return {
+        "api_url": "https://site1.com",
+        "evaluate_api_url": "https://site2.com",
+        "fail_criterion": "accuracy",
+        "fail_threshold": 8.0,
+        "add_chat_history_global": False
+    }
+
+# --- Load configuration from file ---
+def load_site_config():
+    """Load configuration for current site"""
+    site = get_current_site()
+    config = load_config_from_file(site)
+    
+    if config:
+        # Load từ file
+        st.session_state.api_url = config.get("api_url", "https://site1.com")
+        st.session_state.evaluate_api_url = config.get("evaluate_api_url", "https://site2.com")
+        st.session_state.fail_criterion = config.get("fail_criterion", "accuracy")
+        st.session_state.fail_threshold = config.get("fail_threshold", 8.0)
+        st.session_state.add_chat_history_global = config.get("add_chat_history_global", False)
+        logger.info(f"Đã load cấu hình từ file cho site {site}")
+    else:
+        # Sử dụng cấu hình mặc định
+        default_config = get_default_config()
+        st.session_state.api_url = default_config["api_url"]
+        st.session_state.evaluate_api_url = default_config["evaluate_api_url"]
+        st.session_state.fail_criterion = default_config["fail_criterion"]
+        st.session_state.fail_threshold = default_config["fail_threshold"]
+        st.session_state.add_chat_history_global = default_config["add_chat_history_global"]
+        logger.info(f"Sử dụng cấu hình mặc định cho site {site}")
+
+# Load cấu hình khi khởi động
+if 'config_loaded' not in st.session_state:
+    load_site_config()
+    st.session_state.config_loaded = True
+
 # Giao diện Streamlit
 st.title("🤖 Agent Testing")
 
@@ -347,25 +610,64 @@ with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
     
     with col1:
         st.write("**Cấu hình API**")
-        API_URL = st.text_input("API URL", st.session_state.get("api_url", "https://site1.com"))
-        EVALUATE_API_URL = st.text_input("Evaluate API URL", st.session_state.get("evaluate_api_url", "https://site2.com"))
+        API_URL = st.text_input("API URL", value=st.session_state.get("api_url", "https://site1.com"), key="api_url_input")
+        EVALUATE_API_URL = st.text_input("Evaluate API URL", value=st.session_state.get("evaluate_api_url", "https://site2.com"), key="evaluate_api_url_input")
     
     with col2:
         st.write("**Cấu hình Test**")
-        MAX_WORKERS = st.slider("Số luồng xử lý đồng thời", 1, 20, 5)
-        add_chat_history_global = st.checkbox("Thêm chat history (giả lập đã cung cấp thông tin)", value=False)
+        add_chat_history_global = st.checkbox("Thêm chat history (giả lập đã cung cấp thông tin)", value=st.session_state.get("add_chat_history_global", False), key="add_chat_history_checkbox")
     
     st.divider()
     
     col1, col2, col3 = st.columns(3)
     with col1:
         st.write("**Tiêu chí đánh giá fail**")
-        fail_criterion = st.selectbox(
-            "Chọn tiêu chí",
-            ["accuracy", "relevance", "completeness", "clarity", "access_control", "average"],
-            index=0,
-            help="Tiêu chí được sử dụng để xác định test case fail"
-        )
+        
+        # Lấy criteria động từ system prompt
+        current_system_prompt = st.session_state.get("current_system_prompt", "")
+        if not current_system_prompt:
+            # Load system prompt hiện tại nếu chưa có
+            try:
+                site = get_current_site()
+                prompts = load_prompts_for_site(site)
+                current_system_prompt = prompts.get("system_prompt", "")
+                st.session_state.current_system_prompt = current_system_prompt
+            except:
+                current_system_prompt = ""
+        
+        # Lấy danh sách criteria từ prompt
+        criterion_options = get_criteria_from_prompt(current_system_prompt)
+        
+        # Lấy tiêu chí hiện tại từ session state
+        current_criterion = st.session_state.get("fail_criterion", criterion_options[0] if criterion_options else "accuracy")
+        
+        # Tìm index của tiêu chí hiện tại
+        if current_criterion in criterion_options:
+            criterion_index = criterion_options.index(current_criterion)
+        else:
+            criterion_index = 0
+            # Cập nhật session state nếu tiêu chí hiện tại không có trong danh sách mới
+            st.session_state.fail_criterion = criterion_options[0] if criterion_options else "accuracy"
+        
+        col1_1, col1_2 = st.columns([3, 1])
+        with col1_1:
+            fail_criterion = st.selectbox(
+                "Chọn tiêu chí",
+                criterion_options,
+                index=criterion_index,
+                help=f"Tiêu chí được sử dụng để xác định test case fail (tự động từ system prompt: {len(criterion_options)} tiêu chí)",
+                key="fail_criterion_select"
+            )
+        with col1_2:
+            if st.button("🔄", help="Refresh criteria từ system prompt hiện tại", key="refresh_criteria"):
+                try:
+                    site = get_current_site()
+                    prompts = load_prompts_for_site(site)
+                    new_system_prompt = prompts.get("system_prompt", "")
+                    st.session_state.current_system_prompt = new_system_prompt
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Lỗi khi refresh criteria: {str(e)}")
     
     with col2:
         st.write("**Ngưỡng fail**")
@@ -373,9 +675,10 @@ with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
             "Ngưỡng điểm (< ngưỡng = fail)",
             min_value=0.0,
             max_value=10.0,
-            value=8.0,
+            value=st.session_state.get("fail_threshold", 8.0),
             step=0.5,
-            help="Test case có điểm thấp hơn ngưỡng này sẽ được đánh dấu fail"
+            help="Test case có điểm thấp hơn ngưỡng này sẽ được đánh dấu fail",
+            key="fail_threshold_input"
         )
     
     with col3:
@@ -385,29 +688,30 @@ with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
         # Nút lưu cấu hình
         st.write("")  # Spacing
         if st.button("💾 Lưu cấu hình", type="primary", use_container_width=True, help="Lưu và áp dụng cấu hình cho tất cả test"):
+            # Cập nhật session state
             st.session_state.api_url = API_URL
             st.session_state.evaluate_api_url = EVALUATE_API_URL
             st.session_state.fail_criterion = fail_criterion
             st.session_state.fail_threshold = fail_threshold
-            st.session_state.max_workers = MAX_WORKERS
             st.session_state.add_chat_history_global = add_chat_history_global
             
-            st.success("✅ Đã lưu cấu hình! Áp dụng cho tất cả test (đơn lẻ, hàng loạt, lập lịch)")
+            # Lưu vào file
+            site = get_current_site()
+            config = {
+                "api_url": API_URL,
+                "evaluate_api_url": EVALUATE_API_URL,
+                "fail_criterion": fail_criterion,
+                "fail_threshold": fail_threshold,
+                "add_chat_history_global": add_chat_history_global
+            }
+            
+            if save_config_to_file(site, config):
+                st.success("✅ Đã lưu cấu hình vào file! Áp dụng cho tất cả test (đơn lẻ, hàng loạt, lập lịch)")
+            else:
+                st.error("❌ Lỗi khi lưu cấu hình vào file!")
             st.rerun()
     
-    # Lưu vào session state (fallback nếu chưa click nút Lưu)
-    if 'api_url' not in st.session_state:
-        st.session_state.api_url = API_URL
-    if 'evaluate_api_url' not in st.session_state:
-        st.session_state.evaluate_api_url = EVALUATE_API_URL
-    if 'fail_criterion' not in st.session_state:
-        st.session_state.fail_criterion = fail_criterion
-    if 'fail_threshold' not in st.session_state:
-        st.session_state.fail_threshold = fail_threshold
-    if 'max_workers' not in st.session_state:
-        st.session_state.max_workers = MAX_WORKERS
-    if 'add_chat_history_global' not in st.session_state:
-        st.session_state.add_chat_history_global = add_chat_history_global
+    # Configuration đã được load từ file ở trên
 
 # --- Prompt Management Functions ---
 def get_prompt_paths(site):
@@ -728,6 +1032,56 @@ def save_extract_sections_for_site(site, extract_code):
         logger.error(f"Lỗi khi lưu extract_sections cho site {site}: {str(e)}")
         return False
 
+# --- Test Cases Management Functions ---
+def get_test_cases_dir(site):
+    """Get test cases directory for a specific site"""
+    test_cases_dir = os.path.join("test_cases", site)
+    os.makedirs(test_cases_dir, exist_ok=True)
+    return test_cases_dir
+
+def save_test_cases(site, test_cases_df, test_name):
+    """Save test cases to file"""
+    try:
+        test_cases_dir = get_test_cases_dir(site)
+        filename = f"{test_name.replace(' ', '_')}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.xlsx"
+        filepath = os.path.join(test_cases_dir, filename)
+        
+        test_cases_df.to_excel(filepath, index=False)
+        logger.info(f"Đã lưu test cases cho site {site}: {filename}")
+        return filepath
+    except Exception as e:
+        logger.error(f"Lỗi khi lưu test cases cho site {site}: {str(e)}")
+        return None
+
+def load_test_cases_list(site):
+    """Load list of test cases files for a specific site"""
+    try:
+        test_cases_dir = get_test_cases_dir(site)
+        if not os.path.exists(test_cases_dir):
+            return []
+        
+        files = [f for f in os.listdir(test_cases_dir) if f.lower().endswith(('.xlsx', '.xls'))]
+        return sorted(files, reverse=True)  # Mới nhất trước
+    except Exception as e:
+        logger.error(f"Lỗi khi load danh sách test cases cho site {site}: {str(e)}")
+        return []
+
+def load_test_cases_from_file(site, filename):
+    """Load test cases from specific file"""
+    try:
+        test_cases_dir = get_test_cases_dir(site)
+        filepath = os.path.join(test_cases_dir, filename)
+        
+        if os.path.exists(filepath):
+            df = pd.read_excel(filepath)
+            return df
+        else:
+            logger.warning(f"File test cases không tồn tại: {filepath}")
+            return None
+    except Exception as e:
+        logger.error(f"Lỗi khi load test cases từ file {filename}: {str(e)}")
+        return None
+
 def get_default_extract_sections_template(site):
     """Get default extract_sections template based on site"""
     if site == "THFC":
@@ -920,7 +1274,7 @@ def auto_generate_extract_sections_from_prompt(system_prompt):
         '',
         'def extract_section(text):',
         '    json_data = extract_json(text)',
-        '    print(f"JSON data:\\\\n{json_data}")',
+        '    print(f"JSON data:\\n{json_data}")',
         '    results = {}',
         '    if json_data:',
         '        results["scores"] = {}',
@@ -944,7 +1298,7 @@ def auto_generate_extract_sections_from_prompt(system_prompt):
     
     # Return cả code và mapping info để hiển thị
     return {
-        'code': '\\n'.join(code_lines),
+        'code': '\n'.join(code_lines),
         'criteria': criteria,
         'normalized_criteria': unique_criteria,
         'descriptions': unique_descriptions
@@ -1087,17 +1441,42 @@ def process_single_question(question, true_answer, level, department, index, tot
     except Exception as e:
         return f"Lỗi khi xử lý câu hỏi {index + 1}: {str(e)}"
 
-def process_questions_batch(questions, true_answers, levels, departments, add_chat_history=False, custom_history=None, test_name=None, is_scheduled=False, site=None, api_url=None, evaluate_api_url=None):
+def process_questions_batch(questions, true_answers, levels, departments, add_chat_history=False, custom_history=None, test_name=None, is_scheduled=False, site=None, api_url=None, evaluate_api_url=None, progress_bar=None, status_text=None, current_question_text=None):
     results = []
     failed_questions = []
     
-    progress_container = st.empty() if not is_scheduled else None
+    # Tạo progress container với styling đẹp hơn (chỉ khi không có progress bar từ bên ngoài)
+    if not is_scheduled and progress_bar is None:
+        progress_container = st.container()
+        with progress_container:
+            st.markdown("### ⏳ Tiến trình xử lý")
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            current_question_text = st.empty()
+    elif is_scheduled:
+        progress_container = None
+        progress_bar = None
+        status_text = None
+        current_question_text = None
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {executor.submit(process_single_question, q, ta, l, d, i, len(questions), add_chat_history, custom_history, site, api_url, evaluate_api_url): (q, ta) for i, (q, ta, l, d) in enumerate(zip(questions, true_answers, levels, departments))}
         
+        completed_count = 0
         for i, future in enumerate(concurrent.futures.as_completed(futures)):
             question, true_answer = futures[future]
+            completed_count += 1
+            
+            # Cập nhật progress bar và thông báo
+            if not is_scheduled and progress_bar and status_text and current_question_text:
+                progress = completed_count / len(questions)
+                progress_bar.progress(progress)
+                status_text.text(f"📊 Đã xử lý: {completed_count}/{len(questions)} câu hỏi ({progress*100:.1f}%)")
+                
+                # Hiển thị câu hỏi đang được xử lý (rút gọn nếu quá dài)
+                display_question = question[:100] + "..." if len(question) > 100 else question
+                current_question_text.text(f"🔄 Đang xử lý: {display_question}")
+            
             try:
                 result = future.result()
                 if isinstance(result, dict):
@@ -1114,7 +1493,7 @@ def process_questions_batch(questions, true_answers, levels, departments, add_ch
                         
                         if criterion_score < fail_threshold:
                             result["failed_details"] = {
-                                "timestamp": datetime.datetime.now().isoformat(),
+                                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 "test_name": test_name,
                                 "reason": f"{fail_criterion} thấp (< {fail_threshold})",
                                 "expected_output": result["true_answer"],
@@ -1130,7 +1509,7 @@ def process_questions_batch(questions, true_answers, levels, departments, add_ch
                             "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                             "site_response": result.get("site_response", "[Lỗi khi xử lý]"),
                             "evaluate_result": {"scores": {}, "comments": "Lỗi: evaluate_result không hợp lệ"},
-                            "failed_details": {"timestamp": datetime.datetime.now().isoformat(), "test_name": test_name, "reason": "Lỗi evaluate_result", "error_message": "evaluate_result is None or invalid"}
+                            "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi evaluate_result", "error_message": "evaluate_result is None or invalid"}
                         }
                         results.append(error_result)
                         failed_questions.append((question, "Lỗi evaluate_result", "evaluate_result is None or invalid"))
@@ -1139,7 +1518,7 @@ def process_questions_batch(questions, true_answers, levels, departments, add_ch
                         "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                         "site_response": "[Lỗi khi xử lý]",
                         "evaluate_result": {"scores": {}, "comments": f"Lỗi: {result}"},
-                        "failed_details": {"timestamp": datetime.datetime.now().isoformat(), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
+                        "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
                     }
                     results.append(error_result)
                     failed_questions.append((question, "Lỗi xử lý API", result))
@@ -1149,19 +1528,23 @@ def process_questions_batch(questions, true_answers, levels, departments, add_ch
                     "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                     "site_response": "[Lỗi khi xử lý]",
                     "evaluate_result": {"scores": {}, "comments": error_message},
-                    "failed_details": {"timestamp": datetime.datetime.now().isoformat(), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
+                    "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
                 }
                 results.append(error_result)
                 failed_questions.append((question, "Exception", str(e)))
-            
-            if not is_scheduled and progress_container:
-                progress_container.text(f"Đã xử lý {i + 1}/{len(questions)} câu hỏi.")
+    
+    # Hiển thị thông báo hoàn thành
+    if not is_scheduled and status_text and current_question_text:
+        status_text.text(f"✅ Hoàn thành: {len(questions)} câu hỏi đã được xử lý")
+        current_question_text.text("🎉 Tất cả câu hỏi đã được xử lý thành công!")
 
     if failed_questions and (is_scheduled or test_name):
         failed_results = [r for r in results if "failed_details" in r]
         if failed_results:
             save_failed_test_details(failed_results, site)
     
+    return results, failed_questions
+
 # Tải lịch sử test, test case thất bại và lịch sử thay đổi
 
 current_site = get_current_site()
@@ -1259,81 +1642,9 @@ if not st.session_state.schedule_initialized:
     st.session_state.schedule_initialized = True
 
 # Tạo các tab
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["Test đơn lẻ", "Test hàng loạt", "Lập lịch test", "Quản lý test", "Quản lý Prompts"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Test hàng loạt", "Lập lịch test", "Quản lý test", "Quản lý Test Cases", "Quản lý Prompts"])
 
 with tab1:
-    st.subheader("✏️ Test đơn lẻ")
-    
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        question = st.text_area("📝 Câu hỏi:", height=150, placeholder="Nhập câu hỏi test...")
-        
-        col_a, col_b = st.columns(2)
-        with col_a:
-            level = st.selectbox("🎓 Cấp bậc:", ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10", "L11", "L12", "B1", "B2"])
-        with col_b:
-            department = st.selectbox("🏢 Phòng ban:", ["Phòng kinh doanh (Sales)", "Hỗ trợ kinh doanh (Sales Support)", "HR", "Finance"])
-    
-    with col2:
-        true_answer = st.text_area("✅ Câu trả lời chuẩn:", height=230, placeholder="Nhập câu trả lời mẫu...")
-
-    if add_chat_history_global:
-        with st.expander("💬 Thiết lập chat history", expanded=False):
-            if 'chat_history' not in st.session_state or st.session_state.chat_history is None:
-                st.session_state.chat_history = [
-                    {"role": "apiMessage", "content": "Vui lòng cung cấp họ tên, số điện thoại, trường THPT và tỉnh thành sinh sống để tôi có thể tư vấn tốt nhất. Lưu ý, thông tin bạn cung cấp cần đảm bảo tính chính xác."},
-                    {"role": "userMessage", "content": "[Cung cấp thông tin]"}
-                ]
-            
-            # Sử dụng một list tạm để tránh lỗi khi xóa
-            new_history = []
-            for i, msg in enumerate(st.session_state.chat_history):
-                cols = st.columns([2, 8, 1])
-                role = cols[0].selectbox(f"Role {i+1}", ["apiMessage", "userMessage"], key=f"role_{i}", index=["apiMessage", "userMessage"].index(msg["role"]))
-                content = cols[1].text_area(f"Nội dung {i+1}", value=msg["content"], key=f"content_{i}")
-                if not cols[2].button("🗑️", key=f"delete_{i}", help="Xóa message này"):
-                    new_history.append({"role": role, "content": content})
-            st.session_state.chat_history = new_history
-
-            if st.button("➕ Thêm message"):
-                st.session_state.chat_history.append({"role": "userMessage", "content": ""})
-                st.rerun()
-
-    col1, col2, col3 = st.columns([1, 1, 2])
-    with col2:
-        if st.button("▶️ Chạy Test", type="primary", use_container_width=True):
-            if question and true_answer:
-                with st.spinner("⏳ Đang xử lý..."):
-                    history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
-                    result = process_single_question(question, true_answer, level, department, 0, 1, add_chat_history=add_chat_history_global, custom_history=history, site=get_current_site())
-                
-                if isinstance(result, dict):
-                    st.success("✅ Xử lý thành công!")
-                    
-                    st.write("---")
-                    st.subheader("📊 Kết quả")
-                    
-                    col1, col2 = st.columns([1, 1])
-                    
-                    with col1:
-                        st.write("**💬 Câu trả lời từ Agent:**")
-                        st.info(result["site_response"])
-                    
-                    with col2:
-                        st.write("**📈 Điểm đánh giá:**")
-                        scores = result["evaluate_result"]["scores"]
-                        for metric, score in scores.items():
-                            st.metric(metric.capitalize(), f"{score}/10")
-                    
-                    st.write("**💭 Nhận xét và góp ý cải thiện:**")
-                    st.text_area("Comments", value=result["evaluate_result"]["comments"], height=150, disabled=True)
-                else:
-                    st.error(f"❌ Lỗi: {result}")
-            else:
-                st.warning("⚠️ Vui lòng nhập đầy đủ câu hỏi và câu trả lời chuẩn")
-
-with tab2:
     st.subheader("📝 Test hàng loạt từ file Excel")
     
     if add_chat_history_global:
@@ -1371,7 +1682,19 @@ with tab2:
     if uploaded_file is not None:
         try:
             df = pd.read_excel(uploaded_file)
+            
+            # Kiểm tra file rỗng
+            if df.empty:
+                st.error("❌ File Excel rỗng! Vui lòng tải lên file có dữ liệu.")
+                st.stop()
+            
             df = df.dropna(subset=[df.columns[0], df.columns[1]])
+            
+            # Kiểm tra sau khi dropna
+            if df.empty:
+                st.error("❌ File Excel không có dữ liệu hợp lệ! Vui lòng kiểm tra lại file.")
+                st.stop()
+            
             questions = df.iloc[:, 0].tolist()
             true_answers = df.iloc[:, 1].tolist()
             levels = df.iloc[:, 2].tolist() if len(df.columns) > 2 else ["L1"] * len(questions)
@@ -1388,83 +1711,59 @@ with tab2:
                 })
                 st.session_state.current_file_thfc = uploaded_file.name
             
-            st.write("### 📋 Danh sách test cases (có thể chỉnh sửa)")
-            st.info("💡 Tip: Bạn có thể click vào ô để chỉnh sửa trực tiếp. Tick ✓ vào cột 'Chọn' để chọn test case muốn chạy.")
+            st.write("### 📋 Danh sách test cases")
+            st.info("💡 Tip: Chọn các dòng bạn muốn chạy test bằng cách click vào checkbox ở đầu mỗi dòng.")
             
-            # Sử dụng st.data_editor để có thể chỉnh sửa
-            edited_df = st.data_editor(
+            # Sử dụng st.dataframe với selection
+            selected_df = st.dataframe(
                 st.session_state.test_cases_df_thfc,
                 use_container_width=True,
                 hide_index=True,
-                num_rows="dynamic",
-                column_config={
-                    "Chọn": st.column_config.CheckboxColumn(
-                        "Chọn",
-                        help="Tick để chọn test case này",
-                        default=True,
-                        width="small"
-                    ),
-                    "Câu hỏi": st.column_config.TextColumn(
-                        "Câu hỏi",
-                        help="Nội dung câu hỏi",
-                        width="large",
-                        required=True
-                    ),
-                    "Câu trả lời chuẩn": st.column_config.TextColumn(
-                        "Câu trả lời chuẩn",
-                        help="Câu trả lời mẫu để so sánh",
-                        width="large",
-                        required=True
-                    ),
-                    "Level": st.column_config.SelectboxColumn(
-                        "Level",
-                        help="Cấp bậc",
-                        width="small",
-                        options=["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10", "L11", "L12", "B1", "B2"],
-                        required=True
-                    ),
-                    "Department": st.column_config.SelectboxColumn(
-                        "Department",
-                        help="Phòng ban",
-                        width="medium",
-                        options=["Phòng kinh doanh (Sales)", "Hỗ trợ kinh doanh (Sales Support)", "HR", "Finance"],
-                        required=True
-                    ),
-                },
-                key="test_cases_editor_thfc"
+                on_select="rerun",
+                selection_mode="multi-row",
+                key="test_cases_selection_thfc"
             )
-            
-            # Cập nhật session state
-            st.session_state.test_cases_df_thfc = edited_df
-            
-            # Lọc các dòng được chọn
-            selected_df = edited_df[edited_df['Chọn'] == True]
             
             col1, col2, col3 = st.columns([1, 2, 1])
             with col1:
-                st.metric("📊 Tổng test cases", len(edited_df))
+                st.metric("📊 Tổng test cases", len(st.session_state.test_cases_df_thfc))
             with col2:
-                st.metric("✅ Test cases được chọn", len(selected_df))
+                # Lấy số dòng được chọn từ selection
+                selected_count = len(selected_df.selection.rows) if selected_df.selection.rows else 0
+                st.metric("✅ Test cases được chọn", selected_count)
             with col3:
                 if st.button("▶️ Chạy test", type="primary", use_container_width=True, key="run_batch_test_thfc"):
-                    if len(selected_df) > 0:
-                        selected_questions = selected_df['Câu hỏi'].tolist()
-                        selected_true_answers = selected_df['Câu trả lời chuẩn'].tolist()
-                        selected_levels = selected_df['Level'].tolist()
-                        selected_departments = selected_df['Department'].tolist()
+                    if selected_df.selection.rows:
+                        # Lấy các dòng được chọn
+                        selected_indices = selected_df.selection.rows
+                        selected_questions = [st.session_state.test_cases_df_thfc.iloc[i]['Câu hỏi'] for i in selected_indices]
+                        selected_true_answers = [st.session_state.test_cases_df_thfc.iloc[i]['Câu trả lời chuẩn'] for i in selected_indices]
+                        selected_levels = [st.session_state.test_cases_df_thfc.iloc[i]['Level'] for i in selected_indices]
+                        selected_departments = [st.session_state.test_cases_df_thfc.iloc[i]['Department'] for i in selected_indices]
                         
-                        with st.spinner("⏳ Đang xử lý test cases..."):
-                            history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
-                            results, failed_questions = process_questions_batch(
-                                selected_questions, 
-                                selected_true_answers, 
-                                selected_levels, 
-                                selected_departments, 
-                                add_chat_history=add_chat_history_global, 
-                                custom_history=history, 
-                                test_name=uploaded_file.name, 
-                                site=get_current_site()
-                            )
+                        # Tạo progress container toàn màn hình
+                        st.markdown("---")
+                        progress_container = st.container()
+                        with progress_container:
+                            st.markdown("### ⏳ Tiến trình xử lý")
+                            progress_bar = st.progress(0)
+                            status_text = st.empty()
+                            current_question_text = st.empty()
+                        
+                        history = st.session_state.chat_history if (add_chat_history_global and st.session_state.chat_history) else None
+                        results, failed_questions = process_questions_batch(
+                            selected_questions, 
+                            selected_true_answers, 
+                            selected_levels, 
+                            selected_departments, 
+                            add_chat_history=add_chat_history_global, 
+                            custom_history=history, 
+                            test_name=uploaded_file.name, 
+                            site=get_current_site(),
+                            progress_bar=progress_bar,
+                            status_text=status_text,
+                            current_question_text=current_question_text
+                        )
                         
                         st.session_state.results = results
                         
@@ -1488,51 +1787,123 @@ with tab2:
                         st.rerun()  # Reload để hiển thị kết quả bên ngoài
                     else:
                         st.warning("⚠️ Vui lòng chọn ít nhất một test case để chạy")
-            
-            # Hiển thị kết quả test hàng loạt (toàn màn hình)
-            if 'results' in st.session_state and st.session_state.results:
-                results = st.session_state.results
-                results_df = st.session_state.results_df
-                
-                st.write("---")
-                st.subheader(f"📊 Kết quả đánh giá ({len(results)} câu hỏi)")
-                
-                # Hiển thị metrics tổng quan
-                col1, col2, col3, col4 = st.columns(4)
-                with col1:
-                    st.metric("✅ Passed", sum(1 for r in results if "failed_details" not in r))
-                with col2:
-                    st.metric("❌ Failed", sum(1 for r in results if "failed_details" in r))
-                with col3:
-                    avg_score = sum(r["evaluate_result"]["scores"].get("average", 0) for r in results) / len(results) if results else 0
-                    st.metric("📈 Điểm TB", f"{avg_score:.2f}")
-                with col4:
-                    pass_rate = (sum(1 for r in results if "failed_details" not in r) / len(results) * 100) if results else 0
-                    st.metric("📊 Tỷ lệ pass", f"{pass_rate:.1f}%")
-                
-                st.dataframe(results_df, use_container_width=True, hide_index=True)
-                
-                col1, col2 = st.columns([1, 1])
-                with col1:
-                    st.download_button(
-                        label="📥 Tải xuống kết quả (CSV)", 
-                        data=results_df.to_csv(index=False).encode('utf-8'), 
-                        file_name=f'evaluation_results_{uploaded_file.name}.csv', 
-                        mime='text/csv',
-                        use_container_width=True
-                    )
-                with col2:
-                    failed_count = sum(1 for r in results if "failed_details" in r)
-                    if failed_count > 0:
-                        st.warning(f"⚠️ Có {failed_count} câu hỏi xử lý thất bại")
-                    else:
-                        st.success(f"✅ Đã hoàn thành đánh giá {len(results)} câu hỏi")
         except Exception as e:
             st.error(f"Lỗi khi đọc file Excel: {str(e)}")
+            
+        # Hiển thị kết quả test hàng loạt (toàn màn hình) - di chuyển ra ngoài column
+        if 'results' in st.session_state and st.session_state.results:
+            results = st.session_state.results
+            results_df = st.session_state.results_df
+            
+            st.write("---")
+            st.subheader(f"📊 Kết quả đánh giá ({len(results)} câu hỏi)")
+            
+            # Hiển thị metrics tổng quan với styling đẹp hơn
+            st.markdown("""
+            <style>
+            .metric-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                color: white;
+                text-align: center;
+                margin: 5px;
+            }
+            .metric-card-success {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+            .metric-card-danger {
+                background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            }
+            .metric-card-info {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+            .metric-label {
+                font-size: 14px;
+                font-weight: 500;
+                opacity: 0.9;
+                margin-bottom: 5px;
+            }
+            .metric-value {
+                font-size: 32px;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            @media (max-width: 1200px) {
+                .dashboard-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            @media (max-width: 600px) {
+                .dashboard-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            # Grid metrics với styling đẹp
+            passed_count = sum(1 for r in results if "failed_details" not in r)
+            failed_count = sum(1 for r in results if "failed_details" in r)
+            avg_score = sum(r["evaluate_result"]["scores"].get("average", 0) for r in results) / len(results) if results else 0
+            pass_rate = (passed_count / len(results) * 100) if results else 0
+            
+            st.markdown(f"""
+            <div class="dashboard-grid">
+                <div class="metric-card metric-card-success">
+                    <div class="metric-label">✅ Passed</div>
+                    <div class="metric-value">{passed_count}</div>
+                </div>
+                <div class="metric-card metric-card-danger">
+                    <div class="metric-label">❌ Failed</div>
+                    <div class="metric-value">{failed_count}</div>
+                </div>
+                <div class="metric-card metric-card-info">
+                    <div class="metric-label">📈 Điểm TB</div>
+                    <div class="metric-value">{avg_score:.2f}</div>
+                </div>
+                <div class="metric-card metric-card-info">
+                    <div class="metric-label">📊 Tỷ lệ pass</div>
+                    <div class="metric-value">{pass_rate:.1f}%</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Hiển thị dataframe với styling tốt hơn
+            st.write("### 📋 Chi tiết kết quả")
+            st.dataframe(
+                results_df, 
+                use_container_width=True, 
+                hide_index=True,
+                height=400  # Tăng chiều cao để hiển thị nhiều dòng hơn
+            )
+            
+            # Nút tải xuống và thông báo
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                st.download_button(
+                    label="📥 Tải xuống kết quả (CSV)", 
+                    data=results_df.to_csv(index=False).encode('utf-8'), 
+                    file_name=f'evaluation_results_{uploaded_file.name}.csv', 
+                    mime='text/csv',
+                    use_container_width=True
+                )
+            with col2:
+                if failed_count > 0:
+                    st.warning(f"⚠️ Có {failed_count} câu hỏi xử lý thất bại")
+                else:
+                    st.success(f"✅ Đã hoàn thành đánh giá {len(results)} câu hỏi")
     else:
         st.info("Vui lòng tải lên file Excel để bắt đầu")
 
-with tab3:
+with tab2:
     st.subheader("Lập lịch chạy test tự động")
 
     site = get_current_site()
@@ -1777,27 +2148,28 @@ with tab3:
         st.session_state.schedule_api_url = schedule_api_url
         st.session_state.schedule_evaluate_api_url = schedule_evaluate_api_url
 
-        st.write("### Bước 2: Chọn file test và đặt tên")
-        test_file = st.file_uploader("Chọn file Excel chứa test cases", type=['xlsx', 'xls'], key="schedule_file_uploader")
+        st.write("### Bước 2: Chọn test cases và đặt tên")
         
-        # Hiển thị preview 5 dòng đầu tiên khi upload file
-        if test_file is not None:
-            try:
-                df_preview = pd.read_excel(test_file)
-                st.write("**Preview 5 dòng đầu tiên của file:**")
-                st.dataframe(df_preview.head(5), use_container_width=True)
-                
-                # Reset file pointer để có thể đọc lại sau này
-                test_file.seek(0)
-            except Exception as e:
-                st.error(f"Lỗi khi đọc file Excel: {str(e)}")
-                test_file = None
-        else:
-            st.info("Vui lòng tải lên file Excel để bắt đầu")
+        # Load danh sách test cases đã lưu
+        test_cases_files = load_test_cases_list(site)
+        
+        if not test_cases_files:
+            st.warning("⚠️ Chưa có test cases nào được lưu. Vui lòng tạo test cases trong tab 'Quản lý Test Cases' trước.")
+            st.stop()
+        
+        selected_test_cases_file = st.selectbox("Chọn bộ test cases", test_cases_files, key="schedule_test_cases_selector")
+        
+        # Hiển thị preview test cases được chọn
+        if selected_test_cases_file:
+            test_cases_df = load_test_cases_from_file(site, selected_test_cases_file)
+            if test_cases_df is not None:
+                st.write(f"**Test cases:** `{selected_test_cases_file}` ({len(test_cases_df)} test cases)")
+                st.write("**Preview 5 test cases đầu tiên:**")
+                st.dataframe(test_cases_df.head(5), use_container_width=True)
         
         test_name = st.text_input("Tên bộ test (để nhận diện trong lịch sử)", key="test_name_input")
 
-        if test_file and test_name:
+        if selected_test_cases_file and test_name:
             st.write("### Bước 3: Thiết lập lịch chạy test")
             
             schedule_type = st.selectbox("Loại lịch", ["minute", "hourly", "daily", "weekly", "custom"], key="schedule_type_select")
@@ -1826,14 +2198,9 @@ with tab3:
                     schedule_day = st.selectbox("Ngày trong tuần", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], key="schedule_day_select")
 
             if st.button("Thiết lập lịch"):
-                # Tạo thư mục cho site nếu chưa có
-                site_dir = os.path.join(SCHEDULED_TESTS_DIR, site)
-                os.makedirs(site_dir, exist_ok=True)
-                
-                saved_file_name = f"{test_name.replace(' ', '_')}_{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.xlsx"
-                saved_file_path = os.path.join(site_dir, saved_file_name)
-                with open(saved_file_path, "wb") as f:
-                    f.write(test_file.getbuffer())
+                # Lấy đường dẫn file test cases đã lưu
+                test_cases_dir = get_test_cases_dir(site)
+                saved_file_path = os.path.join(test_cases_dir, selected_test_cases_file)
 
                 job_config = {
                     "file_path": saved_file_path,
@@ -1858,7 +2225,7 @@ with tab3:
                 st.rerun()
 
 
-with tab4:
+with tab3:
     st.subheader("Quản lý test và cập nhật tập test")
     
     site = get_current_site()
@@ -2216,6 +2583,202 @@ with tab4:
     # else:
     #     st.info("Thư mục kết quả cho site này chưa được tạo.")
 
+with tab4:
+    st.subheader("📋 Quản lý Test Cases")
+    
+    site = get_current_site()
+    st.write(f"**Site hiện tại:** {site}")
+    
+    # Hiển thị thông báo nếu có
+    if 'test_cases_action_message' in st.session_state:
+        msg_type = st.session_state.test_cases_action_message.get('type', 'info')
+        msg_text = st.session_state.test_cases_action_message.get('text', '')
+        
+        if msg_type == 'success':
+            st.success(msg_text)
+        elif msg_type == 'error':
+            st.error(msg_text)
+        elif msg_type == 'warning':
+            st.warning(msg_text)
+        else:
+            st.info(msg_text)
+        
+        # Clear message sau khi hiển thị
+        del st.session_state.test_cases_action_message
+    
+    # Upload và chỉnh sửa test cases
+    st.write("### 📤 Upload và chỉnh sửa Test Cases")
+    
+    uploaded_file = st.file_uploader("Chọn file Excel chứa test cases", type=['xlsx', 'xls'], key="test_cases_uploader")
+    
+    if uploaded_file is not None:
+        try:
+            df = pd.read_excel(uploaded_file)
+            
+            # Kiểm tra file rỗng
+            if df.empty:
+                st.error("❌ File Excel rỗng! Vui lòng tải lên file có dữ liệu.")
+            else:
+                # Kiểm tra có ít nhất 4 cột (câu hỏi, câu trả lời chuẩn, level, department)
+                if len(df.columns) < 4:
+                    st.error("❌ File Excel phải có ít nhất 4 cột (Câu hỏi, Câu trả lời chuẩn, Level, Department)!")
+                else:
+                    # Lấy 4 cột đầu tiên
+                    questions = df.iloc[:, 0].tolist()
+                    true_answers = df.iloc[:, 1].tolist()
+                    levels = df.iloc[:, 2].tolist()
+                    departments = df.iloc[:, 3].tolist()
+                    
+                    # Loại bỏ các dòng có dữ liệu rỗng
+                    valid_data = []
+                    for q, ta, l, d in zip(questions, true_answers, levels, departments):
+                        if pd.notna(q) and pd.notna(ta) and pd.notna(l) and pd.notna(d) and \
+                           str(q).strip() and str(ta).strip() and str(l).strip() and str(d).strip():
+                            valid_data.append({
+                                'Câu hỏi': str(q).strip(), 
+                                'Câu trả lời chuẩn': str(ta).strip(),
+                                'Level': str(l).strip(),
+                                'Department': str(d).strip()
+                            })
+                    
+                    if not valid_data:
+                        st.error("❌ Không có dữ liệu hợp lệ trong file!")
+                    else:
+                        # Tạo DataFrame từ dữ liệu hợp lệ
+                        test_cases_df = pd.DataFrame(valid_data)
+                        
+                        st.write("### 📝 Chỉnh sửa Test Cases")
+                        st.info("💡 Bạn có thể chỉnh sửa trực tiếp trong bảng dưới đây. Thêm/xóa dòng bằng các nút bên dưới.")
+                        
+                        # Sử dụng st.data_editor để chỉnh sửa
+                        edited_df = st.data_editor(
+                            test_cases_df,
+                            use_container_width=True,
+                            hide_index=True,
+                            num_rows="dynamic",
+                            column_config={
+                                "Câu hỏi": st.column_config.TextColumn(
+                                    "Câu hỏi",
+                                    help="Nội dung câu hỏi",
+                                    width="large",
+                                    required=True
+                                ),
+                                "Câu trả lời chuẩn": st.column_config.TextColumn(
+                                    "Câu trả lời chuẩn",
+                                    help="Câu trả lời mẫu để so sánh",
+                                    width="large",
+                                    required=True
+                                ),
+                                "Level": st.column_config.TextColumn(
+                                    "Level",
+                                    help="Cấp độ câu hỏi",
+                                    width="medium",
+                                    required=True
+                                ),
+                                "Department": st.column_config.TextColumn(
+                                    "Department",
+                                    help="Phòng ban liên quan",
+                                    width="medium",
+                                    required=True
+                                ),
+                            },
+                            key="test_cases_editor"
+                        )
+                        
+                        # Nút lưu test cases
+                        col1, col2, col3 = st.columns([1, 1, 2])
+                        
+                        with col1:
+                            test_name = st.text_input("Tên bộ test cases", value=f"Test_Cases_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}", key="test_cases_name")
+                        
+                        with col2:
+                            if st.button("💾 Lưu Test Cases", type="primary", use_container_width=True):
+                                if test_name.strip():
+                                    filepath = save_test_cases(site, edited_df, test_name.strip())
+                                    if filepath:
+                                        st.session_state.test_cases_action_message = {
+                                            'type': 'success',
+                                            'text': f'✅ Đã lưu test cases "{test_name}" thành công!'
+                                        }
+                                    else:
+                                        st.session_state.test_cases_action_message = {
+                                            'type': 'error',
+                                            'text': '❌ Lỗi khi lưu test cases!'
+                                        }
+                                    st.rerun()
+                                else:
+                                    st.session_state.test_cases_action_message = {
+                                        'type': 'warning',
+                                        'text': '⚠️ Vui lòng nhập tên bộ test cases!'
+                                    }
+                                    st.rerun()
+                        
+                        with col3:
+                            st.metric("📊 Số test cases", len(edited_df))
+        
+        except Exception as e:
+            st.error(f"❌ Lỗi khi đọc file Excel: {str(e)}")
+    
+    # Hiển thị danh sách test cases đã lưu
+    st.write("### 📚 Danh sách Test Cases đã lưu")
+    
+    test_cases_files = load_test_cases_list(site)
+    
+    if test_cases_files:
+        selected_file = st.selectbox("Chọn file test cases để xem", test_cases_files, key="test_cases_file_selector")
+        
+        if selected_file:
+            # Load và hiển thị test cases
+            test_cases_df = load_test_cases_from_file(site, selected_file)
+            
+            if test_cases_df is not None:
+                st.write(f"**File:** `{selected_file}` ({len(test_cases_df)} test cases)")
+                
+                # Hiển thị preview
+                st.dataframe(test_cases_df.head(10), use_container_width=True)
+                
+                if len(test_cases_df) > 10:
+                    st.caption(f"Hiển thị 10/{len(test_cases_df)} test cases đầu tiên")
+                
+                # Nút xóa file
+                col1, col2 = st.columns([1, 1])
+                
+                with col1:
+                    if st.button("🗑️ Xóa file", key="delete_test_cases_file"):
+                        try:
+                            test_cases_dir = get_test_cases_dir(site)
+                            filepath = os.path.join(test_cases_dir, selected_file)
+                            os.remove(filepath)
+                            st.session_state.test_cases_action_message = {
+                                'type': 'success',
+                                'text': f'✅ Đã xóa file "{selected_file}"'
+                            }
+                            st.rerun()
+                        except Exception as e:
+                            st.session_state.test_cases_action_message = {
+                                'type': 'error',
+                                'text': f'❌ Lỗi khi xóa file: {str(e)}'
+                            }
+                            st.rerun()
+                
+                with col2:
+                    # Nút tải xuống
+                    try:
+                        test_cases_dir = get_test_cases_dir(site)
+                        filepath = os.path.join(test_cases_dir, selected_file)
+                        with open(filepath, "rb") as f:
+                            st.download_button(
+                                label="📥 Tải xuống",
+                                data=f.read(),
+                                file_name=selected_file,
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                key=f"download_test_cases_{selected_file}"
+                            )
+                    except Exception as e:
+                        st.error(f"Lỗi khi tải xuống file: {str(e)}")
+    else:
+        st.info("Chưa có test cases nào được lưu cho site này")
+
 with tab5:
     # Custom CSS cho tab Quản lý Prompts
     st.markdown("""
@@ -2370,10 +2933,19 @@ with tab5:
             else:
                 success_extract = True  # Không có lỗi nếu không có prompt
             
+            # Refresh criteria từ system prompt mới
+            if system_prompt:
+                st.session_state.current_system_prompt = system_prompt
+                # Cập nhật fail_criterion nếu cần
+                new_criteria = get_criteria_from_prompt(system_prompt)
+                current_criterion = st.session_state.get("fail_criterion", "accuracy")
+                if current_criterion not in new_criteria and new_criteria:
+                    st.session_state.fail_criterion = new_criteria[0]
+            
             if success_prompts and success_extract:
                 st.session_state.prompt_action_message = {
                     'type': 'success',
-                    'text': '✅ Đã lưu prompts & extract sections!'
+                    'text': '✅ Đã lưu prompts & extract sections! Criteria đã được cập nhật.'
                 }
             elif success_prompts:
                 st.session_state.prompt_action_message = {
@@ -2547,21 +3119,22 @@ with tab5:
 # Hiển thị hướng dẫn sử dụng
 st.sidebar.subheader("Hướng dẫn sử dụng")
 st.sidebar.markdown("""
-### Test đơn lẻ
-1. Nhập câu hỏi và câu trả lời chuẩn.
-2. Nhấn "Test" để xem kết quả.
-
 ### Test hàng loạt
 1. Tải file Excel.
 2. Chọn các câu hỏi muốn test.
 3. Nhấn "Test hàng loạt".
 
 ### Lập lịch test
-1. Tải file test và đặt tên.
+1. Chọn test cases đã lưu và đặt tên.
 2. Thiết lập lịch và nhấn "Thiết lập lịch".
 
 ### Quản lý test
 1. Xem lịch sử và các test case thất bại.
+
+### Quản lý Test Cases
+1. Upload file Excel chứa test cases.
+2. Chỉnh sửa và lưu test cases.
+3. Quản lý các bộ test cases đã lưu.
 
 ### Quản lý Prompts
 1. Chỉnh sửa system prompt và human prompt.

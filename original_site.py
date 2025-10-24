@@ -323,76 +323,123 @@ def setup_schedule(file_path, schedule_type, schedule_time, schedule_day,
         thread.start()
         logger.info(f"Đã khởi động thread quản lý lịch cho site: {site}")
 
-# Giao diện Streamlit
-st.title("🤖 Agent Testing")
+# --- Helper Functions ---
+def get_criteria_from_prompt(system_prompt):
+    """Lấy danh sách criteria từ system prompt để sử dụng cho fail criterion selection"""
+    import re
+    
+    if not system_prompt:
+        return ["accuracy", "relevance", "completeness", "clarity", "tone", "average"]
+    
+    criteria = []
+    lines = system_prompt.split('\n')
+    
+    for line in lines:
+        line = line.strip()
+        # Tìm pattern ### số. Tên tiêu chí (Mô tả)
+        match = re.match(r'^###\s*\d+\.\s*([^(]+?)\s*\(([^)]+)\)\s*$', line, re.IGNORECASE)
+        if match:
+            criterion = match.group(1).strip()
+            if criterion and len(criterion) < 50:
+                criteria.append(criterion)
+        else:
+            # Thử pattern không có mô tả
+            match = re.match(r'^###\s*\d+\.\s*([^(]+?)\s*$', line, re.IGNORECASE)
+            if match:
+                criterion = match.group(1).strip()
+                if criterion and len(criterion) < 50:
+                    criteria.append(criterion)
+    
+    # Nếu không tìm thấy, thử tìm với format khác (dấu -)
+    if not criteria:
+        for line in lines:
+            line = line.strip()
+            # Tìm pattern - Tên tiêu chí (Mô tả)
+            match = re.match(r'^-\s*([^(]+?)\s*\(([^)]+)\)\s*$', line, re.IGNORECASE)
+            if match:
+                criterion = match.group(1).strip()
+                if criterion and len(criterion) < 50:
+                    criteria.append(criterion)
+            else:
+                # Thử pattern không có mô tả
+                match = re.match(r'^-\s*([^(]+?)\s*$', line, re.IGNORECASE)
+                if match:
+                    criterion = match.group(1).strip()
+                    if criterion and len(criterion) < 50:
+                        criteria.append(criterion)
+    
+    # Chuẩn hóa tên criteria thành lowercase và thay khoảng trắng bằng _
+    normalized_criteria = []
+    for criterion in criteria:
+        # Loại bỏ số thứ tự và ký tự đặc biệt
+        clean_name = re.sub(r'^\d+\.?\s*', '', criterion)
+        clean_name = re.sub(r'[^\w\s]', '', clean_name)
+        clean_name = clean_name.strip().lower().replace(' ', '_')
+        normalized_criteria.append(clean_name)
+    
+    # Loại bỏ duplicate và giữ thứ tự
+    seen = set()
+    unique_criteria = []
+    for criterion in normalized_criteria:
+        if criterion not in seen:
+            seen.add(criterion)
+            unique_criteria.append(criterion)
+    
+    # Thêm "average" nếu chưa có
+    if "average" not in unique_criteria:
+        unique_criteria.append("average")
+    
+    # Fallback nếu không tìm thấy criteria nào
+    if not unique_criteria:
+        unique_criteria = ["accuracy", "relevance", "completeness", "clarity", "tone", "average"]
+    
+    return unique_criteria
 
-# --- Cấu hình và các biến toàn cục ---
-with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write("**Cấu hình API**")
-        API_URL = st.text_input("API URL", st.session_state.get("api_url", "https://site1.com"))
-        EVALUATE_API_URL = st.text_input("Evaluate API URL", st.session_state.get("evaluate_api_url", "https://site2.com"))
-    
-    with col2:
-        st.write("**Cấu hình Test**")
-        MAX_WORKERS = st.slider("Số luồng xử lý đồng thời", 1, 20, 5)
-        add_chat_history_global = st.checkbox("Thêm chat history (giả lập đã cung cấp thông tin)", value=False)
-    
-    st.divider()
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.write("**Tiêu chí đánh giá fail**")
-        fail_criterion = st.selectbox(
-            "Chọn tiêu chí",
-            ["accuracy", "relevance", "completeness", "clarity", "tone", "average"],
-            index=0,
-            help="Tiêu chí được sử dụng để xác định test case fail"
-        )
-    
-    with col2:
-        st.write("**Ngưỡng fail**")
-        fail_threshold = st.number_input(
-            "Ngưỡng điểm (< ngưỡng = fail)",
-            min_value=0.0,
-            max_value=10.0,
-            value=8.0,
-            step=0.5,
-            help="Test case có điểm thấp hơn ngưỡng này sẽ được đánh dấu fail"
-        )
-    
-    with col3:
-        st.write("**Tóm tắt cấu hình**")
-        st.info(f"Fail nếu **{fail_criterion}** < {fail_threshold}")
-        
-        # Nút lưu cấu hình
-        st.write("")  # Spacing
-        if st.button("💾 Lưu cấu hình", type="primary", use_container_width=True, help="Lưu và áp dụng cấu hình cho tất cả test"):
-            st.session_state.api_url = API_URL
-            st.session_state.evaluate_api_url = EVALUATE_API_URL
-            st.session_state.fail_criterion = fail_criterion
-            st.session_state.fail_threshold = fail_threshold
-            st.session_state.max_workers = MAX_WORKERS
-            st.session_state.add_chat_history_global = add_chat_history_global
-            
-            st.success("✅ Đã lưu cấu hình! Áp dụng cho tất cả test (đơn lẻ, hàng loạt, lập lịch)")
-            st.rerun()
-    
-    # Lưu vào session state (fallback nếu chưa click nút Lưu)
-    if 'api_url' not in st.session_state:
-        st.session_state.api_url = API_URL
-    if 'evaluate_api_url' not in st.session_state:
-        st.session_state.evaluate_api_url = EVALUATE_API_URL
-    if 'fail_criterion' not in st.session_state:
-        st.session_state.fail_criterion = fail_criterion
-    if 'fail_threshold' not in st.session_state:
-        st.session_state.fail_threshold = fail_threshold
-    if 'max_workers' not in st.session_state:
-        st.session_state.max_workers = MAX_WORKERS
-    if 'add_chat_history_global' not in st.session_state:
-        st.session_state.add_chat_history_global = add_chat_history_global
+# --- Configuration Management Functions ---
+def get_config_file_path(site):
+    """Get configuration file path for a specific site"""
+    config_dir = "config"
+    os.makedirs(config_dir, exist_ok=True)
+    return os.path.join(config_dir, f"{site}_config.pkl")
+
+def save_config_to_file(site, config):
+    """Save configuration to file"""
+    try:
+        config_file = get_config_file_path(site)
+        with open(config_file, "wb") as f:
+            pickle.dump(config, f)
+        logger.info(f"Đã lưu cấu hình cho site {site}")
+        return True
+    except Exception as e:
+        logger.error(f"Lỗi khi lưu cấu hình cho site {site}: {str(e)}")
+        return False
+
+def load_config_from_file(site):
+    """Load configuration from file"""
+    try:
+        config_file = get_config_file_path(site)
+        if os.path.exists(config_file):
+            with open(config_file, "rb") as f:
+                config = pickle.load(f)
+            logger.info(f"Đã tải cấu hình cho site {site}")
+            return config
+        else:
+            logger.info(f"Chưa có file cấu hình cho site {site}")
+            return None
+    except Exception as e:
+        logger.error(f"Lỗi khi tải cấu hình cho site {site}: {str(e)}")
+        return None
+
+def get_default_config():
+    """Get default configuration"""
+    return {
+        "api_url": "https://site1.com",
+        "evaluate_api_url": "https://site2.com",
+        "fail_criterion": "accuracy",
+        "fail_threshold": 8.0,
+        "max_workers": 5,
+        "add_chat_history_global": False
+    }
 
 # --- Prompt Management Functions ---
 def get_prompt_paths(site):
@@ -410,23 +457,22 @@ def get_original_prompt_paths():
         "human_prompt": os.path.join("original_prompts", "human_prompt.txt")
     }
 
-def get_backup_prompt_paths(site):
-    """Get backup prompt file paths for a specific site"""
-    backup_dir = os.path.join("backup_prompts", site)
-    return {
-        "system_prompt": os.path.join(backup_dir, "system_prompt.txt"),
-        "human_prompt": os.path.join(backup_dir, "human_prompt.txt")
-    }
-
-def get_backup_extract_sections_path(site):
-    """Get backup extract_sections.py file path for a specific site"""
-    backup_dir = os.path.join("backup_prompts", site)
-    return os.path.join(backup_dir, "extract_sections.py")
-
-def get_extract_sections_path(site):
-    """Get extract_sections.py file path for a specific site"""
-    utils_dir = os.path.join("utils", site)
-    return os.path.join(utils_dir, "extract_sections.py")
+def copy_original_prompts_to_site(site):
+    """Copy prompts from original_prompts to site folder"""
+    try:
+        original_prompts = load_original_prompts()
+        
+        if original_prompts["system_prompt"] or original_prompts["human_prompt"]:
+            # Save to site folder
+            save_prompts_for_site(site, original_prompts["system_prompt"], original_prompts["human_prompt"])
+            logger.info(f"Đã copy original prompts sang site {site}")
+            return True
+        else:
+            logger.warning("Original prompts rỗng, không thể copy")
+            return False
+    except Exception as e:
+        logger.error(f"Lỗi khi copy original prompts sang site {site}: {str(e)}")
+        return False
 
 def load_original_prompts():
     """Load prompts from original_prompts folder"""
@@ -453,6 +499,79 @@ def load_original_prompts():
         prompts = {"system_prompt": "", "human_prompt": ""}
     
     return prompts
+
+def save_prompts_for_site(site, system_prompt, human_prompt):
+    """Save prompts for a specific site"""
+    prompt_paths = get_prompt_paths(site)
+    
+    try:
+        # Create directory if not exists
+        os.makedirs(os.path.dirname(prompt_paths["system_prompt"]), exist_ok=True)
+        
+        # Save system prompt
+        with open(prompt_paths["system_prompt"], "w", encoding="utf-8") as f:
+            f.write(system_prompt)
+            
+        # Save human prompt
+        with open(prompt_paths["human_prompt"], "w", encoding="utf-8") as f:
+            f.write(human_prompt)
+            
+        logger.info(f"Đã lưu prompts cho site {site}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Lỗi khi lưu prompts cho site {site}: {str(e)}")
+        return False
+
+def load_prompts_for_site(site):
+    """Load prompts for a specific site, copy from original if not exists"""
+    prompt_paths = get_prompt_paths(site)
+    prompts = {}
+    
+    # Check if prompts exist for this site
+    site_prompts_exist = os.path.exists(prompt_paths["system_prompt"]) and os.path.exists(prompt_paths["human_prompt"])
+    
+    # If not exist, copy from original_prompts
+    if not site_prompts_exist:
+        logger.info(f"Prompts cho site {site} chưa tồn tại, đang copy từ original_prompts")
+        copy_original_prompts_to_site(site)
+    
+    try:
+        if os.path.exists(prompt_paths["system_prompt"]):
+            with open(prompt_paths["system_prompt"], "r", encoding="utf-8") as f:
+                prompts["system_prompt"] = f.read()
+        else:
+            prompts["system_prompt"] = ""
+            
+        if os.path.exists(prompt_paths["human_prompt"]):
+            with open(prompt_paths["human_prompt"], "r", encoding="utf-8") as f:
+                prompts["human_prompt"] = f.read()
+        else:
+            prompts["human_prompt"] = ""
+            
+    except Exception as e:
+        logger.error(f"Lỗi khi đọc prompts cho site {site}: {str(e)}")
+        prompts = {"system_prompt": "", "human_prompt": ""}
+    
+    return prompts
+
+def get_backup_prompt_paths(site):
+    """Get backup prompt file paths for a specific site"""
+    backup_dir = os.path.join("backup_prompts", site)
+    return {
+        "system_prompt": os.path.join(backup_dir, "system_prompt.txt"),
+        "human_prompt": os.path.join(backup_dir, "human_prompt.txt")
+    }
+
+def get_backup_extract_sections_path(site):
+    """Get backup extract_sections.py file path for a specific site"""
+    backup_dir = os.path.join("backup_prompts", site)
+    return os.path.join(backup_dir, "extract_sections.py")
+
+def get_extract_sections_path(site):
+    """Get extract_sections.py file path for a specific site"""
+    utils_dir = os.path.join("utils", site)
+    return os.path.join(utils_dir, "extract_sections.py")
 
 def backup_prompts_for_site(site):
     """Backup current prompts to backup_prompts folder"""
@@ -568,77 +687,205 @@ def restore_extract_sections_from_backup(site):
         logger.error(f"Lỗi khi restore extract_sections cho site {site}: {str(e)}")
         return False
 
-def copy_original_prompts_to_site(site):
-    """Copy prompts from original_prompts to site folder"""
-    try:
-        original_prompts = load_original_prompts()
-        
-        if original_prompts["system_prompt"] or original_prompts["human_prompt"]:
-            # Save to site folder
-            save_prompts_for_site(site, original_prompts["system_prompt"], original_prompts["human_prompt"])
-            logger.info(f"Đã copy original prompts sang site {site}")
-            return True
-        else:
-            logger.warning("Original prompts rỗng, không thể copy")
-            return False
-    except Exception as e:
-        logger.error(f"Lỗi khi copy original prompts sang site {site}: {str(e)}")
-        return False
-
-def load_prompts_for_site(site):
-    """Load prompts for a specific site, copy from original if not exists"""
-    prompt_paths = get_prompt_paths(site)
-    prompts = {}
-    
-    # Check if prompts exist for this site
-    site_prompts_exist = os.path.exists(prompt_paths["system_prompt"]) and os.path.exists(prompt_paths["human_prompt"])
+def load_extract_sections_for_site(site):
+    """Load extract_sections.py for a specific site, copy from original if not exists"""
+    extract_path = get_extract_sections_path(site)
     
     # If not exist, copy from original_prompts
-    if not site_prompts_exist:
-        logger.info(f"Prompts cho site {site} chưa tồn tại, đang copy từ original_prompts")
-        copy_original_prompts_to_site(site)
+    if not os.path.exists(extract_path):
+        logger.info(f"Extract sections cho site {site} chưa tồn tại, đang copy từ original_prompts")
+        copy_original_extract_sections_to_site(site)
     
     try:
-        if os.path.exists(prompt_paths["system_prompt"]):
-            with open(prompt_paths["system_prompt"], "r", encoding="utf-8") as f:
-                prompts["system_prompt"] = f.read()
+        if os.path.exists(extract_path):
+            with open(extract_path, "r", encoding="utf-8") as f:
+                return f.read()
         else:
-            prompts["system_prompt"] = ""
-            
-        if os.path.exists(prompt_paths["human_prompt"]):
-            with open(prompt_paths["human_prompt"], "r", encoding="utf-8") as f:
-                prompts["human_prompt"] = f.read()
-        else:
-            prompts["human_prompt"] = ""
-            
+            return ""
     except Exception as e:
-        logger.error(f"Lỗi khi đọc prompts cho site {site}: {str(e)}")
-        prompts = {"system_prompt": "", "human_prompt": ""}
-    
-    return prompts
+        logger.error(f"Lỗi khi đọc extract_sections cho site {site}: {str(e)}")
+        return ""
 
-def save_prompts_for_site(site, system_prompt, human_prompt):
-    """Save prompts for a specific site"""
-    prompt_paths = get_prompt_paths(site)
+def save_extract_sections_for_site(site, extract_code):
+    """Save extract_sections.py for a specific site"""
+    extract_path = get_extract_sections_path(site)
     
     try:
         # Create directory if not exists
-        os.makedirs(os.path.dirname(prompt_paths["system_prompt"]), exist_ok=True)
+        os.makedirs(os.path.dirname(extract_path), exist_ok=True)
         
-        # Save system prompt
-        with open(prompt_paths["system_prompt"], "w", encoding="utf-8") as f:
-            f.write(system_prompt)
+        with open(extract_path, "w", encoding="utf-8") as f:
+            f.write(extract_code)
             
-        # Save human prompt
-        with open(prompt_paths["human_prompt"], "w", encoding="utf-8") as f:
-            f.write(human_prompt)
-            
-        logger.info(f"Đã lưu prompts cho site {site}")
+        logger.info(f"Đã lưu extract_sections cho site {site}")
         return True
         
     except Exception as e:
-        logger.error(f"Lỗi khi lưu prompts cho site {site}: {str(e)}")
+        logger.error(f"Lỗi khi lưu extract_sections cho site {site}: {str(e)}")
         return False
+
+def copy_original_extract_sections_to_site(site):
+    """Copy extract_sections from original_prompts to site folder"""
+    try:
+        original_code = load_original_extract_sections()
+        
+        if original_code:
+            # Save to site folder
+            save_extract_sections_for_site(site, original_code)
+            logger.info(f"Đã copy original extract_sections sang site {site}")
+            return True
+        else:
+            logger.warning("Original extract_sections rỗng, không thể copy")
+            return False
+    except Exception as e:
+        logger.error(f"Lỗi khi copy original extract_sections sang site {site}: {str(e)}")
+        return False
+
+# Giao diện Streamlit
+st.title("🤖 Agent Testing")
+
+# --- Load configuration from file ---
+def load_site_config():
+    """Load configuration for current site"""
+    site = get_current_site()
+    config = load_config_from_file(site)
+    
+    if config:
+        # Load từ file
+        st.session_state.api_url = config.get("api_url", "https://site1.com")
+        st.session_state.evaluate_api_url = config.get("evaluate_api_url", "https://site2.com")
+        st.session_state.fail_criterion = config.get("fail_criterion", "accuracy")
+        st.session_state.fail_threshold = config.get("fail_threshold", 8.0)
+        st.session_state.max_workers = config.get("max_workers", 5)
+        st.session_state.add_chat_history_global = config.get("add_chat_history_global", False)
+        logger.info(f"Đã load cấu hình từ file cho site {site}")
+    else:
+        # Sử dụng cấu hình mặc định
+        default_config = get_default_config()
+        st.session_state.api_url = default_config["api_url"]
+        st.session_state.evaluate_api_url = default_config["evaluate_api_url"]
+        st.session_state.fail_criterion = default_config["fail_criterion"]
+        st.session_state.fail_threshold = default_config["fail_threshold"]
+        st.session_state.max_workers = default_config["max_workers"]
+        st.session_state.add_chat_history_global = default_config["add_chat_history_global"]
+        logger.info(f"Sử dụng cấu hình mặc định cho site {site}")
+
+# Load cấu hình khi khởi động
+if 'config_loaded' not in st.session_state:
+    load_site_config()
+    st.session_state.config_loaded = True
+
+# --- Cấu hình và các biến toàn cục ---
+with st.expander("⚙️ Cấu hình API và các tham số", expanded=False):
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**Cấu hình API**")
+        API_URL = st.text_input("API URL", value=st.session_state.get("api_url", "https://site1.com"), key="api_url_input")
+        EVALUATE_API_URL = st.text_input("Evaluate API URL", value=st.session_state.get("evaluate_api_url", "https://site2.com"), key="evaluate_api_url_input")
+    
+    with col2:
+        st.write("**Cấu hình Test**")
+        MAX_WORKERS = st.slider("Số luồng xử lý đồng thời", 1, 20, value=st.session_state.get("max_workers", 5), key="max_workers_slider")
+        add_chat_history_global = st.checkbox("Thêm chat history (giả lập đã cung cấp thông tin)", value=st.session_state.get("add_chat_history_global", False), key="add_chat_history_checkbox")
+    
+    st.divider()
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.write("**Tiêu chí đánh giá fail**")
+        
+        # Lấy criteria động từ system prompt
+        current_system_prompt = st.session_state.get("current_system_prompt", "")
+        if not current_system_prompt:
+            # Load system prompt hiện tại nếu chưa có
+            try:
+                site = get_current_site()
+                prompts = load_prompts_for_site(site)
+                current_system_prompt = prompts.get("system_prompt", "")
+                st.session_state.current_system_prompt = current_system_prompt
+            except:
+                current_system_prompt = ""
+        
+        # Lấy danh sách criteria từ prompt
+        criterion_options = get_criteria_from_prompt(current_system_prompt)
+        
+        # Lấy tiêu chí hiện tại từ session state
+        current_criterion = st.session_state.get("fail_criterion", criterion_options[0] if criterion_options else "accuracy")
+        
+        # Tìm index của tiêu chí hiện tại
+        if current_criterion in criterion_options:
+            criterion_index = criterion_options.index(current_criterion)
+        else:
+            criterion_index = 0
+            # Cập nhật session state nếu tiêu chí hiện tại không có trong danh sách mới
+            st.session_state.fail_criterion = criterion_options[0] if criterion_options else "accuracy"
+        
+        col1_1, col1_2 = st.columns([3, 1])
+        with col1_1:
+            fail_criterion = st.selectbox(
+                "Chọn tiêu chí",
+                criterion_options,
+                index=criterion_index,
+                help=f"Tiêu chí được sử dụng để xác định test case fail (tự động từ system prompt: {len(criterion_options)} tiêu chí)",
+                key="fail_criterion_select"
+            )
+        with col1_2:
+            if st.button("🔄", help="Refresh criteria từ system prompt hiện tại", key="refresh_criteria"):
+                try:
+                    site = get_current_site()
+                    prompts = load_prompts_for_site(site)
+                    new_system_prompt = prompts.get("system_prompt", "")
+                    st.session_state.current_system_prompt = new_system_prompt
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Lỗi khi refresh criteria: {str(e)}")
+    
+    with col2:
+        st.write("**Ngưỡng fail**")
+        fail_threshold = st.number_input(
+            "Ngưỡng điểm (< ngưỡng = fail)",
+            min_value=0.0,
+            max_value=10.0,
+            value=st.session_state.get("fail_threshold", 8.0),
+            step=0.5,
+            help="Test case có điểm thấp hơn ngưỡng này sẽ được đánh dấu fail",
+            key="fail_threshold_input"
+        )
+    
+    with col3:
+        st.write("**Tóm tắt cấu hình**")
+        st.info(f"Fail nếu **{fail_criterion}** < {fail_threshold}")
+        
+        # Nút lưu cấu hình
+        st.write("")  # Spacing
+        if st.button("💾 Lưu cấu hình", type="primary", use_container_width=True, help="Lưu và áp dụng cấu hình cho tất cả test"):
+            # Cập nhật session state
+            st.session_state.api_url = API_URL
+            st.session_state.evaluate_api_url = EVALUATE_API_URL
+            st.session_state.fail_criterion = fail_criterion
+            st.session_state.fail_threshold = fail_threshold
+            st.session_state.max_workers = MAX_WORKERS
+            st.session_state.add_chat_history_global = add_chat_history_global
+            
+            # Lưu vào file
+            site = get_current_site()
+            config = {
+                "api_url": API_URL,
+                "evaluate_api_url": EVALUATE_API_URL,
+                "fail_criterion": fail_criterion,
+                "fail_threshold": fail_threshold,
+                "max_workers": MAX_WORKERS,
+                "add_chat_history_global": add_chat_history_global
+            }
+            
+            if save_config_to_file(site, config):
+                st.success("✅ Đã lưu cấu hình vào file! Áp dụng cho tất cả test (đơn lẻ, hàng loạt, lập lịch)")
+            else:
+                st.error("❌ Lỗi khi lưu cấu hình vào file!")
+            st.rerun()
+    
+    # Configuration đã được load từ file ở trên
 
 def get_original_extract_sections_path():
     """Get original extract_sections.py file path"""
@@ -1115,7 +1362,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                         
                         if criterion_score < fail_threshold:
                             result["failed_details"] = {
-                                "timestamp": datetime.datetime.now().isoformat(),
+                                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 "test_name": test_name,
                                 "reason": f"{fail_criterion} thấp (< {fail_threshold})",
                                 "expected_output": result["true_answer"],
@@ -1131,7 +1378,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                             "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                             "site_response": result.get("site_response", "[Lỗi khi xử lý]"),
                             "evaluate_result": {"scores": {}, "comments": "Lỗi: evaluate_result không hợp lệ"},
-                            "failed_details": {"timestamp": datetime.datetime.now().isoformat(), "test_name": test_name, "reason": "Lỗi evaluate_result", "error_message": "evaluate_result is None or invalid"}
+                            "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi evaluate_result", "error_message": "evaluate_result is None or invalid"}
                         }
                         results.append(error_result)
                         failed_questions.append((question, "Lỗi evaluate_result", "evaluate_result is None or invalid"))
@@ -1140,7 +1387,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                         "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                         "site_response": "[Lỗi khi xử lý]",
                         "evaluate_result": {"scores": {}, "comments": f"Lỗi: {result}"},
-                        "failed_details": {"timestamp": datetime.datetime.now().isoformat("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
+                        "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
                     }
                     results.append(error_result)
                     failed_questions.append((question, "Lỗi xử lý API", result))
@@ -1150,7 +1397,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                     "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                     "site_response": "[Lỗi khi xử lý]",
                     "evaluate_result": {"scores": {}, "comments": error_message},
-                    "failed_details": {"timestamp": datetime.datetime.now().isoformat("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
+                    "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
                 }
                 results.append(error_result)
                 failed_questions.append((question, "Exception", str(e)))
@@ -2352,10 +2599,19 @@ with tab5:
             else:
                 success_extract = True  # Không có lỗi nếu không có prompt
             
+            # Refresh criteria từ system prompt mới
+            if system_prompt:
+                st.session_state.current_system_prompt = system_prompt
+                # Cập nhật fail_criterion nếu cần
+                new_criteria = get_criteria_from_prompt(system_prompt)
+                current_criterion = st.session_state.get("fail_criterion", "accuracy")
+                if current_criterion not in new_criteria and new_criteria:
+                    st.session_state.fail_criterion = new_criteria[0]
+            
             if success_prompts and success_extract:
                 st.session_state.prompt_action_message = {
                     'type': 'success',
-                    'text': '✅ Đã lưu prompts & extract sections!'
+                    'text': '✅ Đã lưu prompts & extract sections! Criteria đã được cập nhật.'
                 }
             elif success_prompts:
                 st.session_state.prompt_action_message = {

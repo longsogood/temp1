@@ -1093,7 +1093,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                         
                         if criterion_score < fail_threshold:
                             result["failed_details"] = {
-                                "timestamp": datetime.datetime.now().isoformat(),
+                                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 "test_name": test_name,
                                 "reason": f"{fail_criterion} thấp (< {fail_threshold})",
                                 "expected_output": result["true_answer"],
@@ -1109,7 +1109,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                             "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                             "site_response": result.get("site_response", "[Lỗi khi xử lý]"),
                             "evaluate_result": {"scores": {}, "comments": "Lỗi: evaluate_result không hợp lệ"},
-                            "failed_details": {"timestamp": datetime.datetime.now().isoformat(), "test_name": test_name, "reason": "Lỗi evaluate_result", "error_message": "evaluate_result is None or invalid"}
+                            "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi evaluate_result", "error_message": "evaluate_result is None or invalid"}
                         }
                         results.append(error_result)
                         failed_questions.append((question, "Lỗi evaluate_result", "evaluate_result is None or invalid"))
@@ -1118,7 +1118,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                         "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                         "site_response": "[Lỗi khi xử lý]",
                         "evaluate_result": {"scores": {}, "comments": f"Lỗi: {result}"},
-                        "failed_details": {"timestamp": datetime.datetime.now().isoformat("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
+                        "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Lỗi xử lý API", "error_message": str(result)}
                     }
                     results.append(error_result)
                     failed_questions.append((question, "Lỗi xử lý API", result))
@@ -1128,7 +1128,7 @@ def process_questions_batch(questions, true_answers, add_chat_history=False, cus
                     "chat_id": str(uuid4()), "question": question, "true_answer": true_answer,
                     "site_response": "[Lỗi khi xử lý]",
                     "evaluate_result": {"scores": {}, "comments": error_message},
-                    "failed_details": {"timestamp": datetime.datetime.now().isoformat("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
+                    "failed_details": {"timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "test_name": test_name, "reason": "Exception", "error_message": str(e)}
                 }
                 results.append(error_result)
                 failed_questions.append((question, "Exception", str(e)))
